@@ -1,0 +1,62 @@
+---
+// spec: 6.1 Header (Logo, Jobs, Plans, "Order track karein", "Meri history", menu), F01-AC6 (bina JS ke)
+import Logo from './Logo.astro';
+
+const links = [
+  { href: '/jobs', label: 'Jobs' },
+  { href: '/plans', label: 'Plans' },
+  { href: '/track', label: 'Order track karein' },
+  { href: '/my-history', label: 'Meri history' },
+];
+---
+<header class="bg-surface border-b-[3px] border-primary">
+  <div class="container-page flex items-center justify-between gap-4 min-h-[60px]">
+    <a href="/" class="flex items-center py-2" aria-label="GVS Academy, Home">
+      <Logo height={44} />
+    </a>
+
+    <!-- Desktop: seedhe links -->
+    <nav class="hidden md:block" aria-label="Main menu">
+      <ul class="flex items-center gap-1">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="inline-flex items-center min-h-[44px] px-3 rounded-lg text-text no-underline font-medium hover:bg-primary-soft"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Mobile: <details> menu, JavaScript ke baghair khulta hai -->
+    <details class="md:hidden relative group">
+      <summary
+        class="list-none flex items-center gap-2 min-w-[44px] px-3 rounded-lg cursor-pointer font-medium text-text hover:bg-primary-soft [&::-webkit-details-marker]:hidden"
+        aria-label="Menu kholein"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path class="group-open:hidden" d="M4 7h16M4 12h16M4 17h16" />
+          <path class="hidden group-open:block" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+        <span>Menu</span>
+      </summary>
+      <nav
+        class="absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-32px)] bg-surface border border-border rounded-2xl shadow-sm p-2 z-50"
+        aria-label="Main menu"
+      >
+        <ul>
+          {links.map((l) => (
+            <li>
+              <a href={l.href} class="flex items-center min-h-[48px] px-3 rounded-lg text-text no-underline hover:bg-primary-soft">
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>

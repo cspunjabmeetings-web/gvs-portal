@@ -70,8 +70,11 @@ export function checkScope(projectRoot) {
   if (existsSync(pkgPath)) {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
     for (const key of ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']) {
-      for (const dep of Object.keys(pkg[key] ?? {})) {
-        if (!allowed.has(dep)) errors.push(`Allowlist se bahar dependency: ${dep} (${key})`);
+      for (const [dep, spec] of Object.entries(pkg[key] ?? {})) {
+        // Alias ("rollup": "npm:@rollup/wasm-node@x") ho to asal package ka naam jaancho
+        const alias = typeof spec === 'string' && spec.match(/^npm:((?:@[^/]+\/)?[^@]+)@/);
+        const real = alias ? alias[1] : dep;
+        if (!allowed.has(real)) errors.push(`Allowlist se bahar dependency: ${real} (${key})`);
       }
     }
   }

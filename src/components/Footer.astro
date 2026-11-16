@@ -1,0 +1,55 @@
+---
+// spec: 6.1 Footer (About, Contact, Privacy, Terms, How-to-order, WhatsApp number, "GVS niji academy hai")
+// WhatsApp number hard-code nahin: build fallback (intent 12.4); Qadam 5 ke baad /api/settings se.
+import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
+import Logo from './Logo.astro';
+
+const number = PUBLIC_WHATSAPP_FALLBACK;
+const intl = '92' + number.replace(/^0/, '');
+const display = number.replace(/^(\d{4})(\d{7})$/, '$1-$2');
+
+const links = [
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/how-to-order', label: 'Order kaise karein' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+];
+const year = new Date().getFullYear();
+---
+<footer class="bg-surface-2 border-t border-border mt-12">
+  <div class="container-page py-8 grid gap-6 md:grid-cols-[auto_1fr_auto] md:items-start">
+    <div>
+      <Logo height={56} />
+    </div>
+
+    <nav aria-label="Footer links">
+      <ul class="flex flex-wrap gap-x-2 gap-y-1">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} class="inline-flex items-center min-h-[44px] px-2 text-text">{l.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div>
+      <p class="text-sm text-muted">WhatsApp</p>
+      <a
+        href={`https://wa.me/${intl}`}
+        class="inline-flex items-center min-h-[44px] font-semibold tabular"
+        data-whatsapp-number
+        rel="noopener"
+      >
+        {display}
+      </a>
+    </div>
+  </div>
+
+  <div class="container-page pb-8">
+    <p class="text-sm text-muted border-t border-border pt-4">
+      GVS niji academy hai, sarkari idara nahin. Sarkari fee alag hai aur official challan par jati hai.
+    </p>
+    <p class="text-sm text-muted mt-1">© {year} GVS Academy</p>
+  </div>
+</footer>

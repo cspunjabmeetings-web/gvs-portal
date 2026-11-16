@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | design.md (rang, fonts, components, screens) |
-| **Version** | 0.2 (owner ne manzoor kiya, 16 Nov 2026) |
+| **Version** | 0.3 (owner ne manzoor kiya, 16 Nov 2026) |
 | **Tareekh** | 16 November 2026 |
 | **Source** | `intent.md` section 11, 15, 16, 17, 27; `spec.md` section 6, 9 |
 | **Rang ka faisla** | Gehra hara + amber (owner ne 16 Nov 2026 ko chuna) |
@@ -124,7 +124,8 @@ Har component Astro (static) hai jab tak interactive na ho; interactive Preact i
 | Component | Shakal / ahem baatein | Island? |
 |---|---|---|
 | `AnnouncementBar` | Amber patti (`--accent` bg, `--on-accent` text), 1 line, 160 harf | Nahin |
-| `Header` | 56px, `--primary` bg, logo "GVS Academy" left; right: "Order track karein", menu (☰). Desktop par Jobs, Plans, Meri history links | Menu toggle chhota vanilla JS |
+| `Header` | 60px, `--surface` (safaid) bg + neeche 3px `--primary` patti; asal logo (`/images/logo.svg`, dark mein `logo-dark.svg`) left; right: mobile par "☰ Menu" (`<details>`, bina JS), desktop (≥768) par Jobs, Plans, Order track karein, Meri history | Nahin (`<details>`) |
+| `Logo` | `<picture>`: light `logo.svg` (navy #0B2D6B, hara #16A34A, sunehra #F59E0B); dark `logo-dark.svg` (navy ki jagah `#E7EFE9`). Header 44px, footer 56px ooncha | Nahin |
 | `Footer` | `--surface-2`; About, Contact, Privacy, Terms, How-to-order, WhatsApp number, "GVS niji academy hai, sarkari idara nahin" | Nahin |
 | `Breadcrumbs` | Chhota muted matn, `›` separator | Nahin |
 | `DoorCard` | Home ke 4 darwaze: 2x2 grid (mobile 1 column 360px par, 2 column ≥400px), icon + title + 1 line, poora card clickable | Nahin |
@@ -223,3 +224,4 @@ Login (ek field, bara button) → Orders (khulasa ke 4 tiles, filter chips horiz
 |---|---|---|
 | 0.1 | 16 Nov 2026 | Pehla maswida (Qadam 0); rang: gehra hara + amber |
 | 0.2 | 16 Nov 2026 | Dark primary `#237A4F`/hover `#1C6641` (AA fix); do-rang focus ring; tokens `src/styles/global.css` mein; theme sirf phone ki setting se (toggle nahin); logo abhi text, SVG owner de to |
+| 0.3 | 16 Nov 2026 | Owner ka asal logo (navy + hara + sunehra) laga; dark variant; Header ka bg safaid (`--surface`) + 3px hari patti, taake navy logo saaf dikhe (owner ki manzoori) |

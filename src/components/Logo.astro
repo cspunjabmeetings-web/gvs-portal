@@ -1,0 +1,12 @@
+---
+// spec: 6.1 Header/Footer; design.md 5 (logo: light/dark ke liye do files, JS ke baghair)
+interface Props {
+  height?: number;
+}
+const { height = 44 } = Astro.props;
+const width = Math.round((height * 572) / 358);
+---
+<picture>
+  <source srcset="/images/logo-dark.svg" media="(prefers-color-scheme: dark)" />
+  <img src="/images/logo.svg" alt="GVS Academy" width={width} height={height} decoding="async" />
+</picture>

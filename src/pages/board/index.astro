@@ -1,0 +1,89 @@
+---
+// spec: S04 (/board: class chunein), F21-AC8; intent 13 (Ad: Haan)
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import FAQ from '../../components/FAQ.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import seo from '../../data/seo.json';
+import { getProduct, formatPrice } from '../../lib/catalog';
+
+const meta = seo.pages['/board'];
+const p = getProduct('board-paper');
+const price = p && typeof p.price === 'number' ? formatPrice(p.price) : '';
+const classes = [
+  { cls: '9th', line: 'Matric part 1 (SSC-I)' },
+  { cls: '10th', line: 'Matric part 2 (SSC-II)' },
+  { cls: '11th', line: 'Inter part 1 (HSSC-I, first year)' },
+  { cls: '12th', line: 'Inter part 2 (HSSC-II, second year)' },
+];
+const faq = [
+  {
+    q: 'Paper kis ke liye hai?',
+    a: 'Students apni tayyari ke liye, aur teachers aur academies apne class tests ke liye. Paper aap ke chune hue chapters aur kul number ke mutabiq banta hai.',
+  },
+  {
+    q: 'Kya yeh asal board ka paper hai?',
+    a: 'Nahin. Yeh board ke pattern par GVS ka banaya hua test paper hai. Asal board papers aur date sheet ke liye apne board ki official website dekhein.',
+  },
+  {
+    q: 'Ek sath kai mazameen ke papers mil sakte hain?',
+    a: 'Haan. Har mazmoon ko alag alag order list mein daalein; sab ek hi order mein ja sakte hain.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Board Classes' }]} />
+    <h1 class="mt-3">Board Classes: test papers</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Apni class chunein. Mazmoon, chapters aur kul number aap batayen; board pattern par paper hum banayen. {price && `Qeemat ${price} har paper.`}</p>
+
+    <AdSlot slot="top" />
+
+    <ul class="grid gap-3 sm:grid-cols-2">
+      {classes.map((c) => (
+        <li>
+          <a href={`/board/${c.cls}`} class="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 no-underline text-text hover:border-primary">
+            <span>
+              <span class="block text-xl font-bold">{c.cls} class</span>
+              <span class="block text-sm text-muted">{c.line}</span>
+            </span>
+            <span aria-hidden="true" class="text-primary text-2xl">›</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <TrustStrip />
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="how-heading">
+      <h2 id="how-heading">Test paper kaise banta hai</h2>
+      <p class="mt-3">
+        Aap class chunte hain, phir mazmoon likhte hain, kaun se chapters ya units shamil karne hain, aur paper kitne number ka ho.
+        Isi ke mutabiq hum board ke pattern par paper banate hain: ek hissa objective (MCQs) ka aur ek subjective (short aur long
+        sawal) ka, jaise board ke imtihan mein hota hai.
+      </p>
+      <p class="mt-3">
+        Students yeh paper apni tayyari jaanchne ke liye istemal karte hain: ghar par waqt laga kar paper hal karein, phir kitab se
+        jawab milayen. Teachers aur academies isay class test ya monthly test ke liye istemal kar sakte hain, kyun ke chapters aur
+        number unhi ki marzi ke hote hain.
+      </p>
+      <p class="mt-3">
+        Order WhatsApp par hota hai aur paper PDF mein aata hai, payment milne ke baad aam taur par 2 ghante mein, kaam ke auqaat
+        ke andar. Agar aap ka board ya group mukhtalif hai, ya koi khaas hidayat hai, to order ke baad WhatsApp par bata dein.
+      </p>
+      <p class="mt-3">
+        Behtar nateeje ke liye chhote papers se shuru karein: pehle do teen chapters, phir har mahine pichhle chapters mila kar.
+        Imtihan ke qareeb poore syllabus ka paper asal waqt laga kar hal karein, aur jahan number kate un hisson ko dobara parhein.
+      </p>
+      <p class="mt-3">
+        Yeh GVS ka banaya hua practice paper hai, asal board paper nahin. Date sheet, roll number aur results ke liye apne board ki
+        official website dekhein. Job tests ki tayyari ke liye <a href="/job-prep">Job ki tayyari</a> aur saari qeematein
+        <a href="/plans">rate list</a> par hain.
+      </p>
+    </section>
+
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

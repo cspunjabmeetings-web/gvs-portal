@@ -1,0 +1,131 @@
+---
+// spec: S03 (course code ka khana, 4 packs ka muqabla, namoone, FAQ, top+bottom ad), F02-AC1, F02-AC2, F21-AC8
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FieldInput from '../components/FieldInput.astro';
+import ProductCard from '../components/ProductCard.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import OrderSteps from '../components/OrderSteps.astro';
+import FAQ from '../components/FAQ.astro';
+import AdSlot from '../components/AdSlot.astro';
+import seo from '../data/seo.json';
+import { getProduct, formatPrice, type Product } from '../lib/catalog';
+
+const meta = seo.pages['/vu'];
+const packs = ['vu-quick', 'vu-smart', 'vu-complete', 'vu-topper']
+  .map((id) => getProduct(id))
+  .filter((p): p is Product => Boolean(p));
+const courseField = packs[0]?.fields.find((f) => f.key === 'courseCode');
+// Muqable ki table: saare packs ki "includes" ki ikatthi list, tarteeb ke sath
+const features = [...new Set(packs.flatMap((p) => p.includes))];
+const short = (name: string) => name.replace(/^VU /, '').replace(/ pack$/, '');
+
+const faq = [
+  {
+    q: 'Course code kaise likhun?',
+    a: 'Jaise VU ke LMS mein likha hai: pehle harf, phir 3 hindse, maslan CS101, MTH202 ya MGT201. Ghalat shakal par neeche paigham aa jata hai.',
+  },
+  {
+    q: 'Kaun sa pack mere liye sahih hai?',
+    a: 'Waqt kam ho aur sirf ahem cheezein chahiyein to Quick. Aam tayyari ke liye Smart. Subjective ki bhi tayyari chahiye to Complete. Poori tayyari aur guess list ke liye Topper.',
+  },
+  {
+    q: 'Pack kab milta hai?',
+    a: 'Payment milne ke baad taqreeban 2 ghante mein, kaam ke auqaat (subah 9 se raat 10 baje) ke andar, WhatsApp par PDF.',
+  },
+  {
+    q: 'Kya yeh Virtual University ka official material hai?',
+    a: 'Nahin. GVS niji academy hai aur Virtual University se mutalliq nahin. Packs GVS ki apni tayyari ka material hain; official handouts VU ke LMS par hain.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'VU Corner' }]} />
+    <h1 class="mt-3">VU Corner: midterm aur final packs</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Apna course code likhein aur chaar packs mein se chunein. Har pack mein kya hai, saaf likha hai.</p>
+
+    <AdSlot slot="top" />
+
+    {courseField && (
+      <section class="my-6 max-w-md rounded-xl border border-primary bg-surface p-4" aria-labelledby="code-heading" data-shared-field-host="courseCode">
+        <h2 id="code-heading" class="text-lg mb-2">1. Course code likhein</h2>
+        <FieldInput field={courseField} id="vu-courseCode" />
+      </section>
+    )}
+
+    <section class="my-6" aria-labelledby="compare-heading">
+      <h2 id="compare-heading" class="mb-3">2. Pack chunein: muqabla</h2>
+      <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+        <table class="w-full min-w-[520px] text-sm">
+          <caption class="sr-only-focusable">VU packs ka muqabla</caption>
+          <thead>
+            <tr class="border-b border-border">
+              <th scope="col" class="p-3 text-left font-semibold">Kya shamil hai</th>
+              {packs.map((p) => (
+                <th scope="col" class="p-3 text-center font-semibold">
+                  {short(p.name)}
+                  <span class="block tabular text-primary">{formatPrice(p.price as number)}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {features.map((feat) => (
+              <tr class="border-b border-border last:border-0">
+                <th scope="row" class="p-3 text-left font-normal">{feat}</th>
+                {packs.map((p) => (
+                  <td class="p-3 text-center">
+                    {p.includes.includes(feat) ? (
+                      <span class="text-correct font-bold" aria-label="Shamil">✓</span>
+                    ) : (
+                      <span class="text-muted" aria-label="Shamil nahin">—</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="my-6" aria-labelledby="packs-heading">
+      <h2 id="packs-heading" class="mb-3">3. Order list mein daalein</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {packs.map((p) => <ProductCard product={p} sharedFields={['courseCode']} />)}
+      </div>
+    </section>
+
+    <TrustStrip />
+    <OrderSteps />
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="guide-heading">
+      <h2 id="guide-heading">VU ki tayyari: pack kaise chunein</h2>
+      <p class="mt-3">
+        Virtual University mein har course ke lectures, handouts aur quizzes LMS par hote hain, lekin midterm aur final se pehle
+        sab kuch dobara parhna mushkil hota hai. GVS ke VU packs isi kaam ke liye hain: aap ke course code ke mutabiq ahem cheezein
+        ek PDF mein, WhatsApp par.
+      </p>
+      <p class="mt-3">
+        Quick pack un ke liye hai jin ke paas waqt bohat kam hai: ahem topics ka mukhtasar khulasa aur ahem MCQs. Smart pack aam
+        tayyari ke liye hai: har lecture ka khulasa, ahem MCQs aur past papers ke sawal. Complete pack mein in sab ke sath
+        subjective sawal aur un ke jawab bhi hain, jo final term mein kaam aate hain. Topper pack mein Complete ki har cheez ke sath
+        midterm aur final ki guess list bhi hai.
+      </p>
+      <p class="mt-3">
+        Order se pehle namoona zaroor dekhein, taake andaza ho ke material kaisa hai. Course code bilkul sahih likhein, kyun ke pack
+        usi course ka banta hai. Ek se zyada courses ke packs chahiyein to har course code ke sath alag alag order list mein daalein;
+        sab ek hi order mein ja sakte hain.
+      </p>
+      <p class="mt-3">
+        Pack sirf tayyari ki madad hai. Asal syllabus, handouts aur exam ki tareekhein hamesha VU ke LMS aur official notices se
+        dekhein. Muft practice ke liye <a href="/mcqs">MCQs</a> aur <a href="/daily-test">aaj ka test</a> bhi dekhein, aur saari
+        qeematein <a href="/plans">rate list</a> par hain.
+      </p>
+    </section>
+
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

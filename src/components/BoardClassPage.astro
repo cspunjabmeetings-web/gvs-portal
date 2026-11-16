@@ -1,0 +1,69 @@
+---
+// spec: S05 (/board/9th..12th: mazameen, paper kaise banta hai, order form, qeemat, namoona), F02-AC1, F21-AC8
+// Har class ka apna matn <slot /> se (intent 14.4: ek jaise pages nahin)
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import ProductCard from './ProductCard.astro';
+import TrustStrip from './TrustStrip.astro';
+import FAQ from './FAQ.astro';
+import AdSlot from './AdSlot.astro';
+import seo from '../data/seo.json';
+import { getProduct } from '../lib/catalog';
+
+interface Props {
+  cls: '9th' | '10th' | '11th' | '12th';
+  heading: string;
+  intro: string;
+  subjects: string[];
+  faq: { q: string; a: string }[];
+}
+const { cls, heading, intro, subjects, faq } = Astro.props;
+const meta = seo.pages[`/board/${cls}` as keyof typeof seo.pages];
+const product = getProduct('board-paper');
+const others = (['9th', '10th', '11th', '12th'] as const).filter((c) => c !== cls);
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Board Classes', href: '/board' }, { label: `${cls} class` }]} />
+    <h1 class="mt-3">{heading}</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">{intro}</p>
+
+    <AdSlot slot="top" />
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <div>
+        <section class="my-4" aria-labelledby="subjects-heading">
+          <h2 id="subjects-heading" class="mb-3">Aam mazameen</h2>
+          <ul class="flex flex-wrap gap-2">
+            {subjects.map((s) => <li class="rounded-full bg-surface-2 px-3 py-1 text-sm">{s}</li>)}
+          </ul>
+          <p class="mt-2 text-sm text-muted">Group aur board ke hisab se mazameen mukhtalif ho sakte hain. Order mein apna mazmoon khud likhein.</p>
+        </section>
+
+        <section class="my-6 max-w-[68ch]" aria-labelledby="paper-heading">
+          <slot />
+        </section>
+      </div>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} preset={{ className: cls }} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+
+    <nav class="my-6" aria-label="Doosri classes">
+      <h2 class="mb-2 text-lg">Doosri classes</h2>
+      <ul class="flex flex-wrap gap-2">
+        {others.map((c) => (
+          <li><a href={`/board/${c}`} class="inline-flex items-center min-h-[44px] rounded-lg border border-border bg-surface px-4 font-semibold no-underline text-text hover:border-primary">{c} class</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

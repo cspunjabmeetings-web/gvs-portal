@@ -25,6 +25,8 @@
 14. **Har feature/qadam ka plan lazmi owner se approve karwao** (owner ki hidayat, 16 Nov 2026). Plan mein "Approval ki sharait" zaroor hon (neeche template). Code tab hi approve hoga jab woh in sharait par pura utre. Ek waqt mein ek feature/qadam; har ek alag commit.
 15. **GitHub push owner khud karta hai.** Har qadam ke REPORT ke aakhir mein owner ko copy-paste ke qabil git commands do (`git add`, `git commit -m "step N: ..."`, `git push`). Claude khud push nahin karta.
 
+16. **Branch + PR + CI** (owner ka CHANGE REQUEST, 16 Nov 2026). Har qadam apni branch par (`step-N`; Claude local `git checkout -b step-N` kar sakta hai). Qadam ke aakhir mein `npm run verify` lazmi PASS. Owner branch push kare, GitHub par PR banaye (`.github/pull_request_template.md` khud bharta hai; Claude PR ka text bhar kar de), CI (`.github/workflows/ci.yml`, job `verify`) hara ✅ ho, owner haath ki checklist dekhe, phir **owner** GitHub par merge kare aur local mein `git checkout main` + `git pull`. Laal ❌ par merge mana.
+
 ### Plan ka template (har feature/qadam se pehle)
 
 ```
@@ -48,7 +50,7 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Stack (spec 3.1):** Astro 6.x (static default, on-demand sirf DB pages) + `@astrojs/cloudflare` v13 **Workers** (Pages nahin, P-01) + Tailwind 4 (Vite plugin) + Preact islands + Valibot (server) + TypeScript strict + Vitest (+ workers pool Qadam 5 se). D1 database, R2 tasveerein, GA4 deferred, Turnstile (order form), Cloudflare Access (admin, Qadam 18), Cron Trigger har 15 min (F24).
 - **Dependency allowlist:** sirf spec.md 13.6 `DEPS` block. Routes/APIs/tables bhi manifest ke andar (`npm run check:scope`).
 - **Design:** `design.md` — gehra hara (`--primary #0F5132`) + amber (`--accent #F2A20C`), light+dark CSS variables, system fonts.
-- **Commands:** `npm run test`, `npm run check:scope` (Qadam 1 ke baad `dev`, `build`, `typecheck` bhi).
+- **Commands:** `npm run verify` (sab ek sath: test, check:scope, typecheck, build, report:bundle → PASS/FAIL), `npm run dev`, aur alag alag `test`, `check:scope`, `typecheck`, `build`, `report:bundle`.
 - **Mehfooz files:** `.claude/settings.json` (deny, Bash + PowerShell dono: intent.md, .env/.dev.vars, push, deploy, secrets, remote D1, files mitana; ask, Edit + Write dono: spec/design/CLAUDE/settings/catalog/migrations/golden/package.json; npm install/add, pnpm, yarn, git commit).
 - **Golden tests** `tests/golden/`: catalog (Qadam 2 se chalu), settings seed (Qadam 5), timer `addWorkingMinutes` (Qadam 6) — target file bante hi khud chalu hote hain (`describe.skipIf`). banned-words aur scope abhi se chalu.
 
@@ -77,5 +79,13 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Mahol ke sabaq (agle session ke liye):** headless Edge ki kam se kam chaurai 504px hai — 360px jaanch ke liye iframe wrapper istemal karo. `package-lock.json` mein rollup entry ko wasm-node par haath se set kiya gaya tha; lock dobara banana ho to yeh dhyan rahe. `esbuild`/`sharp` ke install scripts approve nahin (zaroorat nahin pari).
 - **Khule masail:** (1) **Qadam 5 ka khatra:** `@cloudflare/vitest-pool-workers` ko `vitest ^4` chahiye, hamare paas vitest 5.1.0 hai — Qadam 5 ke plan mein owner se faisla. (2) Header links (Jobs, Plans, ...) abhi 404 — apne qadmon mein banenge. (3) Owner bina-JS menu aur Tab focus ring khud dekh le.
 - **Approval:** owner ne khud 5 khudkar jaanchein chala kar "sab ok" kaha, phir "Qadam 1 approve". PROGRESS tick. (Owner ke liye haath ki jaanch ka tareeqa: 5 npm commands + 2 "pehre-dar" tajurbe (banned word, nayi route) + browser checklist; owner command type karte waqt ghalti karta hai, is liye hamesha copy-paste ke qabil commands do.)
-- **Khula faisla:** CHANGE REQUEST "npm run verify + GitHub Actions CI + branch/PR" owner ke paas pending hai.
-- **Agla qadam:** push → Qadam 2 (catalog.json, seo.json, ProductCard, AdSlot, FAQ) ka plan.
+- Owner ne Qadam 1 push kar diya (main par).
+
+### 16 Nov 2026 — CI setup (branch `ci-setup`)
+
+- **Kyun:** owner ne poocha "sahi hone ka saboot kya hai, main khud kaise test karun". CHANGE REQUEST manzoor: verify + CI + branch/PR.
+- **Kya bana:** `scripts/verify.mjs` + `npm run verify` (5 jaanchein, pehli ghalti par ruk kar PASS/FAIL table); `.github/workflows/ci.yml` (ubuntu, Node 26, `npm ci`, `npm run verify`, har push/PR); `.github/pull_request_template.md`; CLAUDE.md qaida 16; spec 3.2 mein izafa.
+- **Jaanch:** local `npm run verify` → ✅ PASS. CI ka pehla nateeja GitHub par owner ke push ke baad.
+- **Khatra:** lock file haath se patch shuda (rollup → wasm-node); `@rollup/wasm-node` ka Linux optional package (`@napi-rs/lzma-linux-x64-gnu`) lock mein nahin — CI fail ho to pehle yeh dekho.
+- **Note:** GitHub Free par **private** repo mein branch protection/rulesets nahin milte (Pro chahiye) — is liye "laal par merge mana" owner ka apna usool hai, button band nahin hota.
+- **Agla qadam:** owner `ci-setup` push + PR + CI hara → merge → Qadam 2 ka plan (`step-2` branch par).

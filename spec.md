@@ -95,6 +95,7 @@ Intent 12.2 ka naqsha **bina tabdeeli** ke. Is mein spec ki taraf se sirf yeh iz
 
 - `scripts/check-scope.mjs`, `tests/golden/*.test.ts`, `.claude/settings.json`
 - `PROGRESS.md` (P-10 manzoor)
+- `scripts/verify.mjs` (`npm run verify`), `scripts/bundle-report.mjs`, `.github/workflows/ci.yml`, `.github/pull_request_template.md` (owner ka CHANGE REQUEST, 16 Nov 2026: har push/PR par khudkar jaanch)
 
 ### 3.3 Shared code ka usool (intent 12.2 se)
 
@@ -1393,6 +1394,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 |---|---|---|
 | 0.1 | 16 Nov 2026 | Pehla maswida `intent.md` v1.0 se |
 | 0.3 | 16 Nov 2026 | P-02 se P-10 aur P-12 manzoor: preview browser mein (E16 hata), daily-pins (D1, A09, E23), Cron Trigger, `GET /api/jobs/latest`, soft delete, `q_hash`, Cloudflare Access (F07-AC6), Turnstile (F04-AC11), `PROGRESS.md`, plumbing indexes; routes/API manifest aur FL-12, FL-13 |
+| 0.3.2 | 16 Nov 2026 | Owner ka CHANGE REQUEST: `npm run verify`, GitHub Actions CI, PR template; har qadam branch + PR (3.2 mein files) |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

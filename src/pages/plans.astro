@@ -1,0 +1,68 @@
+---
+// spec: S11, F02-AC5, F02-AC6 (saare active products darwaze ke hisab se), F02-AC4; intent 13 (Ad: Nahin)
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import seo from '../data/seo.json';
+import { activeProducts, formatPrice, productPage, DOOR_LABEL, type Door } from '../lib/catalog';
+
+const meta = seo.pages['/plans'];
+const doors = Object.keys(DOOR_LABEL) as Door[];
+const groups = doors
+  .map((d) => ({ door: d, label: DOOR_LABEL[d], items: activeProducts().filter((p) => p.door === d) }))
+  .filter((g) => g.items.length > 0);
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Rate list' }]} />
+    <h1 class="mt-3">Rate list</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Saari qeematein ek jagah. Jo yahan likha hai wohi qeemat hai; koi chhupa kharcha nahin.</p>
+
+    {groups.map((g) => (
+      <section class="my-6" aria-labelledby={`door-${g.door}`}>
+        <h2 id={`door-${g.door}`} class="mb-3">{g.label}</h2>
+        <ul class="divide-y divide-border rounded-xl border border-border bg-surface">
+          {g.items.map((p) => (
+            <li class="flex items-center justify-between gap-3 p-4">
+              <span>
+                <a href={productPage(p.id)} class="font-semibold">{p.name}</a>
+                {p.govtFeeExtra && <span class="block text-sm text-muted">Qeemat mein sarkari fee shamil nahin</span>}
+              </span>
+              {typeof p.price === 'number' ? (
+                <span class="tabular font-bold text-primary whitespace-nowrap">{formatPrice(p.price)}</span>
+              ) : (
+                <span class="text-sm font-semibold text-accent-text whitespace-nowrap">Rabta karein</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <TrustStrip />
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="notes-heading">
+      <h2 id="notes-heading">Qeemat ke bare mein zaroori baatein</h2>
+      <p class="mt-3">
+        Har qeemat Pakistani rupay mein hai aur poore rupay mein. Order ke waqt qeemat hamara system khud catalog se hisab karta
+        hai, is liye jo yahan likha hai wohi aap ke order mein aaye ga. Kai cheezein ek order mein ho sakti hain; kul raqam order
+        list mein dikhti hai.
+      </p>
+      <p class="mt-3">
+        Online job apply aur sarkari scheme ki madad mein sirf hamari service fee likhi hai. Sarkari fee alag hoti hai, official
+        challan par jati hai, aur GVS use wapas nahin kar sakta kyun ke woh sarkari idare ke usool par hai. Kisi job post se apply
+        karwane par hamari fee us post par likhi hoti hai.
+      </p>
+      <p class="mt-3">
+        Payment WhatsApp par JazzCash ya Easypaisa se hoti hai. Payment milne ke baad aam taur par 2 ghante mein file ya kaam
+        WhatsApp par aa jata hai, kaam ke auqaat (subah 9 se raat 10 baje) ke andar. Jin services mein documents chahiye, wahan
+        waqt documents milne ke baad shuru hota hai.
+      </p>
+      <p class="mt-3">
+        Interview tayyari ki qeemat abhi tay nahin; is ke liye WhatsApp par rabta karein. Refund ki sharait <a href="/terms">Terms</a>
+        mein likhi hain, aur order ka poora tareeqa <a href="/how-to-order">yahan</a> hai. Muft tayyari ke liye
+        <a href="/daily-test">aaj ka test</a> dein.
+      </p>
+    </section>
+  </div>
+</Base>

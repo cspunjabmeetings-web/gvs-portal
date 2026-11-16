@@ -91,10 +91,26 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Agla qadam:** owner `ci-setup` push + PR + CI hara → merge → Qadam 2 ka plan (`step-2` branch par).
 - Owner ne PR #1 (ci-setup) merge kar diya.
 
-### 16 Nov 2026 — Qadam 2: catalog, seo, ProductCard, AdSlot, FAQ (branch `step-2`, REPORT diya, approval baqi)
+### 16 Nov 2026 — Qadam 2: catalog, seo, ProductCard, AdSlot, FAQ (owner ne APPROVE kiya; PR #2 merged)
 
 - **Kya bana:** `src/data/catalog.json` (13 products: intent 7.2 ke 12 + `interview-prep` `price: null`), `src/lib/catalog.ts` (types, `activeProducts`, `getProduct`, `isOrderable`, `formatPrice`, `fieldMessage`), `src/data/seo.json` (spec ROUTES ke 33 static pages), `src/data/house-ads.json` (intent 15.2 ke 4), `ProductCard.astro`, `AdSlot.astro` (5 slots, fixed size, random rotate script), `FAQ.astro` (`<details>`), aarzi Home mein 4 mashhoor packs + FAQ + bottom ad; tests `catalog.test.ts`, `seo.test.ts`; `check-scope.mjs` ab `readManifest()` export karta hai.
 - **Catalog ke chhote faislay:** naya field `govtFeeExtra` (F02-AC4); `price: null` = sirf "Rabta karein" (F02-AC5); field types `text|select|month|number`; ghalti ka paigham `fieldMessage()` se banta hai (catalog mein alag `message` nahin); `sample: null` jab tak owner asal namoona na de ("Namoona dekhein" chhupa); "Order list mein daalein" disabled (Qadam 4).
 - **Jaanch:** verify ✅ (21 pass, 13 skip; `catalog.golden` ab chalu aur pass), Home JS 1.3 KB / CSS 4.5 KB, 360px screenshot saaf.
 - **Owner se tasdeeq baqi:** har pack ki `includes` list (maine maswida banaya; usool 7: wada wohi jo pura ho).
 - **Agla qadam:** owner ki approval + includes ki tasdeeq → push `step-2` → PR → CI → merge → Qadam 3.
+- **Natija:** owner ne includes list "theek" kahi aur Qadam 2 approve kiya; PR #2 merged (`2c6c34b`). **Sabaq:** owner ne pehli dafa merge se pehle `git checkout main` kar liya aur "merge ho gaya" kaha jab ke "Confirm merge" nahin dabaya tha — **owner ke "merged" kehne par hamesha `git fetch` + `git log origin/main` se tasdeeq karo** (gh CLI installed nahin; `git ls-remote origin` se PR refs dikhte hain).
+
+### 16 Nov 2026 — Qadam 3 shuru (3 hisse)
+
+- **Owner ka faisla:** Qadam 3 teen PRs mein: **3a** (`step-3a`: shared components DoorCard, TrustStrip, OrderSteps, Breadcrumbs, DailyTestCard + `/`, `/job-prep`, `/plans`), **3b** (`step-3b`: `/vu`, `/board`, `/board/9th..12th`), **3c** (`step-3c`: `/career`, `/career/cv`, `/apply-service`, `/past-papers`, `/current-affairs`, `/mock-series`, `/sarkari-services`). Har hissa alag REPORT/PR/approval. PROGRESS mein Qadam 3 ka tick sirf 3c ke baad.
+- **Schemes:** abhi koi `/sarkari-services/<scheme>` page nahin; `schemes.json` khali; owner baad mein tasdeeq shuda schemes dega (intent 13).
+- **Mazmoon:** 300+ alfaz Claude likhe ga, sirf aam rehnumai + "official ishtihar dekhein"; owner har hisse ke REPORT mein matn tasdeeq kare.
+- **Bahar:** streak reminder (Qadam 10), Home taza jobs (Qadam 13), cart button band (Qadam 4), JSON-LD (Qadam 15).
+
+### 16 Nov 2026 — Qadam 3a: shared components + `/`, `/job-prep`, `/plans` (branch `step-3a`, REPORT diya, approval baqi)
+
+- **Kya bana:** `src/lib/phone.ts` (normalizeLocal, toIntl, toDisplay, last4, waLink) + `tests/phone.test.ts`; Footer/ProductCard ab phone.ts istemal karte hain; `catalog.ts` mein `productPage()` aur `DOOR_LABEL`; components `Breadcrumbs`, `DoorCard`, `DailyTestCard`, `OrderSteps`, `TrustStrip`; pages Home (4 darwaze, test card, packs, 4 qadam, "GVS kya karti hai", FAQ, bottom ad), `/job-prep` (8 links + qeemat catalog se, 300+ alfaz, FAQ, top+bottom ad), `/plans` (darwaze-war rate list, TrustStrip, koi ad nahin).
+- **Naya test** `tests/pages.test.ts` (dist/client se): ek H1, title/description = seo.json, NO_ADS pages par ad nahin, SEO pages par 300+ alfaz (FAQ/ad ke baghair) aur 3+ andaruni links, max 3 ad slots. **verify ki tarteeb badli:** scope → typecheck → build → test → bundle.
+- **Jaanch:** verify ✅ (33 pass); alfaz: `/` 519, `/job-prep` 346, `/plans` 343; JS 1.0-1.3 KB, CSS 4.8 KB; 360px screenshots saaf.
+- **Owner ke liye flag:** TrustStrip "Pehle namoona dekhein" spec ki shart hai, lekin asal namoone abhi nahin — launch (Qadam 17) se pehle owner namoone de, warna yeh wada adhoora (usool 7).
+- **Agla:** owner matn tasdeeq + approve → push `step-3a` → PR #3 → merge → `step-3b`.

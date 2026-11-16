@@ -1,7 +1,11 @@
 ---
-// spec: S01 (aarzi), F01-AC5 (mashhoor packs, FAQ, bottom ad). Asal Home (darwaze, test card, jobs) Qadam 3 mein.
+// spec: S01, F01-AC1, F01-AC2, F01-AC5, F01-AC6, F01-AC7; F21-AC1, F21-AC8
+// Bahar: streak reminder F01-AC3 (Qadam 10), taza jobs F01-AC4 (Qadam 13)
 import Base from '../layouts/Base.astro';
+import DoorCard from '../components/DoorCard.astro';
+import DailyTestCard from '../components/DailyTestCard.astro';
 import ProductCard from '../components/ProductCard.astro';
+import OrderSteps from '../components/OrderSteps.astro';
 import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
@@ -32,21 +36,63 @@ const faq = [
 ];
 ---
 <Base title={meta.title} description={meta.description}>
-  <section class="container-page py-10">
+  <section class="container-page pt-8 pb-4">
     <h1>Aap kon hain?</h1>
-    <p class="mt-3 text-muted max-w-[68ch]">
-      Portal ban raha hai. Asal home aur chaar darwaze agle qadam mein aayenge.
-    </p>
+    <p class="mt-2 text-muted max-w-[68ch]">Apna rasta chunein. Tayyari bhi, form bhi, kaam bhi: ek jagah.</p>
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      <DoorCard icon="book" title="Job ki tayyari" line="Rozana muft MCQs, mock tests, notes, past papers aur current affairs." href="/job-prep" />
+      <DoorCard icon="cap" title="VU Corner" line="Course code likhein aur Quick, Smart, Complete ya Topper pack chunein." href="/vu" />
+      <DoorCard icon="paper" title="Board Classes" line="9th se 12th: class, mazmoon aur chapters ke mutabiq test paper." href="/board" />
+      <DoorCard
+        icon="brief"
+        title="Kaam karwana hai"
+        line="CV, job apply, ya sarkari scheme ka form: hum kar dein."
+        links={[
+          { label: 'Career Desk', href: '/career' },
+          { label: 'Sarkari Services', href: '/sarkari-services' },
+        ]}
+      />
+    </div>
   </section>
 
-  <section class="container-page" aria-labelledby="popular-heading">
+  <section class="container-page py-4">
+    <DailyTestCard />
+  </section>
+
+  <section class="container-page py-4" aria-labelledby="popular-heading">
     <h2 id="popular-heading" class="mb-4">Mashhoor packs</h2>
     <div class="grid gap-4 md:grid-cols-2">
       {popular.map((p) => <ProductCard product={p} />)}
     </div>
+    <p class="mt-4"><a href="/plans">Saari qeematein dekhein</a></p>
   </section>
 
   <div class="container-page">
+    <OrderSteps />
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="about-heading">
+      <h2 id="about-heading">GVS Academy kya karti hai</h2>
+      <p class="mt-3">
+        GVS Academy ek niji academy hai jo teen kaam karti hai. Pehla, job tests ki tayyari: har din 10 naye MCQs ka muft test,
+        mazmoon-war practice, muft mock tests aur notes. Doosra, tayyar material: VU ke course code ke mutabiq packs, board pattern
+        ke test papers, solved past papers aur mahana current affairs. Teesra, aap ka kaam: CV aur cover letter banana, online job
+        ka form bharna, aur sarkari scheme ke form mein madad.
+      </p>
+      <p class="mt-3">
+        Har qeemat is portal par saaf likhi hai, aur order se pehle aap namoona dekh sakte hain. Order ke liye sign up nahin karna
+        parta; sirf naam aur WhatsApp number. Order pehle hamare paas mehfooz hota hai, phir WhatsApp par tayyar message khulta hai.
+        Payment JazzCash ya Easypaisa se hoti hai, aur aap order number se har waqt dekh sakte hain ke payment mili ya nahin aur
+        file kab tak aaye gi.
+      </p>
+      <p class="mt-3">
+        Hum sarkari idara nahin hain, aur naukri ya pass hone ka wada nahin karte. Hum tayyari aur sahih form mein madad karte hain.
+        Sarkari fee hamesha alag hoti hai aur official challan par jati hai. Jobs ki maloomat sirf official ishtihar se li jati
+        hai, official link ke sath. Muft test rozana dein, apni streak banayen, aur jahan madad chahiye wahan hum se WhatsApp par
+        rabta karein.
+      </p>
+    </section>
+
     <FAQ items={faq} />
     <AdSlot slot="bottom" />
   </div>

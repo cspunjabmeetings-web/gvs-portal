@@ -1,0 +1,24 @@
+---
+// spec: 6.1 FAQ (intent 13: jahan likha ho). <details> = bina JS ke khulta hai. JSON-LD (FAQPage) Qadam 15 mein.
+interface Props {
+  items: { q: string; a: string }[];
+  heading?: string;
+}
+const { items, heading = 'Aksar poochay jane wale sawal' } = Astro.props;
+---
+{items.length > 0 && (
+  <section class="my-8" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="mb-3">{heading}</h2>
+    <div class="flex flex-col gap-2">
+      {items.map((it) => (
+        <details class="group rounded-xl border border-border bg-surface">
+          <summary class="flex items-center justify-between gap-3 cursor-pointer list-none px-4 py-3 font-semibold [&::-webkit-details-marker]:hidden">
+            <span>{it.q}</span>
+            <svg class="shrink-0 transition-transform group-open:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </summary>
+          <p class="px-4 pb-4 text-muted">{it.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+)}

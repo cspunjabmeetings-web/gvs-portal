@@ -1,0 +1,136 @@
+{
+  "pages": {
+    "/": {
+      "title": "Job Tayyari, VU Packs, Board Papers | GVS Academy",
+      "description": "Rozana muft MCQs test, mock tests, notes aur sarkari jobs. VU packs, board papers aur apply service WhatsApp par order karein."
+    },
+    "/job-prep": {
+      "title": "PPSC, FPSC, NTS Test Preparation | GVS Academy",
+      "description": "Job test ki tayyari: rozana muft MCQs test, mock tests, notes, solved past papers aur current affairs. Aaj ka test abhi dein."
+    },
+    "/vu": {
+      "title": "VU Midterm aur Final Packs: Course Code se | GVS Academy",
+      "description": "VU course code likhein aur Quick, Smart, Complete ya Topper pack chunein. Rs. 250 se shuru, muft namoona pehle dekhein."
+    },
+    "/board": {
+      "title": "Board Test Papers 9th se 12th Class | GVS Academy",
+      "description": "9th, 10th, 11th aur 12th class ke board pattern test papers. Class, mazmoon aur chapters chunein; students aur teachers ke liye."
+    },
+    "/board/9th": {
+      "title": "9th Class Test Paper: Board Pattern | GVS Academy",
+      "description": "9th class ka test paper apne chapters aur number ke mutabiq banwayen. Board pattern, objective aur subjective. Rs. 300."
+    },
+    "/board/10th": {
+      "title": "10th Class Test Paper aur Guess Paper | GVS Academy",
+      "description": "10th class ka board pattern test paper apne chapters ke mutabiq. Students, teachers aur academies ke liye. Rs. 300, WhatsApp par."
+    },
+    "/board/11th": {
+      "title": "11th Class Test Paper: Board Pattern | GVS Academy",
+      "description": "11th class (first year) ka test paper mazmoon aur chapters ke mutabiq. Board pattern, objective aur subjective. Rs. 300."
+    },
+    "/board/12th": {
+      "title": "12th Class Test Paper: Board Pattern | GVS Academy",
+      "description": "12th class (second year) ka test paper mazmoon aur chapters ke mutabiq banwayen. Board pattern. Rs. 300, WhatsApp par."
+    },
+    "/career": {
+      "title": "Career Desk: CV, Cover Letter, Job Apply | GVS Academy",
+      "description": "CV aur cover letter banwayen, online job apply karwayen, aur interview ki tayyari ke liye rabta karein. Qeemat pehle se saaf."
+    },
+    "/career/cv": {
+      "title": "CV Maker aur Cover Letter: Rs. 500 | GVS Academy",
+      "description": "Professional CV aur job ke mutabiq cover letter, Word aur PDF mein, WhatsApp par. Apni maloomat bhejein, hum bana dein."
+    },
+    "/apply-service": {
+      "title": "PPSC Apply Online: Hum Form Bhar Dein | GVS Academy",
+      "description": "PPSC, FPSC, NTS ka online form hum bhar dein. Rs. 300 hamari fee; sarkari fee alag, official challan par. Documents ki list dekhein."
+    },
+    "/sarkari-services": {
+      "title": "Punjab Schemes Apply Online: Madad | GVS Academy",
+      "description": "Sarkari scheme aur form mein madad: ahliyat, documents ki list aur official link. GVS niji madadgar hai, sarkari idara nahin."
+    },
+    "/plans": {
+      "title": "Rate List: Saari Qeematein | GVS Academy",
+      "description": "GVS Academy ke saare packs aur services ki qeematein ek jagah: MCQs, past papers, VU packs, board papers, CV aur apply service."
+    },
+    "/past-papers": {
+      "title": "PPSC Past Papers Solved: Post ke Mutabiq | GVS Academy",
+      "description": "Apni post ya test ke solved past papers, GVS ke apne hal aur tashreeh ke sath. Rs. 400, PDF WhatsApp par. Pehle namoona dekhein."
+    },
+    "/current-affairs": {
+      "title": "Monthly Current Affairs PDF: Rs. 120 | GVS Academy",
+      "description": "Har mahine ke ahem current affairs, Pakistan aur dunya, mukhtasar PDF mein. Mahina chunein aur WhatsApp par order karein."
+    },
+    "/mock-series": {
+      "title": "Mock Test Series: Mahana Rs. 700 | GVS Academy",
+      "description": "Paid mock test series WhatsApp group mein: ek mahine ke mock tests. Order ke liye sirf naam aur WhatsApp number."
+    },
+    "/mcqs": {
+      "title": "MCQs Online Practice: Mazmoon-war | GVS Academy",
+      "description": "General knowledge, Pak study, Islamiat, English aur doosre mazameen ke muft MCQs, 10-10 ke sets mein, foran jawab ke sath."
+    },
+    "/daily-test": {
+      "title": "Daily MCQs Test: Rozana 10 Muft Sawal | GVS Academy",
+      "description": "Har din 10 naye MCQs, foran sahih ya ghalat jawab aur tashreeh. Apni streak banayen aur kamzor mazmoon pehchanein."
+    },
+    "/mock-tests": {
+      "title": "Free Mock Tests: PPSC, FPSC Pattern | GVS Academy",
+      "description": "Muft online mock tests timer ke sath, mazmoon-war result aur har sawal ki tashreeh. Asal test jaisa tajurba, phone par."
+    },
+    "/notes": {
+      "title": "Free Notes: Pak Study, GK, Islamiat | GVS Academy",
+      "description": "Job tests ke liye muft notes mazmoon ke hisab se: Pakistan Studies, General Knowledge, Islamiat aur mazeed. Har note ke sath quiz."
+    },
+    "/jobs": {
+      "title": "PPSC, FPSC, NTS Jobs: Last Date, Documents | GVS Academy",
+      "description": "Taza sarkari jobs official ishtihar ke sath: akhri tareekh, documents aur apply ka tareeqa. Chahein to hum apply kar dein."
+    },
+    "/jobs/ppsc": {
+      "title": "PPSC Jobs: Apply Ka Tareeqa aur Pattern | GVS Academy",
+      "description": "PPSC ki khuli jobs, online form bharne ka tareeqa, test ka pattern aur documents. GVS niji academy hai, PPSC nahin."
+    },
+    "/jobs/fpsc": {
+      "title": "FPSC Jobs: Apply Ka Tareeqa aur Pattern | GVS Academy",
+      "description": "FPSC ki khuli jobs, online apply ka tareeqa, test ka pattern aur zaroori documents. GVS niji academy hai, FPSC nahin."
+    },
+    "/jobs/nts": {
+      "title": "NTS Jobs aur Tests: Apply Ka Tareeqa | GVS Academy",
+      "description": "NTS ke zariye hone wali jobs aur tests, apply ka tareeqa aur documents. GVS niji academy hai, NTS nahin."
+    },
+    "/track": {
+      "title": "Order Track Karein | GVS Academy",
+      "description": "Order number aur apne number ke aakhri 4 hindse daal kar order ka darja aur delivery ka waqt dekhein."
+    },
+    "/my-history": {
+      "title": "Meri History: Scores aur Bookmarks | GVS Academy",
+      "description": "Aap ke rozana test ke scores, streak, mock results, bookmarks aur orders, sirf aap ke browser mein."
+    },
+    "/how-to-order": {
+      "title": "Order Kaise Karein: 4 Asaan Qadam | GVS Academy",
+      "description": "GVS Academy se order ke 4 qadam: cheez chunein, naam aur number dein, WhatsApp par bhejein, JazzCash ya Easypaisa se payment."
+    },
+    "/about": {
+      "title": "About GVS Academy: Hum Kaun Hain",
+      "description": "GVS Academy ek niji academy hai jo job tests, VU aur board classes ki tayyari aur online forms mein madad karti hai."
+    },
+    "/contact": {
+      "title": "Contact GVS Academy: WhatsApp par Rabta",
+      "description": "GVS Academy se WhatsApp par rabta karein. Order, payment ya kisi bhi sawal ke liye hum kaam ke auqaat mein jawab dete hain."
+    },
+    "/privacy": {
+      "title": "Privacy Policy | GVS Academy",
+      "description": "GVS Academy kya maloomat rakhti hai, kitni der aur kis liye: naam, WhatsApp number, cookies, analytics aur browser storage."
+    },
+    "/terms": {
+      "title": "Terms aur Refund Policy | GVS Academy",
+      "description": "GVS Academy ke istemal ki sharait aur refund policy: kab poori raqam wapas hoti hai aur sarkari fee ka usool."
+    },
+    "/404": {
+      "title": "Page Nahin Mila | GVS Academy",
+      "description": "Yeh page maujood nahin. Job ki tayyari, VU Corner, Board Classes ya Career Desk se dobara shuru karein."
+    },
+    "/admin": {
+      "title": "Admin | GVS Academy",
+      "description": "GVS Academy admin panel."
+    }
+  }
+}

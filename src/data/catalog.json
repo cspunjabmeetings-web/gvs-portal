@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "products": [
+    {
+      "id": "mcq-pack",
+      "name": "MCQs pack (ek mazmoon)",
+      "door": "job-prep",
+      "price": 250,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "subject",
+          "label": "Mazmoon",
+          "type": "select",
+          "required": true,
+          "options": ["General Knowledge", "Pakistan Studies", "Islamiat", "English", "Everyday Science", "Current Affairs", "Computer", "Urdu", "Maths"],
+          "example": "Pakistan Studies"
+        }
+      ],
+      "includes": ["Chune hue mazmoon ke MCQs, jawab ke sath", "Ahem sawalon ki tashreeh", "PDF file WhatsApp par"],
+      "sample": null,
+      "fileHint": "MCQs/{subject}.pdf",
+      "active": true
+    },
+    {
+      "id": "past-papers",
+      "name": "Solved past papers (ek post / ek test)",
+      "door": "job-prep",
+      "price": 400,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "postName",
+          "label": "Post ya test ka naam",
+          "type": "text",
+          "required": true,
+          "pattern": "^.{3,100}$",
+          "example": "PPSC Educator BPS-14"
+        }
+      ],
+      "includes": ["Us post/test ke past papers", "GVS ke apne hal aur tashreeh", "PDF file WhatsApp par"],
+      "sample": null,
+      "fileHint": "PastPapers/{postName}.pdf",
+      "active": true
+    },
+    {
+      "id": "current-affairs",
+      "name": "Mahana current affairs PDF",
+      "door": "job-prep",
+      "price": 120,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "month",
+          "label": "Mahina",
+          "type": "month",
+          "required": true,
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$",
+          "example": "2026-11"
+        }
+      ],
+      "includes": ["Chune hue mahine ke ahem current affairs", "Pakistan aur dunya ki khabrein, mukhtasar", "PDF file WhatsApp par"],
+      "sample": null,
+      "fileHint": "CurrentAffairs/{month}.pdf",
+      "active": true
+    },
+    {
+      "id": "mock-series",
+      "name": "Mock test series (mahana)",
+      "door": "job-prep",
+      "price": 700,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [],
+      "includes": ["Ek mahine ke mock tests", "WhatsApp group mein shamil kiya jata hai", "Pehla test 2 ghante ke andar"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    },
+    {
+      "id": "vu-quick",
+      "name": "VU Quick pack",
+      "door": "vu",
+      "price": 250,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "courseCode",
+          "label": "Course code",
+          "type": "text",
+          "required": true,
+          "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
+          "example": "CS101"
+        }
+      ],
+      "includes": ["Ahem topics ka mukhtasar khulasa", "Ahem MCQs"],
+      "sample": null,
+      "fileHint": "VU/{courseCode}/Quick.pdf",
+      "active": true
+    },
+    {
+      "id": "vu-smart",
+      "name": "VU Smart pack",
+      "door": "vu",
+      "price": 350,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "courseCode",
+          "label": "Course code",
+          "type": "text",
+          "required": true,
+          "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
+          "example": "CS101"
+        }
+      ],
+      "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal"],
+      "sample": null,
+      "fileHint": "VU/{courseCode}/Smart.pdf",
+      "active": true
+    },
+    {
+      "id": "vu-complete",
+      "name": "VU Complete pack",
+      "door": "vu",
+      "price": 450,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "courseCode",
+          "label": "Course code",
+          "type": "text",
+          "required": true,
+          "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
+          "example": "CS101"
+        }
+      ],
+      "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal", "Subjective sawal aur un ke jawab"],
+      "sample": null,
+      "fileHint": "VU/{courseCode}/Complete.pdf",
+      "active": true
+    },
+    {
+      "id": "vu-topper",
+      "name": "VU Topper pack",
+      "door": "vu",
+      "price": 550,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "courseCode",
+          "label": "Course code",
+          "type": "text",
+          "required": true,
+          "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
+          "example": "CS101"
+        }
+      ],
+      "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal", "Subjective sawal aur un ke jawab", "Midterm aur final ki guess list"],
+      "sample": null,
+      "fileHint": "VU/{courseCode}/Topper.pdf",
+      "active": true
+    },
+    {
+      "id": "board-paper",
+      "name": "Board test paper (9th se 12th)",
+      "door": "board",
+      "price": 300,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [
+        {
+          "key": "className",
+          "label": "Class",
+          "type": "select",
+          "required": true,
+          "options": ["9th", "10th", "11th", "12th"],
+          "example": "10th"
+        },
+        {
+          "key": "subject",
+          "label": "Mazmoon",
+          "type": "text",
+          "required": true,
+          "pattern": "^.{2,60}$",
+          "example": "Physics"
+        },
+        {
+          "key": "chapters",
+          "label": "Chapters / units",
+          "type": "text",
+          "required": true,
+          "pattern": "^.{1,100}$",
+          "example": "Chapter 1 se 3"
+        },
+        {
+          "key": "totalMarks",
+          "label": "Kul number",
+          "type": "number",
+          "required": true,
+          "pattern": "^[1-9][0-9]{0,2}$",
+          "example": "75"
+        }
+      ],
+      "includes": ["Board pattern par test paper", "Objective aur subjective hisse", "Students, teachers aur academies ke liye"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    },
+    {
+      "id": "cv-cover",
+      "name": "CV + cover letter",
+      "door": "career",
+      "price": 500,
+      "deliveryMinutes": 120,
+      "needsDocuments": true,
+      "govtFeeExtra": false,
+      "fields": [],
+      "includes": ["Saaf aur professional CV", "Job ke mutabiq cover letter", "Word aur PDF file WhatsApp par"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    },
+    {
+      "id": "job-apply",
+      "name": "Online job apply service",
+      "door": "career",
+      "price": 300,
+      "deliveryMinutes": 120,
+      "needsDocuments": true,
+      "govtFeeExtra": true,
+      "fields": [
+        {
+          "key": "jobName",
+          "label": "Idara aur post",
+          "type": "text",
+          "required": true,
+          "pattern": "^.{3,100}$",
+          "example": "PPSC Educator BPS-14"
+        }
+      ],
+      "includes": ["Online form hum bharte hain", "Documents ki list pehle se", "Challan aur form ki copy WhatsApp par"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    },
+    {
+      "id": "scheme-help",
+      "name": "Sarkari scheme / form mein madad",
+      "door": "sarkari",
+      "price": 300,
+      "deliveryMinutes": 120,
+      "needsDocuments": true,
+      "govtFeeExtra": true,
+      "fields": [
+        {
+          "key": "schemeName",
+          "label": "Scheme ya form ka naam",
+          "type": "text",
+          "required": true,
+          "pattern": "^.{3,100}$",
+          "example": "Ehsaas program"
+        }
+      ],
+      "includes": ["Ahliyat aur documents ki rehnumai", "Form hum bharte hain", "Official link ke sath"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    },
+    {
+      "id": "interview-prep",
+      "name": "Interview tayyari",
+      "door": "career",
+      "price": null,
+      "deliveryMinutes": 120,
+      "needsDocuments": false,
+      "govtFeeExtra": false,
+      "fields": [],
+      "includes": ["Aam interview sawal aur un ki tayyari", "Qeemat abhi tay nahin, rabta karein"],
+      "sample": null,
+      "fileHint": "",
+      "active": true
+    }
+  ]
+}

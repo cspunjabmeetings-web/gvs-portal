@@ -3,11 +3,12 @@
 // Usage: npm run verify
 import { spawnSync } from 'node:child_process';
 
+// Tests build ke BAAD, taake pages.test bani hui HTML jaanch sake
 const STEPS = [
-  { name: 'Tests (golden + scope)', script: 'test' },
   { name: 'Scope check (spec manifest)', script: 'check:scope' },
   { name: 'Typecheck', script: 'typecheck' },
   { name: 'Build', script: 'build' },
+  { name: 'Tests (golden, scope, pages)', script: 'test' },
   { name: 'Bundle report (spec 9.1)', script: 'report:bundle' },
 ];
 

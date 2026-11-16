@@ -1,0 +1,102 @@
+---
+// spec: S02, F01-AC8 (8 links + ek line, 300+ alfaz, FAQ, breadcrumbs, top+bottom ad), F21-AC1, F21-AC8
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import DailyTestCard from '../components/DailyTestCard.astro';
+import FAQ from '../components/FAQ.astro';
+import AdSlot from '../components/AdSlot.astro';
+import seo from '../data/seo.json';
+import { getProduct, formatPrice } from '../lib/catalog';
+
+const meta = seo.pages['/job-prep'];
+const price = (id: string) => {
+  const p = getProduct(id);
+  return p && typeof p.price === 'number' ? formatPrice(p.price) : undefined;
+};
+
+const links = [
+  { href: '/daily-test', title: 'Rozana muft test', line: 'Har din 10 naye MCQs, foran jawab aur tashreeh.', tag: 'Muft' },
+  { href: '/mcqs', title: 'MCQs practice', line: 'Mazmoon chunein aur 10-10 sawalon ke sets hal karein.', tag: 'Muft' },
+  { href: '/mock-tests', title: 'Mock tests', line: 'Timer ke sath poora test, mazmoon-war result.', tag: 'Muft' },
+  { href: '/notes', title: 'Notes', line: 'Pakistan Studies, GK aur doosre mazameen ke mukhtasar notes.', tag: 'Muft' },
+  { href: '/past-papers', title: 'Solved past papers', line: 'Apni post ya test ke papers, hal aur tashreeh ke sath.', tag: price('past-papers') },
+  { href: '/current-affairs', title: 'Current affairs', line: 'Har mahine ke ahem current affairs ek PDF mein.', tag: price('current-affairs') },
+  { href: '/mock-series', title: 'Mock test series', line: 'Mahana paid series, WhatsApp group mein.', tag: price('mock-series') },
+  { href: '/jobs', title: 'Jobs', line: 'Taza sarkari jobs: akhri tareekh, documents aur tareeqa.', tag: 'Muft' },
+];
+
+const faq = [
+  {
+    q: 'Kya rozana test sach mein muft hai?',
+    a: 'Haan. Rozana test, MCQs practice, mock tests aur notes muft hain, aur in ke liye sign up nahin karna parta.',
+  },
+  {
+    q: 'Muft aur paid mein kya farq hai?',
+    a: 'Muft hissa roz ki practice ke liye hai. Paid packs waqt bachate hain: ek mazmoon ya ek post ka material ek jagah, PDF mein, WhatsApp par.',
+  },
+  {
+    q: 'Kya yeh PPSC ya FPSC ka official material hai?',
+    a: 'Nahin. GVS niji academy hai. Material GVS ka apna hai; test aur job ki asal maloomat ke liye hamesha official ishtihar dekhein.',
+  },
+  {
+    q: 'Meri progress kahan mehfooz hoti hai?',
+    a: 'Aap ke apne browser mein ("Meri history"). Phone ya browser badalne par purani history wahan nahin hogi.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Job ki tayyari' }]} />
+    <h1 class="mt-3">Job ki tayyari</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">PPSC, FPSC aur NTS ke tests ke liye roz ki practice, aur jahan waqt kam ho wahan tayyar material.</p>
+
+    <AdSlot slot="top" />
+
+    <div class="my-4"><DailyTestCard /></div>
+
+    <section aria-labelledby="links-heading">
+      <h2 id="links-heading" class="sr-only-focusable">Tayyari ke raste</h2>
+      <ul class="grid gap-3 sm:grid-cols-2">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} class="flex h-full items-start justify-between gap-3 rounded-xl border border-border bg-surface p-4 no-underline text-text hover:border-primary">
+              <span>
+                <span class="block font-semibold">{l.title}</span>
+                <span class="block text-sm text-muted">{l.line}</span>
+              </span>
+              {l.tag && (
+                <span class:list={['shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold tabular', l.tag === 'Muft' ? 'bg-primary-soft text-primary' : 'bg-surface-2 text-text']}>{l.tag}</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="how-heading">
+      <h2 id="how-heading">Tayyari ka asaan tareeqa</h2>
+      <p class="mt-3">
+        Sarkari job ke test mein aam taur par General Knowledge, Pakistan Studies, Islamiat, English, Everyday Science aur Current
+        Affairs se sawal aate hain. Kis mazmoon ka kitna hissa hoga, yeh har post ke official ishtihar aur syllabus mein likha hota
+        hai, is liye pehla qadam hamesha wohi parhna hai.
+      </p>
+      <p class="mt-3">
+        Roz thora parhna ek dafa bohat parhne se behtar hai. Isi liye har din 10 sawalon ka muft test hai: paanch se das minute
+        lagte hain, har jawab ke sath tashreeh milti hai, aur aakhir mein pata chalta hai ke aap ka sab se kamzor mazmoon kaun sa
+        hai. Phir usi mazmoon ki MCQs practice karein aur mutalliqa notes parhein.
+      </p>
+      <p class="mt-3">
+        Test se do teen hafte pehle poore mock test dein. Mock test mein timer chalta hai, sawalon ki palette hoti hai, aur result
+        mein har mazmoon ka score alag dikhta hai. Is se waqt ki taqseem ki aadat banti hai.
+      </p>
+      <p class="mt-3">
+        Agar waqt kam hai to tayyar material madad karta hai: apni post ke solved past papers, ek mazmoon ka MCQs pack, ya mahana
+        current affairs ki PDF. Har pack ki qeemat saaf likhi hai, aur order WhatsApp par hota hai. Yaad rahe, GVS tayyari mein
+        madad karta hai; naukri ya pass hone ka wada koi nahin kar sakta.
+      </p>
+    </section>
+
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

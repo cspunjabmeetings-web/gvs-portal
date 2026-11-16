@@ -3,10 +3,10 @@
 // WhatsApp number hard-code nahin: build fallback (intent 12.4); Qadam 5 ke baad /api/settings se.
 import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
 import Logo from './Logo.astro';
+import { toDisplay, waLink } from '../lib/phone';
 
 const number = PUBLIC_WHATSAPP_FALLBACK;
-const intl = '92' + number.replace(/^0/, '');
-const display = number.replace(/^(\d{4})(\d{7})$/, '$1-$2');
+const display = toDisplay(number);
 
 const links = [
   { href: '/about', label: 'About' },
@@ -36,7 +36,7 @@ const year = new Date().getFullYear();
     <div>
       <p class="text-sm text-muted">WhatsApp</p>
       <a
-        href={`https://wa.me/${intl}`}
+        href={waLink(number)}
         class="inline-flex items-center min-h-[44px] font-semibold tabular"
         data-whatsapp-number
         rel="noopener"

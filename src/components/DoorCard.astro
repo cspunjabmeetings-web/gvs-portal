@@ -1,0 +1,37 @@
+---
+// spec: F01-AC1, F01-AC6 (bina JS), design.md 5 DoorCard
+interface Props {
+  title: string;
+  line: string;
+  href?: string;
+  icon: 'book' | 'cap' | 'paper' | 'brief';
+  links?: { label: string; href: string }[];
+}
+const { title, line, href, icon, links } = Astro.props;
+const paths: Record<Props['icon'], string> = {
+  book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zm0 14a2 2 0 012-2h13',
+  cap: 'M2 9l10-5 10 5-10 5L2 9zm4 2v5c3 2 9 2 12 0v-5',
+  paper: 'M7 3h7l5 5v13H7V3zm7 0v5h5M10 13h6M10 17h6',
+  brief: 'M4 8h16v11H4V8zm5 0V5h6v3M4 13h16',
+};
+---
+<div class="relative flex flex-col gap-2 rounded-xl border border-border bg-surface p-4 shadow-[0_1px_2px_rgb(0_0_0/0.06)] hover:border-primary">
+  <span class="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={paths[icon]} /></svg>
+  </span>
+  <h2 class="text-lg font-semibold">
+    {href ? <a href={href} class="text-text no-underline after:absolute after:inset-0">{title}</a> : title}
+  </h2>
+  <p class="text-sm text-muted">{line}</p>
+  {links && (
+    <ul class="mt-1 flex flex-col gap-2">
+      {links.map((l) => (
+        <li>
+          <a href={l.href} class="flex items-center justify-between min-h-[44px] rounded-lg bg-surface-2 px-3 font-semibold no-underline text-text hover:bg-primary-soft">
+            {l.label}<span aria-hidden="true">›</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>

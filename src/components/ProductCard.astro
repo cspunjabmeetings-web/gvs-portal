@@ -3,6 +3,7 @@
 // "Order list mein daalein" Qadam 4 (cart) mein chalu hoga; abhi band.
 import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
 import { formatPrice, fieldMessage, isOrderable, type Product } from '../lib/catalog';
+import { waLink } from '../lib/phone';
 
 interface Props {
   product: Product;
@@ -12,8 +13,7 @@ interface Props {
 const { product: p, headingLevel = 'h3' } = Astro.props;
 const Heading = headingLevel;
 const orderable = isOrderable(p);
-const intl = '92' + PUBLIC_WHATSAPP_FALLBACK.replace(/^0/, '');
-const contactUrl = `https://wa.me/${intl}?text=${encodeURIComponent(`Assalam o Alaikum GVS Academy, mujhe "${p.name}" ke bare mein maloomat chahiye.`)}`;
+const contactUrl = waLink(PUBLIC_WHATSAPP_FALLBACK, `Assalam o Alaikum GVS Academy, mujhe "${p.name}" ke bare mein maloomat chahiye.`);
 const fid = (key: string) => `${p.id}-${key}`;
 ---
 {p.active && (

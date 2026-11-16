@@ -1,0 +1,22 @@
+---
+// spec: 6.1 Breadcrumbs (andar ke pages par; home aur 404 par nahin). BreadcrumbList schema Qadam 15.
+interface Props {
+  items: { label: string; href?: string }[];
+}
+const { items } = Astro.props;
+const all = [{ label: 'Home', href: '/' }, ...items];
+---
+<nav aria-label="Breadcrumb" class="text-sm text-muted">
+  <ol class="flex flex-wrap items-center gap-1">
+    {all.map((it, i) => (
+      <li class="flex items-center gap-1">
+        {i > 0 && <span aria-hidden="true">›</span>}
+        {it.href && i < all.length - 1 ? (
+          <a href={it.href} class="inline-flex items-center min-h-[32px] text-muted underline-offset-2 hover:underline">{it.label}</a>
+        ) : (
+          <span aria-current="page" class="text-text">{it.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

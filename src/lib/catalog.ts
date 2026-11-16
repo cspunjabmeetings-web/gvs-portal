@@ -47,6 +47,34 @@ export function isOrderable(p: Product): boolean {
   return p.active && typeof p.price === 'number';
 }
 
+/** Product ka page (rate list aur links ke liye; spec 6.2 ki screens) */
+const PRODUCT_PAGE: Record<string, string> = {
+  'mcq-pack': '/mcqs',
+  'past-papers': '/past-papers',
+  'current-affairs': '/current-affairs',
+  'mock-series': '/mock-series',
+  'vu-quick': '/vu',
+  'vu-smart': '/vu',
+  'vu-complete': '/vu',
+  'vu-topper': '/vu',
+  'board-paper': '/board',
+  'cv-cover': '/career/cv',
+  'job-apply': '/apply-service',
+  'scheme-help': '/sarkari-services',
+  'interview-prep': '/career',
+};
+export function productPage(id: string): string {
+  return PRODUCT_PAGE[id] ?? '/plans';
+}
+
+export const DOOR_LABEL: Record<Door, string> = {
+  'job-prep': 'Job ki tayyari',
+  vu: 'VU Corner',
+  board: 'Board Classes',
+  career: 'Career Desk',
+  sarkari: 'Sarkari Services',
+};
+
 /** "Rs. 350" (PKR, poore rupay) */
 export function formatPrice(price: number): string {
   return `Rs. ${price.toLocaleString('en-PK')}`;

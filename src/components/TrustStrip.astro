@@ -1,0 +1,30 @@
+---
+// spec: 6.1 TrustStrip (har bechne wala page), F02-AC1, intent 16 (aitmad ke nishan)
+import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
+import { toDisplay, waLink } from '../lib/phone';
+
+const number = PUBLIC_WHATSAPP_FALLBACK;
+const items = [
+  { t: 'Qeemat saaf', d: 'Jo likhi hai wohi; "rate ke liye inbox" nahin.' },
+  { t: 'Pehle namoona dekhein', d: 'Order se pehle muft namoona.' },
+  { t: 'Order ke 4 qadam', d: 'Bina sign up, WhatsApp par.', href: '/how-to-order' },
+  { t: 'Refund policy', d: 'Likhi hui, saaf sharait.', href: '/terms' },
+];
+---
+<section class="my-8 rounded-xl bg-surface-2 p-4" aria-label="Hum par bharosa kyun">
+  <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {items.map((it) => (
+      <li class="flex gap-2">
+        <svg class="mt-0.5 shrink-0 text-correct" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+        <span>
+          {it.href ? <a href={it.href} class="font-semibold">{it.t}</a> : <span class="font-semibold">{it.t}</span>}
+          <span class="block text-sm text-muted">{it.d}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+  <p class="mt-3 text-sm">
+    Sawal ho to WhatsApp karein:
+    <a href={waLink(number)} class="font-semibold tabular" rel="noopener" data-whatsapp-number>{toDisplay(number)}</a>
+  </p>
+</section>

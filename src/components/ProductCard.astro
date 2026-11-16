@@ -2,17 +2,24 @@
 // spec: F02-AC1, F02-AC2, F02-AC3, F02-AC4, F02-AC5; design.md 5 ProductCard
 // "Order list mein daalein" Qadam 4 (cart) mein chalu hoga; abhi band.
 import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
-import { formatPrice, fieldMessage, isOrderable, type Product } from '../lib/catalog';
+import { formatPrice, isOrderable, type Product } from '../lib/catalog';
 import { waLink } from '../lib/phone';
+import FieldInput from './FieldInput.astro';
 
 interface Props {
   product: Product;
   headingLevel?: 'h2' | 'h3';
+  /** Pehle se tay value (maslan board class page par className); khana nahin, sirf likha hua */
+  preset?: Record<string, string>;
+  /** Yeh khane page par ek jagah hain (maslan VU course code); card mein dobara nahin */
+  sharedFields?: string[];
 }
 
-const { product: p, headingLevel = 'h3' } = Astro.props;
+const { product: p, headingLevel = 'h3', preset = {}, sharedFields = [] } = Astro.props;
 const Heading = headingLevel;
 const orderable = isOrderable(p);
+const ownFields = p.fields.filter((f) => !(f.key in preset) && !sharedFields.includes(f.key));
+const presetFields = p.fields.filter((f) => f.key in preset);
 const contactUrl = waLink(PUBLIC_WHATSAPP_FALLBACK, `Assalam o Alaikum GVS Academy, mujhe "${p.name}" ke bare mein maloomat chahiye.`);
 const fid = (key: string) => `${p.id}-${key}`;
 ---
@@ -49,37 +56,13 @@ const fid = (key: string) => `${p.id}-${key}`;
     )}
 
     {orderable ? (
-      <form class="flex flex-col gap-3" data-add-to-cart={p.id}>
-        {p.fields.map((f) => (
-          <div class="flex flex-col gap-1">
-            <label for={fid(f.key)} class="text-sm font-medium">{f.label}{f.required && <span aria-hidden="true"> *</span>}</label>
-            {f.type === 'select' ? (
-              <select id={fid(f.key)} name={f.key} required={f.required} class="min-h-[44px] rounded-lg border border-border bg-surface px-3 text-text">
-                <option value="">Chunein</option>
-                {f.options?.map((o) => <option value={o}>{o}</option>)}
-              </select>
-            ) : (
-              <input
-                id={fid(f.key)}
-                name={f.key}
-                type={f.type === 'number' ? 'text' : f.type}
-                inputmode={f.type === 'number' ? 'numeric' : undefined}
-                required={f.required}
-                pattern={f.pattern?.replace(/^\^/, '').replace(/\$$/, '')}
-                title={fieldMessage(f)}
-                placeholder={f.example ? `maslan ${f.example}` : undefined}
-                autocomplete="off"
-                class="peer min-h-[44px] rounded-lg border border-border bg-surface px-3 text-text placeholder:text-muted [&:not(:placeholder-shown):invalid]:border-wrong [&:not(:placeholder-shown):invalid]:border-2"
-              />
-            )}
-            {f.pattern && f.type !== 'select' && (
-              <p class="hidden text-sm text-wrong peer-[:not(:placeholder-shown):invalid]:flex gap-1 items-start" data-field-error={f.key}>
-                <span aria-hidden="true">✕</span>
-                <span>{fieldMessage(f)}</span>
-              </p>
-            )}
-          </div>
+      <form class="flex flex-col gap-3" data-add-to-cart={p.id} data-shared-fields={sharedFields.join(',') || undefined}>
+        {presetFields.map((f) => (
+          <p class="text-sm"><span class="text-muted">{f.label}:</span>{' '}<strong>{preset[f.key]}</strong>
+            <input type="hidden" name={f.key} value={preset[f.key]} />
+          </p>
         ))}
+        {ownFields.map((f) => <FieldInput field={f} id={fid(f.key)} />)}
         <button
           type="submit"
           disabled

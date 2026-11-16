@@ -52,6 +52,34 @@ describe.skipIf(built.length === 0)('bane hue pages (dist)', () => {
     expect(internal.size).toBeGreaterThanOrEqual(3);
   });
 
+  it.each(['9th', '10th', '11th', '12th'].filter((c) => built.includes(`/board/${c}`)))('/board/%s: class pehle se chuni (preset)', (c) => {
+    const h = html(`/board/${c}`);
+    expect(h).toMatch(new RegExp(`<input type="hidden" name="className" value="${c}"`));
+    expect(h).not.toMatch(/<select[^>]*name="className"/);
+  });
+
+  it.runIf(built.includes('/vu'))('/vu: course code ka khana sirf ek (shared), 4 packs', () => {
+    const h = html('/vu');
+    expect((h.match(/name="courseCode"/g) ?? []).length).toBe(1);
+    expect((h.match(/data-add-to-cart="vu-/g) ?? []).length).toBe(4);
+  });
+
+  it('board class pages ek jaise nahin (intent 14.4): alfaz ka mel 70% se kam', () => {
+    const cls = ['/board/9th', '/board/10th', '/board/11th', '/board/12th'].filter((r) => built.includes(r));
+    const bag = (r: string) => {
+      const m = mainOf(html(r)).match(/<section[^>]*aria-labelledby="paper-heading"[\s\S]*?<\/section>/)?.[0] ?? '';
+      return new Set(decode(m.replace(/<[^>]+>/g, ' ')).toLowerCase().split(/\W+/).filter((w) => w.length > 3));
+    };
+    for (let i = 0; i < cls.length; i++)
+      for (let j = i + 1; j < cls.length; j++) {
+        const a = bag(cls[i]);
+        const b = bag(cls[j]);
+        const inter = [...a].filter((w) => b.has(w)).length;
+        const jaccard = inter / (a.size + b.size - inter);
+        expect(jaccard, `${cls[i]} vs ${cls[j]}`).toBeLessThan(0.7);
+      }
+  });
+
   it('ek screen par 2 se zyada ad nahin (page par max 3 slots, intent 15.3)', () => {
     for (const r of built) expect((html(r).match(/data-ad-slot=/g) ?? []).length, r).toBeLessThanOrEqual(3);
   });

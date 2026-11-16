@@ -114,3 +114,12 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Jaanch:** verify ✅ (33 pass); alfaz: `/` 519, `/job-prep` 346, `/plans` 343; JS 1.0-1.3 KB, CSS 4.8 KB; 360px screenshots saaf.
 - **Owner ke liye flag:** TrustStrip "Pehle namoona dekhein" spec ki shart hai, lekin asal namoone abhi nahin — launch (Qadam 17) se pehle owner namoone de, warna yeh wada adhoora (usool 7).
 - **Agla:** owner matn tasdeeq + approve → push `step-3a` → PR #3 → merge → `step-3b`.
+- **Natija:** owner ne 3a merge kiya (PR #3, `a5e4fde`; git se tasdeeq).
+
+### 16 Nov 2026 — Qadam 3b: `/vu`, `/board`, `/board/9th..12th` (branch `step-3b`, REPORT diya, approval baqi)
+
+- **Kya bana:** `FieldInput.astro` (ProductCard se nikala hua khana); ProductCard ke naye props `preset` (hidden input + likha hua, maslan class) aur `sharedFields` (page par ek khana, card mein `data-shared-fields` — Qadam 4 ka cart isi se value lega); `/vu` (ek course code khana, includes se banti muqable ki table, 4 cards, 300+ alfaz, FAQ, top+bottom ad); `BoardClassPage.astro` (shared dhancha, har class ka matn slot se); `/board` aur 4 class pages, har ek ka alag matn aur mazameen.
+- **Tests:** pages.test mein izafa: board class preset hidden input, `/vu` par `courseCode` sirf ek, 4 class pages ka Jaccard < 0.7 (intent 14.4). Test ne `/board` ke 285 alfaz pakde → paragraph joda.
+- **Jaanch:** verify ✅ (51 pass); alfaz `/vu` 514, `/board` 327, class pages 343-361; har page 2 ads (top+bottom); 360px screenshots; "Class: 10th" ka space theek kiya (`{' '}`).
+- **Note:** VU table 360px par apne box mein horizontal scroll hoti hai (page nahin) — jaan boojh kar.
+- **Agla:** owner matn tasdeeq + approve → push `step-3b` → PR #4 → merge → `step-3c`.

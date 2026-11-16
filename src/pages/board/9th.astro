@@ -1,0 +1,36 @@
+---
+// spec: S05 (/board/9th)
+import BoardClassPage from '../../components/BoardClassPage.astro';
+---
+<BoardClassPage
+  cls="9th"
+  heading="9th class test paper: board pattern"
+  intro="Matric part 1 ke liye apne chapters aur number ke mutabiq test paper banwayen."
+  subjects={['English', 'Urdu', 'Islamiat', 'Tarjuma-tul-Quran', 'Maths', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'General Science']}
+  faq={[
+    { q: '9th mein kaun se chapters dein?', a: 'Jo aap ke school ya academy mein ab tak parhaye gaye hain, ya jin ka test lena hai. Maslan "Chapter 1 se 3".' },
+    { q: 'Science aur Arts dono ke papers milte hain?', a: 'Haan. Order mein apna mazmoon likhein, maslan Physics, Biology ya General Science.' },
+    { q: 'Kya paper ke jawab bhi milte hain?', a: 'Paper ke sath koi khaas zaroorat ho, maslan answer key, to order ke baad WhatsApp par bata dein; hum bata denge ke kya mumkin hai.' },
+  ]}
+>
+  <h2 id="paper-heading">9th class ka paper kaisa hota hai</h2>
+  <p class="mt-3">
+    9th class matric ka pehla saal hai, aur yahin se board ke imtihan ki aadat banti hai. Board ke paper mein aam taur par do hisse
+    hote hain: objective, jis mein MCQs hote hain aur waqt kam hota hai, aur subjective, jis mein short sawal aur long sawal hote
+    hain. Is liye tayyari mein dono ki practice zaroori hai.
+  </p>
+  <p class="mt-3">
+    Science group mein Physics, Chemistry aur Biology ya Computer Science ke sath Maths aham hai; in mazameen mein definitions,
+    numericals aur diagrams teeno par sawal aate hain. English aur Urdu mein grammar, translation aur comprehension par tawajjo
+    chahiye. Islamiat aur Tarjuma-tul-Quran mein yaad karne wala hissa zyada hota hai.
+  </p>
+  <p class="mt-3">
+    Test paper ka faida yeh hai ke aap asal imtihan jaisa waqt laga kar paper hal karte hain. Pehle chhote hisse, maslan do teen
+    chapters, ka paper banwayen. Phir har mahine pichhle chapters ko mila kar bara paper. Is tarah saal ke aakhir tak poora
+    syllabus kai dafa dohra liya jata hai.
+  </p>
+  <p class="mt-3">
+    Teachers is paper ko class test ke liye istemal kar sakte hain. Order mein mazmoon, chapters aur kul number likhein; class
+    pehle se 9th chuni hui hai. Agar aap ka board ka syllabus khaas hai to WhatsApp par bata dein.
+  </p>
+</BoardClassPage>

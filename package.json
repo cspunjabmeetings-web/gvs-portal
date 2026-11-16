@@ -10,7 +10,8 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "check:scope": "node scripts/check-scope.mjs",
-    "report:bundle": "node scripts/bundle-report.mjs"
+    "report:bundle": "node scripts/bundle-report.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

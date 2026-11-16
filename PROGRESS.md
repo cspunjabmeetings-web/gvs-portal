@@ -1,0 +1,20 @@
+# Progress (sirf tick; tafseel spec.md section 11 mein)
+- [x] 0 Repo, CLAUDE.md, settings, check-scope, golden tests, design.md
+- [ ] 1 Astro + Workers + Tailwind + layout
+- [ ] 2 catalog, seo, components
+- [ ] 3 Home, /job-prep, darwazon ke static pages
+- [ ] 4 Cart aur order form
+- [ ] 5 D1, orders API, notifications, Turnstile
+- [ ] 6 timer, track
+- [ ] 7 Admin login, Orders, Notifications
+- [ ] 8 Admin Settings
+- [ ] 9 parser, Content tab
+- [ ] 10 Daily test, practice, history
+- [ ] 11 Mock tests
+- [ ] 12 Notes
+- [ ] 13 Jobs
+- [ ] 14 Baqi static pages
+- [ ] 15 SEO, ads, analytics, manifest
+- [ ] 16 V2 tayyari (band)
+- [ ] 17 Preview par poori jaanch, content
+- [ ] 18 Production deploy, Access, backup

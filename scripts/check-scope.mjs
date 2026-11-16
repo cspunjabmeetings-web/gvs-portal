@@ -11,6 +11,11 @@ const specPath = existsSync(join(root, 'spec.md'))
   ? join(root, 'spec.md')
   : join(fileURLToPath(new URL('.', import.meta.url)), '..', 'spec.md');
 
+/** spec.md ka ek manifest block (ROUTES/API/DEPS/TABLES) lines ki shakal mein */
+export function readManifest(name) {
+  return block(readFileSync(specPath, 'utf8'), name);
+}
+
 function block(spec, name) {
   const m = spec.match(new RegExp(`<!-- ${name}:BEGIN -->([\\s\\S]*?)<!-- ${name}:END -->`));
   if (!m) throw new Error(`spec.md mein ${name} block nahin mila`);

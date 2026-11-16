@@ -89,3 +89,12 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Khatra:** lock file haath se patch shuda (rollup → wasm-node); `@rollup/wasm-node` ka Linux optional package (`@napi-rs/lzma-linux-x64-gnu`) lock mein nahin — CI fail ho to pehle yeh dekho.
 - **Note:** GitHub Free par **private** repo mein branch protection/rulesets nahin milte (Pro chahiye) — is liye "laal par merge mana" owner ka apna usool hai, button band nahin hota.
 - **Agla qadam:** owner `ci-setup` push + PR + CI hara → merge → Qadam 2 ka plan (`step-2` branch par).
+- Owner ne PR #1 (ci-setup) merge kar diya.
+
+### 16 Nov 2026 — Qadam 2: catalog, seo, ProductCard, AdSlot, FAQ (branch `step-2`, REPORT diya, approval baqi)
+
+- **Kya bana:** `src/data/catalog.json` (13 products: intent 7.2 ke 12 + `interview-prep` `price: null`), `src/lib/catalog.ts` (types, `activeProducts`, `getProduct`, `isOrderable`, `formatPrice`, `fieldMessage`), `src/data/seo.json` (spec ROUTES ke 33 static pages), `src/data/house-ads.json` (intent 15.2 ke 4), `ProductCard.astro`, `AdSlot.astro` (5 slots, fixed size, random rotate script), `FAQ.astro` (`<details>`), aarzi Home mein 4 mashhoor packs + FAQ + bottom ad; tests `catalog.test.ts`, `seo.test.ts`; `check-scope.mjs` ab `readManifest()` export karta hai.
+- **Catalog ke chhote faislay:** naya field `govtFeeExtra` (F02-AC4); `price: null` = sirf "Rabta karein" (F02-AC5); field types `text|select|month|number`; ghalti ka paigham `fieldMessage()` se banta hai (catalog mein alag `message` nahin); `sample: null` jab tak owner asal namoona na de ("Namoona dekhein" chhupa); "Order list mein daalein" disabled (Qadam 4).
+- **Jaanch:** verify ✅ (21 pass, 13 skip; `catalog.golden` ab chalu aur pass), Home JS 1.3 KB / CSS 4.5 KB, 360px screenshot saaf.
+- **Owner se tasdeeq baqi:** har pack ki `includes` list (maine maswida banaya; usool 7: wada wohi jo pura ho).
+- **Agla qadam:** owner ki approval + includes ki tasdeeq → push `step-2` → PR → CI → merge → Qadam 3.

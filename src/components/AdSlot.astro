@@ -1,0 +1,63 @@
+---
+// spec: F22-AC1, F22-AC2, F22-AC4 (data-house-ad), intent 15.1-15.3; design.md 5 AdSlot
+// Size pehle se tay (CLS < 0.1). Label "Ishtihar". Andar GVS ke house ads, har load par ghoomte.
+// Kahan NAHIN lagana (F22-AC3) page ki zimmedari: order, track, admin, history, legal, how-to-order, chalta quiz/mock.
+import adsData from '../data/house-ads.json';
+
+type Slot = 'top' | 'inline' | 'sidebar' | 'bottom' | 'result';
+interface Props {
+  slot: Slot;
+}
+
+const { slot } = Astro.props;
+const ads = adsData.ads;
+// Build par ek tay shuda ad (bina JS ke yehi dikhe); JS hone par script ghuma deta hai
+const order: Slot[] = ['top', 'inline', 'sidebar', 'bottom', 'result'];
+const first = ads[order.indexOf(slot) % ads.length];
+
+const sizeClass: Record<Slot, string> = {
+  top: 'h-[100px] max-w-[320px] md:h-[90px] md:max-w-[728px]',
+  inline: 'h-[250px]',
+  sidebar: 'hidden lg:block h-[250px] w-[300px]',
+  bottom: 'h-[250px]',
+  result: 'h-[250px]',
+};
+const compact = slot === 'top';
+---
+<aside class:list={['my-6 w-full mx-auto', slot === 'sidebar' && 'lg:mx-0']} aria-label="Ishtihar" data-ad-slot={slot}>
+  <p class="text-xs text-muted mb-1">Ishtihar</p>
+  <div class:list={['w-full mx-auto overflow-hidden rounded-xl border border-border bg-surface-2', sizeClass[slot]]}>
+    <a
+      href={first.href}
+      class:list={[
+        'flex h-full w-full no-underline text-text',
+        compact ? 'flex-row items-center justify-between gap-3 px-4' : 'flex-col items-center justify-center gap-4 p-6 text-center',
+      ]}
+      data-house-ad={first.id}
+      data-ads={JSON.stringify(ads)}
+    >
+      <span class:list={['font-semibold', compact ? 'text-sm leading-snug' : 'text-lg']} data-ad-text>{first.text}</span>
+      <span class="inline-flex items-center rounded-lg bg-accent text-on-accent font-semibold px-3 min-h-[36px] text-sm whitespace-nowrap" data-ad-cta>{first.cta}</span>
+    </a>
+  </div>
+</aside>
+
+<script>
+  // spec: F22-AC2 (house ads ghoomte hue). Har slot mein page load par ek random ad.
+  type Ad = { id: string; text: string; cta: string; href: string };
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-house-ad][data-ads]')) {
+    try {
+      const ads = JSON.parse(a.dataset.ads ?? '[]') as Ad[];
+      if (ads.length < 2) continue;
+      const ad = ads[Math.floor(Math.random() * ads.length)];
+      a.href = ad.href;
+      a.dataset.houseAd = ad.id;
+      const t = a.querySelector('[data-ad-text]');
+      const c = a.querySelector('[data-ad-cta]');
+      if (t) t.textContent = ad.text;
+      if (c) c.textContent = ad.cta;
+    } catch {
+      /* ad na badle to bhi page chale */
+    }
+  }
+</script>

@@ -1,0 +1,8 @@
+{
+  "ads": [
+    { "id": "vu-packs", "text": "VU Midterm Packs: Rs. 250 se shuru.", "cta": "Muft namoona dekhein", "href": "/vu" },
+    { "id": "apply-service", "text": "PPSC form? Hum apply kar dein. Rs. 300", "cta": "Tafseel dekhein", "href": "/apply-service" },
+    { "id": "daily-test", "text": "Rozana 10 muft MCQs.", "cta": "Aaj ka test dein", "href": "/daily-test" },
+    { "id": "cv", "text": "CV + cover letter Rs. 500, 2 ghante mein.", "cta": "Order karein", "href": "/career/cv" }
+  ]
+}

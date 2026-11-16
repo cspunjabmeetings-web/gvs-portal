@@ -1,15 +1,53 @@
 ---
-// spec: S01 (aarzi khaka, Qadam 1). Asal Home Qadam 3 mein (F01).
+// spec: S01 (aarzi), F01-AC5 (mashhoor packs, FAQ, bottom ad). Asal Home (darwaze, test card, jobs) Qadam 3 mein.
 import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import FAQ from '../components/FAQ.astro';
+import AdSlot from '../components/AdSlot.astro';
+import seo from '../data/seo.json';
+import { getProduct, type Product } from '../lib/catalog';
+
+const meta = seo.pages['/'];
+const popular = ['vu-smart', 'mcq-pack', 'past-papers', 'cv-cover']
+  .map((id) => getProduct(id))
+  .filter((p): p is Product => Boolean(p));
+
+const faq = [
+  {
+    q: 'Order kaise karein?',
+    a: 'Cheez chunein aur zaroori tafseel bharein (maslan course code), phir naam aur WhatsApp number de kar order WhatsApp par bhejein. Sign up ki zaroorat nahin.',
+  },
+  {
+    q: 'Payment kaise hoti hai?',
+    a: 'WhatsApp par JazzCash ya Easypaisa se. Payment ka screenshot isi chat par bhejein; hum tasdeeq kar ke order shuru karte hain.',
+  },
+  {
+    q: 'File kab milegi?',
+    a: 'Payment milne ke baad taqreeban 2 ghante mein, kaam ke auqaat (subah 9 se raat 10 baje) ke andar. Order ka darja aur waqt "Order track karein" par dekhein.',
+  },
+  {
+    q: 'Kya GVS sarkari idara hai?',
+    a: 'Nahin. GVS Academy niji academy hai. Sarkari fee alag hoti hai aur official challan par jati hai.',
+  },
+];
 ---
-<Base
-  title="GVS Academy: Job ki tayyari, VU packs, board papers"
-  description="Rozana muft MCQs test, mock tests, notes aur sarkari jobs. VU packs, board papers aur apply services WhatsApp par order karein."
->
+<Base title={meta.title} description={meta.description}>
   <section class="container-page py-10">
     <h1>Aap kon hain?</h1>
     <p class="mt-3 text-muted max-w-[68ch]">
-      Portal ban raha hai. Yeh aarzi page hai; asal home aur chaar darwaze agle qadam mein aayenge.
+      Portal ban raha hai. Asal home aur chaar darwaze agle qadam mein aayenge.
     </p>
   </section>
+
+  <section class="container-page" aria-labelledby="popular-heading">
+    <h2 id="popular-heading" class="mb-4">Mashhoor packs</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      {popular.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+
+  <div class="container-page">
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
 </Base>

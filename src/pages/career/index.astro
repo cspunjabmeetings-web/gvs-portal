@@ -1,0 +1,79 @@
+---
+// spec: S06 (/career: CV/cover letter, apply, interview "Rabta karein", links), F02-AC5, F21-AC8; intent 13 (Ad: Haan)
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import FAQ from '../../components/FAQ.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import seo from '../../data/seo.json';
+import { getProduct, type Product } from '../../lib/catalog';
+
+const meta = seo.pages['/career'];
+const items = ['cv-cover', 'job-apply', 'interview-prep']
+  .map((id) => getProduct(id))
+  .filter((p): p is Product => Boolean(p));
+
+const faq = [
+  {
+    q: 'CV ke liye kya bhejna hoga?',
+    a: 'Naam, rabte ki maloomat, taleem, tajurba aur skills. Poori list CV ke page par hai; yeh sab order ke baad WhatsApp par bhejein.',
+  },
+  {
+    q: 'Job apply mein sarkari fee shamil hai?',
+    a: 'Nahin. Hamari service fee alag hai; sarkari fee official challan par jati hai aur aap khud jama karwate hain ya hamein bata kar.',
+  },
+  {
+    q: 'Interview tayyari ki qeemat kya hai?',
+    a: 'Abhi tay nahin. WhatsApp par rabta karein aur batayein kis job ke interview ki tayyari chahiye.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Career Desk' }]} />
+    <h1 class="mt-3">Career Desk</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">CV aur cover letter, online job apply, aur interview ki tayyari. Kaam hum karein, aap tayyari par dhyan dein.</p>
+
+    <AdSlot slot="top" />
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {items.map((p) => <ProductCard product={p} />)}
+    </div>
+    <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+      <li><a href="/career/cv">CV ki poori tafseel</a></li>
+      <li><a href="/apply-service">Apply service ki tafseel</a></li>
+      <li><a href="/jobs">Taza jobs dekhein</a></li>
+    </ul>
+
+    <TrustStrip />
+
+    <section class="my-8 max-w-[68ch]" aria-labelledby="guide-heading">
+      <h2 id="guide-heading">Job ki talash mein teen zaroori kaam</h2>
+      <p class="mt-3">
+        Job ki talash mein aksar asal masla qabiliyat nahin, kaghazi kaam hota hai. Pehla kaam ek saaf CV hai. Bohat se log purana,
+        lamba ya bikhra hua CV bhejte hain, aur pehli nazar mein hi peeche reh jate hain. Achha CV ek do safhon ka hota hai, jis mein
+        taleem, tajurba aur skills tarteeb se aur sach likhe hon. Har job ke sath ek chhota cover letter batata hai ke aap is khaas
+        post ke liye kyun munasib hain.
+      </p>
+      <p class="mt-3">
+        Doosra kaam online apply hai. Sarkari jobs ke forms mein account banana, maloomat bharna, documents upload karna aur challan
+        jama karwana hota hai. Ek chhoti ghalti, maslan ghalat domicile ya adhoori degree ki maloomat, poora form zaya kar sakti hai.
+        GVS ki apply service mein form hum bharte hain, aur documents ki list aap ko pehle bata dete hain. Sarkari fee hamesha alag
+        hoti hai aur official challan par jati hai.
+      </p>
+      <p class="mt-3">
+        Teesra kaam interview ki tayyari hai: apne bare mein mukhtasar taaruf, post se mutalliq aam sawal, aur aitmad se jawab dena.
+        Is service ki qeemat abhi tay nahin, is liye WhatsApp par rabta karein.
+      </p>
+      <p class="mt-3">
+        Yaad rahe, GVS niji academy hai. Hum tayyari aur kaghazi kaam mein madad karte hain; naukri milna idare ke faisle par hai.
+        Jobs ki maloomat hamesha official ishtihar se dekhein. Job tests ki tayyari ke liye <a href="/job-prep">Job ki tayyari</a>
+        dekhein.
+      </p>
+    </section>
+
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

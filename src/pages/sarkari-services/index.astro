@@ -1,0 +1,91 @@
+---
+// spec: S09 (/sarkari-services: schemes ki list schemes.json se, "GVS niji madadgar hai"), F02-AC4; intent 13 (Ad: Haan)
+// Scheme pages (/sarkari-services/<scheme>) sirf owner ki tasdeeq shuda maloomat ke baad (intent 13); abhi list khali.
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import FAQ from '../../components/FAQ.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import seo from '../../data/seo.json';
+import schemesData from '../../data/schemes.json';
+import { getProduct } from '../../lib/catalog';
+
+const meta = seo.pages['/sarkari-services'];
+const product = getProduct('scheme-help');
+const schemes = schemesData.schemes as { slug: string; name: string }[];
+const faq = [
+  {
+    q: 'Kya GVS sarkari idara hai?',
+    a: 'Nahin. GVS niji madadgar hai. Hum sirf form bharne aur documents samajhne mein madad karte hain; faisla aur ahliyat sarkari idara tay karta hai.',
+  },
+  {
+    q: 'Sarkari fee kitni hai?',
+    a: 'Har scheme ki apni hai, aur kai schemes mein koi fee nahin hoti. Jo sarkari fee ho woh official challan par jati hai, hamari fee mein shamil nahin.',
+  },
+  {
+    q: 'Meri scheme list mein nahin?',
+    a: '"Scheme ya form ka naam" ke khane mein naam likh kar order karein, ya pehle WhatsApp par pooch lein ke hum is mein madad kar sakte hain ya nahin.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Sarkari Services' }]} />
+    <h1 class="mt-3">Sarkari Services: scheme aur form mein madad</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Ahliyat samjhein, documents ki list lein, aur form hum se bharwayen. GVS niji madadgar hai, sarkari idara nahin.</p>
+
+    <AdSlot slot="top" />
+
+    <section class="my-6" aria-labelledby="list-heading">
+      <h2 id="list-heading" class="mb-3">Schemes</h2>
+      {schemes.length > 0 ? (
+        <ul class="grid gap-3 sm:grid-cols-2">
+          {schemes.map((s) => (
+            <li><a href={`/sarkari-services/${s.slug}`} class="flex min-h-[56px] items-center rounded-xl border border-border bg-surface px-4 font-semibold no-underline text-text hover:border-primary">{s.name}</a></li>
+          ))}
+        </ul>
+      ) : (
+        <p class="rounded-xl border border-border bg-surface p-4 max-w-[68ch]">
+          Schemes ke alag pages tasdeeq shuda maloomat ke sath jald aayenge. Tab tak neeche apni scheme ya form ka naam likh kar
+          madad ka order karein, ya WhatsApp par pooch lein.
+        </p>
+      )}
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <section class="max-w-[68ch]" aria-labelledby="how-heading">
+        <h2 id="how-heading">Hum kaise madad karte hain</h2>
+        <p class="mt-3">
+          Sarkari schemes aur forms aksar mufeed hote hain, lekin un ki sharait, documents aur online tareeqa samajhna mushkil hota
+          hai. Kai log sirf is liye reh jate hain ke form mein ek khana ghalat bhar diya, ya zaroori document maloom hi nahin tha.
+        </p>
+        <p class="mt-3">
+          Scheme madad mein aap scheme ya form ka naam batate hain. Hum official maloomat ke mutabiq bata dete hain ke ahliyat kya
+          hai aur kaun se documents chahiyein. Payment aur documents milne ke baad hum form bharte hain aur aap ko us ki maloomat
+          WhatsApp par dete hain. Har kaam ka official link aap ke sath share kiya jata hai, taake aap khud bhi tasdeeq kar sakein.
+        </p>
+        <p class="mt-3">
+          Ahliyat aur faisla hamesha sarkari idara karta hai; hum sirf madadgar hain aur kisi scheme mein shamil hone ka wada nahin
+          karte. Sarkari fee, agar ho, alag hai aur official challan par jati hai. Kisi bhi aise shakhs se hoshiyar rahein jo paise le
+          kar scheme "pakki" karne ka kahe.
+        </p>
+        <p class="mt-3">
+          Documents sirf WhatsApp par, sirf usi kaam ke liye istemal hote hain aur baad mein hata diye jate hain. Job ke forms ke liye
+          <a href="/apply-service">apply service</a>, CV ke liye <a href="/career/cv">CV service</a>, aur saari qeematein
+          <a href="/plans">rate list</a> par dekhein.
+        </p>
+      </section>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

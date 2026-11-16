@@ -1,0 +1,76 @@
+---
+// spec: S13 (/current-affairs: mahine ki list, namoona, order: mahina chunna), F02-AC1; intent 13 (Ad: Haan)
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ProductCard from '../components/ProductCard.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import FAQ from '../components/FAQ.astro';
+import AdSlot from '../components/AdSlot.astro';
+import seo from '../data/seo.json';
+import { getProduct } from '../lib/catalog';
+
+const meta = seo.pages['/current-affairs'];
+const product = getProduct('current-affairs');
+const faq = [
+  {
+    q: 'Kaun sa mahina order karun?',
+    a: 'Test se pehle ke aakhri chand mahine sab se zaroori hote hain. Order mein mahina chunein; har mahine ki PDF alag order hoti hai.',
+  },
+  {
+    q: 'Agar mera chuna hua mahina tayyar na ho?',
+    a: 'Hum payment se pehle WhatsApp par bata dete hain ke woh mahina kab tak tayyar hoga.',
+  },
+  {
+    q: 'Muft current affairs ke sawal kahan hain?',
+    a: 'Rozana test aur MCQs practice mein Current Affairs ke sawal bhi aate hain, tareekh ke sath.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Current affairs' }]} />
+    <h1 class="mt-3">Monthly current affairs PDF</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Har mahine ke ahem current affairs, mukhtasar aur tarteeb se, ek PDF mein.</p>
+
+    <AdSlot slot="top" />
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <section class="max-w-[68ch]" aria-labelledby="why-heading">
+        <h2 id="why-heading">Current affairs ki tayyari kaise karein</h2>
+        <p class="mt-3">
+          Sarkari job ke tests mein current affairs ka hissa aksar hota hai, aur yahi hissa sab se jaldi purana bhi hota hai. Roz
+          akhbar parhna behtar hai, lekin har cheez yaad rakhna mushkil hai, aur test se pehle bikhri hui khabrein ikattha karna aur
+          bhi mushkil.
+        </p>
+        <p class="mt-3">
+          Mahana PDF mein us mahine ki ahem khabrein mukhtasar aur tarteeb se hoti hain: Pakistan ki ahem tabdeeliyan, ahem
+          taqarruriyan, maeeshat aur khel ki ahem khabrein, aur dunya ke bare waqiat. Har nukta itna mukhtasar hai ke test se pehle
+          jaldi dohraya ja sake.
+        </p>
+        <p class="mt-3">
+          Order karte waqt mahina chunein. Test ki tareekh se pehle ke aakhri teen se chhe mahine aam taur par sab se zaroori hote
+          hain, lekin har idare ka andaz alag hai, is liye apne test ke official syllabus ko dekhein. Har mahina alag order hai, aur
+          kai mahine ek hi order mein daale ja sakte hain.
+        </p>
+        <p class="mt-3">
+          PDF ko ek dafa parh kar na chhor dein. Pehli dafa poora parhein, doosri dafa sirf naam, tareekhein aur ginti wali baatein
+          alag copy mein likhein, aur test se ek hafta pehle sirf woh copy dohrayen. Is tarah kam waqt mein zyada yaad rehta hai.
+        </p>
+        <p class="mt-3">
+          PDF parhne ke baad practice zaroor karein. <a href="/daily-test">Rozana muft test</a> aur <a href="/mcqs">MCQs practice</a>
+          mein Current Affairs ke sawal tareekh ke sath aate hain. Poori tayyari ke liye <a href="/job-prep">Job ki tayyari</a> dekhein.
+        </p>
+      </section>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+    <FAQ items={faq} />
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

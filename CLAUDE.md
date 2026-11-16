@@ -123,3 +123,11 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Jaanch:** verify ✅ (51 pass); alfaz `/vu` 514, `/board` 327, class pages 343-361; har page 2 ads (top+bottom); 360px screenshots; "Class: 10th" ka space theek kiya (`{' '}`).
 - **Note:** VU table 360px par apne box mein horizontal scroll hoti hai (page nahin) — jaan boojh kar.
 - **Agla:** owner matn tasdeeq + approve → push `step-3b` → PR #4 → merge → `step-3c`.
+- **Natija:** owner ne 3b merge kiya (PR #4, `bd415fb`; git se tasdeeq).
+
+### 16 Nov 2026 — Qadam 3c: Career, CV, apply, past-papers, current-affairs, mock-series, sarkari (branch `step-3c`, REPORT diya, approval baqi)
+
+- **Kya bana:** `/career` (3 cards: cv-cover, job-apply, interview-prep), `/career/cv` (kya bhejna hai ki list, ad nahin), `/apply-service` (sarkari fee ka zaroori box, documents ki aam list, ad nahin; F18-AC7), `/past-papers`, `/current-affairs`, `/mock-series` (kaise chalti hai, ad nahin), `/sarkari-services` (schemes list `schemes.json` se — abhi khali, "jald aayenge" paigham); `src/data/schemes.json` = `{ schemes: [] }`.
+- **Jaanch:** verify ✅ (68 pass); test ne `/current-affairs` ke 276 alfaz pakde → paragraph joda; alfaz 315-496; ads: career/past/current/sarkari 2, cv/apply/mock 0; saare 7 pages 200; 360px screenshots.
+- **Owner ke liye flags:** (1) mock series ka **schedule** spec mein hai lekin maloom nahin — page par "schedule group mein bataya jata hai"; owner asal schedule de to likh dein. (2) past papers aur current affairs: "agar maujood na ho to payment se pehle bata dete hain" — owner tasdeeq kare ke yehi tareeqa hai. (3) Mobile par order card lambe matn ke baad aata hai (jaan boojh kar: pehle maloomat).
+- **Agla:** owner approve → push `step-3c` → PR #5 → merge → `step-4` branch par pehla kaam PROGRESS mein Qadam 3 tick → Qadam 4 (cart + order form) ka plan.

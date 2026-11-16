@@ -1,0 +1,80 @@
+---
+// spec: S14 (/mock-series: kaise chalti hai, schedule, qeemat, order sirf naam+number), F02-AC1; intent 13 (Ad: Nahin), 7.3
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ProductCard from '../components/ProductCard.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import OrderSteps from '../components/OrderSteps.astro';
+import FAQ from '../components/FAQ.astro';
+import seo from '../data/seo.json';
+import { getProduct } from '../lib/catalog';
+
+const meta = seo.pages['/mock-series'];
+const product = getProduct('mock-series');
+const steps = [
+  'Order karein: sirf naam aur WhatsApp number.',
+  'JazzCash ya Easypaisa se payment WhatsApp par.',
+  'Payment ke baad 2 ghante ke andar aap ko WhatsApp group mein shamil kiya jata hai aur pehla test bheja jata hai.',
+  'Mahine bhar group mein mock tests aate hain; tests ka schedule group mein bataya jata hai.',
+];
+const faq = [
+  { q: 'Muft mock tests aur series mein kya farq hai?', a: 'Muft mock tests portal par khud dein. Paid series WhatsApp group mein ek mahine ke liye chalti hai, tarteeb se.' },
+  { q: 'Mahina khatam hone par?', a: 'Series ek mahine ki hai. Agle mahine ke liye dobara order karein.' },
+  { q: 'Kya group mein mera number doosron ko dikhega?', a: 'WhatsApp group mein members ke number ek doosre ko nazar aate hain; yeh WhatsApp ka tareeqa hai. Agar yeh pasand nahin to order se pehle WhatsApp par baat kar lein.' },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Mock test series' }]} />
+    <h1 class="mt-3">Mock test series: mahana</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Ek mahine ke mock tests WhatsApp group mein. Order ke liye sirf naam aur number.</p>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <div>
+        <section aria-labelledby="how-heading">
+          <h2 id="how-heading" class="mb-3">Kaise chalti hai</h2>
+          <ol class="flex flex-col gap-2">
+            {steps.map((s, i) => (
+              <li class="flex gap-3">
+                <span class="tabular inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary text-sm font-bold" aria-hidden="true">{i + 1}</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section class="my-8 max-w-[68ch]" aria-labelledby="why-heading">
+          <h2 id="why-heading">Series kyun</h2>
+          <p class="mt-3">
+            Akele tayyari mein sab se bara masla tarteeb ka hota hai: aaj parh liya, kal reh gaya. Mock test series ek mahine ke liye
+            yeh tarteeb deti hai. Tests waqt par aate hain, aap waqt laga kar hal karte hain, aur har test ke baad pata chalta hai ke
+            kahan kamzori hai.
+          </p>
+          <p class="mt-3">
+            Series WhatsApp group mein chalti hai, kyun ke wahi sab se asaan hai: alag app, password ya account ki zaroorat nahin. Is
+            liye order mein koi tafseel nahin mangi jati, sirf naam aur WhatsApp number. Payment ke baad 2 ghante ke andar aap ko
+            group mein shamil kar ke pehla test bhej diya jata hai, kaam ke auqaat (subah 9 se raat 10 baje) ke andar.
+          </p>
+          <p class="mt-3">
+            Tests ka schedule aur tareeqa group mein bataya jata hai. Har test ke baad apni ghaltiyan likh lein aur agle test se pehle
+            unhi topics ko dohrayen. Isi se score barhta hai.
+          </p>
+          <p class="mt-3">
+            Series ke sath muft practice bhi jari rakhein: <a href="/daily-test">aaj ka test</a>, <a href="/mock-tests">muft mock tests</a>
+            aur <a href="/notes">notes</a>. Apni post ke liye <a href="/past-papers">solved past papers</a> bhi faida dete hain.
+          </p>
+        </section>
+      </div>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+    <OrderSteps />
+    <FAQ items={faq} />
+  </div>
+</Base>

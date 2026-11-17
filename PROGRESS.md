@@ -6,7 +6,7 @@
 - [x] 4 Cart aur order form
 - [x] 5 D1, orders API, notifications, Turnstile
 - [x] 6 timer, track
-- [ ] 7 Admin login, Orders, Notifications
+- [x] 7 Admin login, Orders, Notifications
 - [ ] 8 Admin Settings
 - [ ] 9 parser, Content tab
 - [ ] 10 Daily test, practice, history

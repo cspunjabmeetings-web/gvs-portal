@@ -3,8 +3,8 @@
 - [x] 1 Astro + Workers + Tailwind + layout
 - [x] 2 catalog, seo, components
 - [x] 3 Home, /job-prep, darwazon ke static pages
-- [ ] 4 Cart aur order form
-- [ ] 5 D1, orders API, notifications, Turnstile
+- [x] 4 Cart aur order form
+- [x] 5 D1, orders API, notifications, Turnstile
 - [ ] 6 timer, track
 - [ ] 7 Admin login, Orders, Notifications
 - [ ] 8 Admin Settings

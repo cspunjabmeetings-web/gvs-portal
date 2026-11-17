@@ -5,5 +5,7 @@ declare namespace Cloudflare {
     DB: D1Database;
     TURNSTILE_SECRET?: string;
     SESSION_SECRET?: string;
+    /** F07-AC5: sirf secret (.dev.vars / Cloudflare), kam az kam 12 harf */
+    ADMIN_PASSWORD?: string;
   }
 }

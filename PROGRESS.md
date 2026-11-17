@@ -5,7 +5,7 @@
 - [x] 3 Home, /job-prep, darwazon ke static pages
 - [x] 4 Cart aur order form
 - [x] 5 D1, orders API, notifications, Turnstile
-- [ ] 6 timer, track
+- [x] 6 timer, track
 - [ ] 7 Admin login, Orders, Notifications
 - [ ] 8 Admin Settings
 - [ ] 9 parser, Content tab

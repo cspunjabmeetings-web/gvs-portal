@@ -105,7 +105,7 @@ export function saveCart(items: CartItem[], store: Store = pickStore()): void {
   }
 }
 
-/** Orders khule hain? Asal value Qadam 5 se /api/settings (orders_open); tab tak hamesha khule (F03-AC6) */
+/** Orders khule hain? Value /api/settings (orders_open) se, site-settings.ts bharta hai; na ho to khule (F03-AC6) */
 export function ordersOpen(): boolean {
   const s = (globalThis as { __gvsSettings?: { orders_open?: boolean } }).__gvsSettings;
   return s?.orders_open !== false;
@@ -122,6 +122,38 @@ export function removeFromCart(key: string): CartItem[] {
   const items = removeItem(loadCart(), key);
   saveCart(items);
   return items;
+}
+
+/** F04-AC10: order kamyab → list khali */
+export function clearCart(): void {
+  saveCart([]);
+}
+
+// ---- "Mere orders" (spec 7.5: key gvs.v1, orders ≤ 20). Qadam 10 ka history.ts isi shakal ko parhe ga. ----
+export const HISTORY_KEY = 'gvs.v1';
+export interface SavedOrder {
+  id: string;
+  last4: string;
+  at: string;
+}
+
+/** Order number + aakhri 4 hindse browser mein mehfooz (F04-AC10). Naya sab se upar. */
+export function rememberOrder(o: SavedOrder, ls: Pick<Storage, 'getItem' | 'setItem'> | undefined = globalThis.localStorage): void {
+  try {
+    if (!ls) return;
+    let data: Record<string, unknown> = { v: 1 };
+    try {
+      const parsed = JSON.parse(ls.getItem(HISTORY_KEY) ?? 'null') as Record<string, unknown> | null;
+      if (parsed && parsed.v === 1) data = parsed;
+    } catch {
+      /* kharab data: naye se */
+    }
+    const prev = Array.isArray(data.orders) ? (data.orders as SavedOrder[]).filter((x) => x && x.id !== o.id) : [];
+    data.orders = [o, ...prev].slice(0, 20);
+    ls.setItem(HISTORY_KEY, JSON.stringify(data));
+  } catch {
+    /* storage band: chhor do */
+  }
 }
 
 /** Test ke liye: memory store saaf */

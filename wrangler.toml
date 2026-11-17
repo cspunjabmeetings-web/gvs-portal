@@ -1,4 +1,4 @@
-# spec: 3.1 Hosting (Workers + static assets, P-01). D1 Qadam 5, R2 Qadam 13 mein.
+# spec: 3.1 Hosting (Workers + static assets, P-01), 4.1 D1 (Qadam 5). R2 Qadam 13 mein.
 name = "gvs-portal"
 main = "@astrojs/cloudflare/entrypoints/server"
 compatibility_date = "2026-11-01"
@@ -7,3 +7,12 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 binding = "ASSETS"
 directory = "./dist"
+
+# spec: 4.1 D1, 7.6. Abhi sirf local (Miniflare). Remote DB owner khud banaye ga (`wrangler d1 create gvs`)
+# aur asal database_id yahan likhe ga; remote migration sirf owner ki manzoori se (spec 13.3).
+[[d1_databases]]
+binding = "DB"
+database_name = "gvs"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+

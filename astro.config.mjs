@@ -1,4 +1,4 @@
-// spec: 3.1 (Astro, Workers adapter, Tailwind, prefetch), P-01, intent 12.4 (WhatsApp fallback)
+// spec: 3.1 (Astro, Workers adapter, Tailwind, prefetch), P-01, intent 12.4 (WhatsApp fallback), F04-AC11 (Turnstile site key)
 import { defineConfig, envField, sessionDrivers } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
@@ -21,6 +21,13 @@ export default defineConfig({
         context: 'client',
         access: 'public',
         default: '03404905266',
+      }),
+      // F04-AC11: Turnstile site key public hai. Default = Cloudflare ki "hamesha pass" TEST key;
+      // production build par asal key env se (Qadam 17/18).
+      PUBLIC_TURNSTILE_SITE_KEY: envField.string({
+        context: 'client',
+        access: 'public',
+        default: '1x00000000000000000000AA',
       }),
     },
   },

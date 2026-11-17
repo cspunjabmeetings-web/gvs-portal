@@ -1,0 +1,4 @@
+# spec: F07-AC4 (/admin band), F21-AC4 (/admin, /api band; sitemap link Qadam 15)
+User-agent: *
+Disallow: /admin
+Disallow: /api/

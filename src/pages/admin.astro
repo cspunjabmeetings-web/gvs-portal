@@ -1,0 +1,34 @@
+---
+// spec: 6.3 A01 (login) + admin dhancha (tabs, ghanti), F07-AC1, AC4 (noindex), 6.1 (admin par CartBar/header/footer nahin)
+// On-demand: cookie server par jaanchi jati hai (HttpOnly; browser JS nahin parh sakta). Nayi "me" API ki zaroorat nahin.
+import { env } from 'cloudflare:workers';
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import AdminLogin from '../components/admin/AdminLogin.tsx';
+import AdminShell from '../components/admin/AdminShell.tsx';
+import { isAdmin } from '../lib/admin-auth';
+import seo from '../data/seo.json';
+
+export const prerender = false;
+
+const meta = seo.pages['/admin'];
+const loggedIn = await isAdmin(Astro.request, env);
+---
+<Base title={meta.title} description={meta.description} chrome={false} noindex>
+  <div class="mx-auto w-full max-w-2xl px-4 py-4">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <Logo height={36} />
+      <span class="text-sm font-semibold text-muted">Admin</span>
+    </div>
+    {
+      loggedIn ? (
+        <AdminShell client:load />
+      ) : (
+        <div class="mx-auto max-w-sm">
+          <h1 class="mb-4 text-2xl">Admin login</h1>
+          <AdminLogin client:load />
+        </div>
+      )
+    }
+  </div>
+</Base>

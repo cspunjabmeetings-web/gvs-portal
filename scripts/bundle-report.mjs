@@ -34,6 +34,31 @@ function assetSize(url) {
   return existsSync(p) ? gz(readFileSync(p)) : 0;
 }
 
+/**
+ * JS module aur us ki saari static imports (chunks), har file ek dafa.
+ * Islands (<astro-island component-url/renderer-url>) bhi isi se gine jate hain.
+ */
+function jsGraph(entryUrls) {
+  const seen = new Set();
+  const stack = [...entryUrls].map((u) => u.split('?')[0]);
+  let total = 0;
+  while (stack.length) {
+    const url = stack.pop();
+    if (seen.has(url)) continue;
+    seen.add(url);
+    const p = join(DIST, url.replace(/^\//, ''));
+    if (!existsSync(p)) continue;
+    const src = readFileSync(p);
+    total += gz(src);
+    const dir = url.slice(0, url.lastIndexOf('/') + 1);
+    for (const m of src.toString('utf8').matchAll(/(?:import|from)\s*["'](\.{1,2}\/[^"']+\.js)["']/g)) {
+      const resolved = new URL(m[1], 'http://x' + dir).pathname;
+      stack.push(resolved);
+    }
+  }
+  return total;
+}
+
 const htmlFiles = walk(DIST).filter((f) => f.endsWith('.html'));
 if (!htmlFiles.length) {
   console.error('dist/ mein koi HTML nahin. Pehle `npm run build` chalayein.');
@@ -47,7 +72,11 @@ for (const file of htmlFiles) {
   const route = '/' + relative(DIST, file).split(sep).join('/').replace(/index\.html$/, '').replace(/\.html$/, '');
   let js = 0;
   let css = 0;
-  for (const m of html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)) js += assetSize(m[1]);
+  const entries = [
+    ...[...html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)].map((m) => m[1]),
+    ...[...html.matchAll(/\b(?:component-url|renderer-url|before-hydration-url)="([^"]+)"/g)].map((m) => m[1]),
+  ].filter((u) => u.startsWith('/'));
+  js += jsGraph(entries);
   for (const m of html.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"|<link[^>]*href="([^"]+)"[^>]*rel="stylesheet"/g))
     css += assetSize(m[1] ?? m[2]);
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) if (m[1].trim()) js += gz(Buffer.from(m[1]));

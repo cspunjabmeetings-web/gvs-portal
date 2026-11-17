@@ -56,21 +56,31 @@ const fid = (key: string) => `${p.id}-${key}`;
     )}
 
     {orderable ? (
-      <form class="flex flex-col gap-3" data-add-to-cart={p.id} data-shared-fields={sharedFields.join(',') || undefined}>
+      <form
+        class="flex flex-col gap-3"
+        novalidate
+        data-add-to-cart={p.id}
+        data-name={p.name}
+        data-price={p.price}
+        data-govt-fee={p.govtFeeExtra ? '1' : undefined}
+        data-shared-fields={sharedFields.join(',') || undefined}
+      >
         {presetFields.map((f) => (
           <p class="text-sm"><span class="text-muted">{f.label}:</span>{' '}<strong>{preset[f.key]}</strong>
             <input type="hidden" name={f.key} value={preset[f.key]} />
           </p>
         ))}
         {ownFields.map((f) => <FieldInput field={f} id={fid(f.key)} />)}
+        {/* Bina JS ke band; script chalu karta hai (cart JS se chalti hai, spec 9.8) */}
         <button
           type="submit"
           disabled
-          class="min-h-[48px] rounded-lg bg-primary text-on-primary font-semibold px-4 disabled:opacity-60 disabled:cursor-not-allowed"
-          title="Order list jald chalu hogi"
+          data-add-button
+          class="min-h-[48px] rounded-lg bg-primary text-on-primary font-semibold px-4 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Order list mein daalein
         </button>
+        <p class="hidden text-sm font-medium rounded-lg px-3 py-2" role="status" aria-live="polite" data-cart-status></p>
       </form>
     ) : (
       <a
@@ -83,3 +93,66 @@ const fid = (key: string) => `${p.id}-${key}`;
     )}
   </article>
 )}
+
+<script>
+  // spec: F03-AC1 (foran, bina network), F03-AC3, F03-AC4, F03-AC6, F02-AC2 (ghalti ka paigham)
+  import { addToCart, CART_MSG } from '../lib/cart';
+  import { validateFieldValue } from '../lib/validators';
+
+  // <select> bhi yahi cheezein rakhta hai (value, required, checkValidity, setCustomValidity, dataset)
+  type Field = HTMLInputElement;
+
+  function show(form: HTMLFormElement, text: string, ok: boolean) {
+    const el = form.querySelector<HTMLElement>('[data-cart-status]');
+    if (!el) return;
+    el.textContent = (ok ? '✓ ' : '✕ ') + text;
+    el.className = `text-sm font-medium rounded-lg px-3 py-2 ${ok ? 'bg-correct-bg text-correct' : 'bg-wrong-bg text-wrong'}`;
+  }
+
+  function fieldsOf(form: HTMLFormElement): Field[] {
+    const own = [...form.querySelectorAll<Field>('input[name], select[name]')];
+    const shared = (form.dataset.sharedFields ?? '')
+      .split(',')
+      .filter(Boolean)
+      .map((k) => document.querySelector<Field>(`[data-shared-field-host="${k}"] [name="${k}"]`))
+      .filter((x): x is Field => Boolean(x));
+    return [...shared, ...own];
+  }
+
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-add-button]')) b.disabled = false;
+
+  // Ghalti ka custom paigham likhte hi saaf
+  document.addEventListener('input', (e) => {
+    const t = e.target as Field;
+    if (t && 'setCustomValidity' in t) t.setCustomValidity('');
+  });
+
+  document.addEventListener('submit', (e) => {
+    const form = (e.target as HTMLElement).closest<HTMLFormElement>('form[data-add-to-cart]');
+    if (!form) return;
+    e.preventDefault();
+
+    const fields: Record<string, string> = {};
+    for (const el of fieldsOf(form)) {
+      el.setCustomValidity('');
+      const tooLong = !validateFieldValue(el.value).ok;
+      if (!el.checkValidity() || tooLong || (el.required && !el.value.trim())) {
+        el.setCustomValidity(el.dataset.msg ?? 'Yeh khana sahih bharein.');
+        el.reportValidity();
+        el.focus();
+        show(form, el.dataset.msg ?? 'Yeh khana sahih bharein.', false);
+        return;
+      }
+      if (el.value.trim()) fields[el.name] = el.value.trim();
+    }
+
+    const res = addToCart({
+      id: form.dataset.addToCart!,
+      name: form.dataset.name ?? '',
+      price: Number(form.dataset.price ?? 0),
+      govtFeeExtra: form.dataset.govtFee === '1',
+      fields,
+    });
+    show(form, res.ok ? CART_MSG.added : CART_MSG[res.reason], res.ok);
+  });
+</script>

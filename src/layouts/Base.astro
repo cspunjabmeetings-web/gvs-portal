@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import CartBar from '../components/CartBar.tsx';
 
 interface Props {
   title: string;
@@ -36,5 +37,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       <slot />
     </main>
     {chrome && <Footer />}
+    {/* spec 6.1: CartBar har page par, admin par nahin (chrome=false) */}
+    {chrome && <CartBar client:idle />}
   </body>
 </html>

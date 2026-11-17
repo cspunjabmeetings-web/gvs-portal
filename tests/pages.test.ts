@@ -84,3 +84,15 @@ describe.skipIf(built.length === 0)('bane hue pages (dist)', () => {
     for (const r of built) expect((html(r).match(/data-ad-slot=/g) ?? []).length, r).toBeLessThanOrEqual(3);
   });
 });
+
+// spec: F06-AC9 (/track noindex, ad nahin), F21-AC3 (noindex pages)
+describe('/track (F06-AC9)', () => {
+  it.skipIf(!built.includes('/track'))('noindex hai aur koi ishtihar nahin', () => {
+    const h = html('/track');
+    expect(h).toMatch(/<meta name="robots" content="noindex, nofollow"/);
+    expect(h).not.toMatch(/data-ad-slot=/);
+  });
+  it.skipIf(!built.includes('/'))('doosre pages index hote hain (noindex nahin)', () => {
+    expect(html('/')).not.toMatch(/name="robots"/);
+  });
+});

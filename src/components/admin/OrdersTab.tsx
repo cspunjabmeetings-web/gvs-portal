@@ -1,8 +1,10 @@
 // spec: 6.3 A02 (din ka khulasa, filter chips, search, cards), F08-AC1, AC2, AC10; E11
-// 60 s polling, awaz, browser notification = 7c (F08-AC11).
+// F08-AC11: polling AdminShell mein; naya order aaye to yeh list khud taza. F09-AC2: notification ka link `#orders:<id>` → wohi order search.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { AdminOrder, Filter } from '../../lib/admin-orders';
 import type { ContactInput } from '../../lib/admin-ui';
+import type { AdminNotification } from '../../lib/notify';
+import { ADMIN_EVENTS } from '../../lib/admin-alert';
 import OrderCard from './OrderCard';
 
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-PK')}`;
@@ -27,7 +29,7 @@ interface ListResponse {
   error?: { message?: string };
 }
 
-export default function OrdersTab() {
+export default function OrdersTab({ focus = '' }: { focus?: string }) {
   const [filter, setFilter] = useState<Filter>('all');
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
@@ -76,6 +78,27 @@ export default function OrdersTab() {
   useEffect(() => {
     void load(0);
   }, [filter, query]);
+
+  // Notification se aaye: wohi order dikhao (Sab filter + search)
+  useEffect(() => {
+    if (!focus) return;
+    setFilter('all');
+    setQ(focus);
+    setQuery(focus);
+  }, [focus]);
+
+  // Polling ne naya order / WhatsApp khola / khud cancel laya → list aur khulasa taza.
+  // Ref se taaza `load` (filter/search ke sath) bulate hain.
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useEffect(() => {
+    const onIncoming = (e: Event) => {
+      const fresh = (e as CustomEvent<AdminNotification[]>).detail ?? [];
+      if (fresh.some((n) => n.type !== 'status_changed' && n.type !== 'low_mcq_bank')) void loadRef.current(0);
+    };
+    addEventListener(ADMIN_EVENTS.incoming, onIncoming);
+    return () => removeEventListener(ADMIN_EVENTS.incoming, onIncoming);
+  }, []);
 
   const update = (o: AdminOrder) => {
     setOrders((list) => list.map((x) => (x.id === o.id ? o : x)));

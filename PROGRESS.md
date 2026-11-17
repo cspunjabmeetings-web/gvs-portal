@@ -2,7 +2,7 @@
 - [x] 0 Repo, CLAUDE.md, settings, check-scope, golden tests, design.md
 - [x] 1 Astro + Workers + Tailwind + layout
 - [x] 2 catalog, seo, components
-- [ ] 3 Home, /job-prep, darwazon ke static pages
+- [x] 3 Home, /job-prep, darwazon ke static pages
 - [ ] 4 Cart aur order form
 - [ ] 5 D1, orders API, notifications, Turnstile
 - [ ] 6 timer, track

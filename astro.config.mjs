@@ -2,9 +2,11 @@
 import { defineConfig, envField, sessionDrivers } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
+import preact from '@astrojs/preact';
 
 export default defineConfig({
   output: 'static', // on-demand sirf jahan `export const prerender = false`
+  integrations: [preact()], // spec 3.1: Preact islands (cart, quiz, mock, track, admin)
   adapter: cloudflare({
     // Tasveerein pehle se WebP; build/runtime par processing nahin (sharp/Images binding nahin)
     imageService: 'passthrough',

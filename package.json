@@ -25,7 +25,9 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "13.7.0",
-    "astro": "6.4.8"
+    "@astrojs/preact": "5.1.5",
+    "astro": "6.4.8",
+    "preact": "10.29.8"
   },
   "overrides": {
     "rollup": "$rollup",

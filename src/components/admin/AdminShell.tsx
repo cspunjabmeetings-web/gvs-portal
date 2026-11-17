@@ -1,10 +1,11 @@
 // spec: 6.3 (har admin screen par ghanti + tabs: Orders, Notifications, Content, Jobs, Settings), F07-AC4 (logout), F08-AC10 (44px, 360px)
-// Qadam 7a: sirf dhancha. Orders = 7b, Notifications + ghanti ki ginti = 7c, Settings = Qadam 8, Content = 9, Jobs = 13.
+// Qadam 7a: dhancha; 7b: Orders tab (OrdersTab). Notifications + ghanti ki ginti = 7c, Settings = Qadam 8, Content = 9, Jobs = 13.
 // Tabs URL hash se (#orders); nayi route nahin (spec 6.4 mein sirf PAGE /admin).
 import { useEffect, useState } from 'preact/hooks';
+import OrdersTab from './OrdersTab';
 
 const TABS = [
-  { id: 'orders', label: 'Orders', soon: 'Orders ki list agle hisse (7b) mein aaye gi.' },
+  { id: 'orders', label: 'Orders', soon: '' },
   { id: 'notifications', label: 'Notifications', soon: 'Notifications agle hisse (7c) mein aayengi.' },
   { id: 'content', label: 'Content', soon: 'Content tab Qadam 9 mein aaye ga.' },
   { id: 'jobs', label: 'Jobs', soon: 'Jobs tab Qadam 13 mein aaye ga.' },
@@ -83,9 +84,15 @@ export default function AdminShell() {
         </ul>
       </nav>
 
-      <section class="rounded-xl border border-border bg-surface p-4" aria-live="polite" data-tab={tab}>
-        <p class="text-muted">{current.soon}</p>
-      </section>
+      {tab === 'orders' ? (
+        <div data-tab="orders">
+          <OrdersTab />
+        </div>
+      ) : (
+        <section class="rounded-xl border border-border bg-surface p-4" aria-live="polite" data-tab={tab}>
+          <p class="text-muted">{current.soon}</p>
+        </section>
+      )}
     </div>
   );
 }

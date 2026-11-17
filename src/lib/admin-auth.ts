@@ -101,7 +101,8 @@ export async function guardAdminPath(pathname: string, request: Request, env: Pi
 // ---- Login / logout (E10) ----
 const LoginBody = v.object({ password: v.pipe(v.string(), v.maxLength(200)) });
 
-function adminPost(request: Request): ApiResult | null {
+/** Har admin POST: Origin apni site + sirf application/json (9.2 CSRF). null = theek. */
+export function adminPost(request: Request): ApiResult | null {
   if (!sameOrigin(request)) return fail(403, 'origin', API_MSG.origin);
   // CSRF (9.2): admin par sirf application/json
   if (!(request.headers.get('Content-Type') ?? '').toLowerCase().startsWith('application/json')) return fail(400, 'json', ADMIN_MSG.json);

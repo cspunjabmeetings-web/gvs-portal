@@ -1,0 +1,99 @@
+---
+// spec: S08, F18-AC7 (kya karte hain, documents, qeemat, sarkari fee ki wazahat, order, FAQ), F02-AC4; intent 13 (Ad: Nahin)
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ProductCard from '../components/ProductCard.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import OrderSteps from '../components/OrderSteps.astro';
+import FAQ from '../components/FAQ.astro';
+import seo from '../data/seo.json';
+import { getProduct } from '../lib/catalog';
+
+const meta = seo.pages['/apply-service'];
+const product = getProduct('job-apply');
+const docs = [
+  'CNIC (dono taraf ki saaf tasveer)',
+  'Matric, Inter aur aage ki degrees / transcripts',
+  'Domicile',
+  'Passport size tasveer',
+  'Tajurbe ke certificate (agar post mangti ho)',
+  'Ishtihar mein likhe doosre documents',
+];
+const faq = [
+  {
+    q: 'Sarkari fee kaun deta hai?',
+    a: 'Aap. Sarkari fee official challan par jati hai aur hamari fee mein shamil nahin. GVS sarkari fee wapas nahin kar sakta; woh idare ke usool par hai.',
+  },
+  {
+    q: 'Kya aap PPSC ya FPSC ki taraf se hain?',
+    a: 'Nahin. GVS niji academy hai. Hum sirf aap ki taraf se online form bharne mein madad karte hain; faisla aur test idara khud leta hai.',
+  },
+  {
+    q: 'Form bharne ke baad mujhe kya milega?',
+    a: 'Form aur challan ki copy WhatsApp par, taake aap ke paas record rahe. Roll number slip aur test ki khabar idare ki website se aati hai.',
+  },
+  {
+    q: 'Mere documents ka kya hota hai?',
+    a: 'Documents sirf WhatsApp par, sirf usi form ke liye istemal hote hain, aur kaam ke baad hata diye jate hain. Portal par koi document upload nahin hota.',
+  },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Career Desk', href: '/career' }, { label: 'Online apply service' }]} />
+    <h1 class="mt-3">Online job apply service: hum form bhar dein</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">PPSC, FPSC, NTS aur doosre idaron ke online form hum bharte hain. Aap documents bhejein, hum baqi kaam karein.</p>
+
+    <p class="mt-4 rounded-lg bg-surface-2 px-4 py-3 max-w-[68ch]">
+      <strong>Zaroori:</strong> qeemat sirf hamari service fee hai. Sarkari fee alag hai aur official challan par jati hai.
+      GVS niji academy hai, sarkari idara nahin.
+    </p>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <div>
+        <section aria-labelledby="docs-heading">
+          <h2 id="docs-heading" class="mb-3">Aam taur par yeh documents chahiye</h2>
+          <ul class="flex flex-col gap-2">
+            {docs.map((d) => (
+              <li class="flex gap-2"><span class="text-correct font-bold" aria-hidden="true">✓</span><span>{d}</span></li>
+            ))}
+          </ul>
+          <p class="mt-2 text-sm text-muted">Har post ke documents us ke official ishtihar mein likhe hote hain. Kisi job page se order karne par us post ki list khud aap ke message mein aati hai.</p>
+        </section>
+
+        <section class="my-8 max-w-[68ch]" aria-labelledby="how-heading">
+          <h2 id="how-heading">Hum kya karte hain</h2>
+          <p class="mt-3">
+            Sarkari job ka online form bharna lagta asaan hai, lekin is mein kai qadam hote hain: idare ki website par account banana,
+            zaati maloomat, taleem aur tajurba bharna, tasveer aur documents sahih size mein upload karna, aur challan bana kar jama
+            karwana. Kisi bhi qadam par ghalti ho to form rad ho sakta hai, aur aksar akhri tareekh guzar jane ke baad pata chalta hai.
+          </p>
+          <p class="mt-3">
+            Apply service mein aap order karte hain aur post ka naam batate hain. Payment aur documents milne ke baad hum aap ki taraf
+            se form bharte hain, aap se tasdeeq karte hain, aur challan ki maloomat dete hain. Form aur challan ki copy WhatsApp par aap
+            ke paas aati hai. Waqt payment aur documents dono milne ke baad shuru hota hai.
+          </p>
+          <p class="mt-3">
+            Akhri tareekh ke bilkul qareeb order na karein; idaron ki websites aakhri dinon mein aksar dheemi ho jati hain. Taza jobs
+            aur un ki akhri tareekhein <a href="/jobs">Jobs</a> par dekhein, aur kisi post par "Hum apply kar dein" dabayein to us post
+            ki documents ki list khud order mein aa jati hai.
+          </p>
+          <p class="mt-3">
+            Hum naukri ka wada nahin karte; selection idare ke test aur interview par hai. Test ki tayyari ke liye
+            <a href="/job-prep">Job ki tayyari</a> aur CV ke liye <a href="/career/cv">CV service</a> dekhein.
+          </p>
+        </section>
+      </div>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+    <OrderSteps />
+    <FAQ items={faq} />
+  </div>
+</Base>

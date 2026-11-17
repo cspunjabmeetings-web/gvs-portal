@@ -1,0 +1,81 @@
+---
+// spec: S07 (/career/cv: kya milega, kya bhejna hai, qeemat, order), F02-AC1; intent 13 (Ad: Nahin)
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import TrustStrip from '../../components/TrustStrip.astro';
+import OrderSteps from '../../components/OrderSteps.astro';
+import FAQ from '../../components/FAQ.astro';
+import seo from '../../data/seo.json';
+import { getProduct } from '../../lib/catalog';
+
+const meta = seo.pages['/career/cv'];
+const product = getProduct('cv-cover');
+const send = [
+  'Poora naam aur rabte ki maloomat (phone, email agar ho, shehar)',
+  'Taleem: degree, board/university, saal aur number ya grade',
+  'Tajurba: idara, post, muddat aur kya kaam kiya',
+  'Skills: computer, zabanein aur doosri mahaarat',
+  'Kis job ya kis qism ki job ke liye CV chahiye',
+  'Purana CV (agar ho) aur tasveer (sirf agar CV par chahiye)',
+];
+const faq = [
+  { q: 'CV kis shakal mein milega?', a: 'Word aur PDF dono mein, WhatsApp par, taake aap khud bhi tabdeeli kar sakein.' },
+  { q: 'Agar maloomat mein ghalti ho?', a: 'CV milne ke baad dekh lein; hamari ghalti ho to theek kar ke dobara bhej dete hain.' },
+  { q: 'Kya CNIC ya degree ki tasveer bhejna zaroori hai?', a: 'CV ke liye nahin. Sirf likhi hui maloomat kaafi hai. Documents sirf zaroorat par aur sirf WhatsApp par.' },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Career Desk', href: '/career' }, { label: 'CV + cover letter' }]} />
+    <h1 class="mt-3">CV aur cover letter</h1>
+    <p class="mt-2 text-muted max-w-[68ch]">Saaf, sacha aur job ke mutabiq CV, sath mein cover letter. Word aur PDF mein, WhatsApp par.</p>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+      <div>
+        <section aria-labelledby="send-heading">
+          <h2 id="send-heading" class="mb-3">Order ke baad kya bhejna hai</h2>
+          <ul class="flex flex-col gap-2">
+            {send.map((s) => (
+              <li class="flex gap-2"><span class="text-correct font-bold" aria-hidden="true">✓</span><span>{s}</span></li>
+            ))}
+          </ul>
+          <p class="mt-2 text-sm text-muted">Yeh sab order ke baad WhatsApp par bhejein. Waqt maloomat milne ke baad shuru hota hai.</p>
+        </section>
+
+        <section class="my-8 max-w-[68ch]" aria-labelledby="guide-heading">
+          <h2 id="guide-heading">Achhe CV ki pehchan</h2>
+          <p class="mt-3">
+            Achha CV mukhtasar hota hai: aam taur par ek ya do safhe. Sab se upar naam aur rabte ki maloomat, phir taleem aur tajurba
+            naye se purane ki tarteeb mein, aur aakhir mein skills. Har line sach aur saaf ho; bari bari baatein aur farzi tajurba
+            nuqsan dete hain, kyun ke interview mein yahi sawal poochhe jate hain.
+          </p>
+          <p class="mt-3">
+            Har job ke liye CV thora sa badalna parta hai. Teacher ki post ke liye parhane ka tajurba aage aata hai, office job ke
+            liye computer skills. Isi liye order ke waqt batayein ke CV kis job ke liye hai. Cover letter is ka sath deta hai: teen
+            chaar chhote paragraph jo batate hain ke aap is post mein kyun dilchaspi rakhte hain aur kya la sakte hain.
+          </p>
+          <p class="mt-3">
+            Fresh graduates ke paas tajurba kam hota hai; un ke CV mein taleem, projects, internship aur rozana kaam aane wali skills
+            par zor diya jata hai. Tajurba-kar logon ke CV mein pichhle kaam ke nataij aur zimmedariyan aage hoti hain.
+          </p>
+          <p class="mt-3">
+            CV Word aur PDF dono mein milta hai. PDF online apply mein bhejne ke liye behtar hai, aur Word se aap baad mein khud
+            tabdeeli kar sakte hain. Online form bhi bharwana ho to <a href="/apply-service">apply service</a> dekhein, aur taza jobs
+            <a href="/jobs">yahan</a> hain.
+          </p>
+        </section>
+      </div>
+
+      {product && (
+        <aside aria-label="Order" class="lg:sticky lg:top-4">
+          <ProductCard product={product} />
+        </aside>
+      )}
+    </div>
+
+    <TrustStrip />
+    <OrderSteps />
+    <FAQ items={faq} />
+  </div>
+</Base>

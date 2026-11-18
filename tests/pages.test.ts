@@ -106,3 +106,14 @@ describe.skipIf(built.length === 0)('AnnouncementBar (F10-AC3)', () => {
     expect(bar).toBeLessThan(h.indexOf('<header'));
   });
 });
+
+// spec: F13-AC7 (test ke dauran koi ad nahin; `result` slot sirf score card ke neeche, shuru mein chhupa)
+describe('/daily-test (F13-AC7)', () => {
+  it.skipIf(!built.includes('/daily-test'))('sirf ek `result` ad, hidden wrapper ke andar; quiz island maujood', () => {
+    const h = html('/daily-test');
+    const slots = [...h.matchAll(/data-ad-slot="([a-z]+)"/g)].map((m) => m[1]);
+    expect(slots).toEqual(['result']);
+    expect(h).toMatch(/<div[^>]*data-result-ad[^>]*hidden|<div[^>]*hidden[^>]*data-result-ad/);
+    expect(h).toMatch(/component-url="[^"]*DailyTest/);
+  });
+});

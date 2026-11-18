@@ -140,6 +140,11 @@
     .container-page { padding-inline: 24px; }
   }
   .tabular { font-variant-numeric: tabular-nums; }
+  /* F13-AC3/AC4, design QuizCard: tashreeh narmi se khule, sahih par chhota "shabash" asar (reduced-motion par upar wala qaida band karta hai) */
+  .anim-reveal { animation: gvs-reveal 220ms ease-out both; }
+  .anim-pop { animation: gvs-pop 260ms ease-out; }
+  @keyframes gvs-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  @keyframes gvs-pop { 0% { transform: scale(1); } 40% { transform: scale(1.03); } 100% { transform: scale(1); } }
   .sr-only-focusable:not(:focus) {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
     clip: rect(0 0 0 0); white-space: nowrap;

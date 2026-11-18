@@ -1,0 +1,31 @@
+---
+// spec: S17 /daily-test (static + client, /api/daily-test), F13-AC1..AC9; F13-AC7: test ke dauran ad nahin, `result` sirf score card ke neeche
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AdSlot from '../components/AdSlot.astro';
+import DailyTest from '../components/quiz/DailyTest.tsx';
+import seo from '../data/seo.json';
+import { getProduct, formatPrice, productPage } from '../lib/catalog';
+
+const meta = seo.pages['/daily-test'];
+const p = getProduct('mcq-pack');
+const pack = p && p.price !== null ? { name: p.name, line: p.includes[0] ?? '', price: formatPrice(p.price), href: productPage(p.id) } : null;
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Rozana test' }]} />
+    <h1 class="mt-3">Aaj ka muft test</h1>
+    <p class="mt-2 max-w-[68ch] text-muted">
+      Roz 10 sawal, har sawal ka foran jawab aur tashreeh. Sab ke liye aaj ke wohi sawal hain; raat 12 baje (Pakistan waqt) naye aate hain.
+    </p>
+    <div class="mt-5 max-w-xl">
+      <DailyTest client:load pack={pack} />
+      <noscript>
+        <p class="mt-4 rounded-xl bg-surface-2 p-4">Test dene ke liye browser mein JavaScript chalu karein.</p>
+      </noscript>
+    </div>
+    <div class="max-w-xl" data-result-ad hidden>
+      <AdSlot slot="result" />
+    </div>
+  </div>
+</Base>

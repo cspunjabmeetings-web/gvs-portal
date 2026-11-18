@@ -1118,6 +1118,7 @@ Yahan sirf wo cheezein hain jo **khatarnak, mehngi ya gair zaroori** lagi. Har f
 | FU-06 | Version 2 ki tayyari (agent endpoints, `agent_log`, `fileHint`) abhi bana lena | Intent ne tay kiya, is liye **rakha** hai, lekin bilkul chhota; gair istemal code ki hifazat 404 se. Owner chahe to V2 shuru hone tak mo'akhar kar sakta hai |
 | FU-07 | `/jobs/ppsc`, `/jobs/fpsc`, `/jobs/nts` ke pages | Intent mein hain, lekin **sirf asal content** (300+ alfaz) ke sath; filler se SEO ko nuqsan |
 | FU-08 | Daily pins ki alag admin screen (A09) | P-03 manzoor hone se shamil (A09) |
+| FU-09 | Ek se ziyada elaan (maslan 5 tak) aur patti mein chalta hua "news ticker" (owner ki tajweez, Qadam 8, 18 Nov 2026) | **Version 1 mein nahin; aage ke version mein.** V1 mein F10-AC3 ke mutabiq ek elaan (160 harf). Aage banate waqt: nayi table/dependency nahin (`announcements` list setting + CSS); ⏸ rokne ka button (WCAG 2.2.2), `prefers-reduced-motion` par ruka hua; Claude ki sifarish: ghoomta elaan (har 5 s agla) asal ticker se behtar, kyun ke phone par poora jumla parha jata hai |
 
 ---
 
@@ -1399,6 +1400,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3 | 16 Nov 2026 | P-02 se P-10 aur P-12 manzoor: preview browser mein (E16 hata), daily-pins (D1, A09, E23), Cron Trigger, `GET /api/jobs/latest`, soft delete, `q_hash`, Cloudflare Access (F07-AC6), Turnstile (F04-AC11), `PROGRESS.md`, plumbing indexes; routes/API manifest aur FL-12, FL-13 |
 | 0.3.2 | 16 Nov 2026 | Owner ka CHANGE REQUEST: `npm run verify`, GitHub Actions CI, PR template; har qadam branch + PR (3.2 mein files) |
 | 0.3.3 | 17 Nov 2026 | Qadam 5 (owner ka CHANGE REQUEST): DEPS mein `@types/node` (devDep); `tests/` ab typecheck mein (`tests/tsconfig.json`, `npm run typecheck` = `astro check` + `tsc -p tests`) |
+| 0.3.4 | 18 Nov 2026 | Qadam 8: owner ki tajweez (kai elaan + news ticker) FU-09 mein aage ke version ke liye darj; V1 mein koi tabdeeli nahin |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

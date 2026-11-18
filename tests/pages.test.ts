@@ -96,3 +96,13 @@ describe('/track (F06-AC9)', () => {
     expect(html('/')).not.toMatch(/name="robots"/);
   });
 });
+
+// spec: 6.1 AnnouncementBar (har public page par, Header se pehle), F10-AC3, F10-AC7
+describe.skipIf(built.length === 0)('AnnouncementBar (F10-AC3)', () => {
+  it.each(built)('%s: AnnouncementBar island Header se pehle', (r) => {
+    const h = html(r);
+    const bar = h.search(/component-url="[^"]*AnnouncementBar/);
+    expect(bar).toBeGreaterThan(-1);
+    expect(bar).toBeLessThan(h.indexOf('<header'));
+  });
+});

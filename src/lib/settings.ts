@@ -58,6 +58,11 @@ const TEXT_KEYS = new Set<keyof Settings>([
 ]);
 const kindOf = (k: keyof Settings): Kind => (TEXT_KEYS.has(k) ? 'text' : 'json');
 
+/** Settings ki value → DB ka `value` (seed wali shakal: text seedha, baqi JSON). Qadam 8 (E24) */
+export function serializeSetting<K extends keyof Settings>(k: K, value: Settings[K]): string {
+  return kindOf(k) === 'text' ? String(value) : JSON.stringify(value);
+}
+
 /** DB ki rows → Settings. Kharab value par default (site na toote). */
 export function parseSettings(rows: { key: string; value: string }[]): Settings {
   const out: Settings = structuredClone(DEFAULT_SETTINGS);

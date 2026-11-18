@@ -7,7 +7,7 @@
 - [x] 5 D1, orders API, notifications, Turnstile
 - [x] 6 timer, track
 - [x] 7 Admin login, Orders, Notifications
-- [ ] 8 Admin Settings
+- [x] 8 Admin Settings
 - [ ] 9 parser, Content tab
 - [ ] 10 Daily test, practice, history
 - [ ] 11 Mock tests

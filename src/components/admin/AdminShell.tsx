@@ -1,10 +1,11 @@
 // spec: 6.3 (har admin screen par ghanti + tabs: Orders, Notifications, Content, Jobs, Settings), F07-AC4 (logout), F08-AC10 (44px, 360px),
 //       F08-AC11 (60 s polling, awaz, browser notification, ghanti), F09-AC3 (ghanti ki na-parhi ginti har tab par)
-// Qadam 7a: dhancha; 7b: Orders tab; 7c: Notifications + polling. Settings = Qadam 8, Content = 9, Jobs = 13.
+// Qadam 7a: dhancha; 7b: Orders tab; 7c: Notifications + polling; 8: Settings (F10). Content = 9, Jobs = 13.
 // Tabs URL hash se (#orders, #orders:GVS-2611-0005, #notifications); nayi route nahin (spec 6.4 mein sirf PAGE /admin).
 import { useEffect, useRef, useState } from 'preact/hooks';
 import OrdersTab from './OrdersTab';
 import NotificationsTab from './NotificationsTab';
+import SettingsTab from './SettingsTab';
 import type { AdminNotification } from '../../lib/notify';
 import { ADMIN_EVENTS, chime, showBrowserNotification, unlockAudio } from '../../lib/admin-alert';
 
@@ -13,7 +14,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', soon: '' },
   { id: 'content', label: 'Content', soon: 'Content tab Qadam 9 mein aaye ga.' },
   { id: 'jobs', label: 'Jobs', soon: 'Jobs tab Qadam 13 mein aaye ga.' },
-  { id: 'settings', label: 'Settings', soon: 'Settings tab Qadam 8 mein aaye ga.' },
+  { id: 'settings', label: 'Settings', soon: '' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
 
@@ -171,6 +172,10 @@ export default function AdminShell() {
       ) : tab === 'notifications' ? (
         <div data-tab="notifications">
           <NotificationsTab />
+        </div>
+      ) : tab === 'settings' ? (
+        <div data-tab="settings">
+          <SettingsTab />
         </div>
       ) : (
         <section class="rounded-xl border border-border bg-surface p-4" aria-live="polite" data-tab={tab}>

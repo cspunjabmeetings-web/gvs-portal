@@ -1,9 +1,20 @@
 // spec: A05 Content (paste/.txt upload), A06 preview, F11-AC1..AC10, P-02 (preview browser mein), 8.7 (tukron mein import + progress bar)
-// Lists/edit/chhupana/mitana (F12) Qadam 9c mein.
+// 9c: andar 4 chhote tabs — Naya content | Sawal | Mock | Notes (F12 lists, E18–E20).
 import { useEffect, useState } from 'preact/hooks';
 import { parseContent, type ParseResult, type ParsedMcq } from '../../lib/parser';
 import { allMcqs, buildChunks, hashMcqs, IMPORT_BODY_LIMIT, UPLOAD_LIMIT, type Chunk } from '../../lib/content-chunks';
 import ContentPreview, { type DupInfo } from './ContentPreview';
+import McqList from './McqList';
+import MockList from './MockList';
+import NoteList from './NoteList';
+
+type Sub = 'new' | 'mcqs' | 'mocks' | 'notes';
+const SUBS: { id: Sub; label: string }[] = [
+  { id: 'new', label: 'Naya content' },
+  { id: 'mcqs', label: 'Sawal' },
+  { id: 'mocks', label: 'Mock' },
+  { id: 'notes', label: 'Notes' },
+];
 
 const btn = 'min-h-[44px] rounded-lg px-4 font-semibold';
 const HASH_BATCH = 100;
@@ -36,6 +47,8 @@ export default function ContentTab() {
   const [text, setText] = useState('');
   const [fileMsg, setFileMsg] = useState('');
   const [subjects, setSubjects] = useState<string[] | null>(null);
+  const [sub, setSub] = useState<Sub>('new');
+  const [mockFilter, setMockFilter] = useState<{ id: number; name: string } | null>(null);
   const [result, setResult] = useState<ParseResult | null>(null);
   const [dup, setDup] = useState<DupInfo>({ existing: new Set(), repeats: new Map() });
   const [dupNote, setDupNote] = useState('');
@@ -166,8 +179,54 @@ export default function ContentTab() {
   const savedLine = `${saved.MCQ} sawal, ${saved.MOCK} mock, ${saved.NOTE} notes save ho gaye.`;
   const pct = phase.k === 'saving' || phase.k === 'stopped' ? Math.round((phase.done / Math.max(1, phase.total)) * 100) : 100;
 
+  const subNav = (
+    <nav aria-label="Content ke hisse" class="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
+      <ul class="flex gap-2">
+        {SUBS.map((t) => (
+          <li key={t.id}>
+            <button
+              type="button"
+              onClick={() => {
+                setSub(t.id);
+                if (t.id !== 'mcqs') setMockFilter(null);
+              }}
+              aria-pressed={sub === t.id}
+              disabled={busy}
+              class={`min-h-[44px] whitespace-nowrap rounded-lg px-4 text-sm font-semibold ${sub === t.id ? 'bg-primary-soft text-primary ring-2 ring-primary' : 'border border-border'}`}
+              data-sub={t.id}
+            >
+              {t.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+
+  if (sub !== 'new')
+    return (
+      <div class="flex flex-col gap-4" data-content>
+        {subNav}
+        {!subjects ? (
+          <p class="text-muted">Load ho raha hai…</p>
+        ) : sub === 'mcqs' ? (
+          <McqList subjects={subjects} mock={mockFilter} onClearMock={() => setMockFilter(null)} />
+        ) : sub === 'mocks' ? (
+          <MockList
+            onShowQuestions={(m) => {
+              setMockFilter(m);
+              setSub('mcqs');
+            }}
+          />
+        ) : (
+          <NoteList subjects={subjects} />
+        )}
+      </div>
+    );
+
   return (
     <div class="flex flex-col gap-4" data-content>
+      {subNav}
       <section class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
         <h2 class="text-lg">Naya content daalein</h2>
         <p class="text-sm text-muted">

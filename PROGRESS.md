@@ -8,7 +8,7 @@
 - [x] 6 timer, track
 - [x] 7 Admin login, Orders, Notifications
 - [x] 8 Admin Settings
-- [ ] 9 parser, Content tab
+- [x] 9 parser, Content tab
 - [ ] 10 Daily test, practice, history
 - [ ] 11 Mock tests
 - [ ] 12 Notes

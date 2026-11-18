@@ -1,9 +1,10 @@
-// spec: E18 GET /api/admin/mcqs — 9b: sirf ?hashes= (F11-AC7, ek jaisa sawal); list aur POST Qadam 9c mein.
+// spec: E18 GET/POST /api/admin/mcqs — GET: list (F12-AC1) ya ?hashes= (F11-AC7); POST: banana/badalna/verified (F12-AC2, AC6).
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { toResponse } from '../../../lib/api';
-import { existingHashes } from '../../../lib/content-import';
+import { listMcqs, saveMcq } from '../../../lib/admin-content';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ request }) => toResponse(await existingHashes(request, env));
+export const GET: APIRoute = async ({ request }) => toResponse(await listMcqs(request, env));
+export const POST: APIRoute = async ({ request }) => toResponse(await saveMcq(request, env));

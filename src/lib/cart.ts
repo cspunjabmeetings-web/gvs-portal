@@ -1,5 +1,6 @@
 // spec: 3.3, F03-AC1..AC7 (order list browser mein), F05-AC3, intent 9.2, 11.4
 // Koi network call nahin (F03-AC1). localStorage band ho to memory (F03-AC7).
+import { addOrder, updateHistory, type SavedOrder } from './history';
 
 export interface CartItem {
   /** id + tafseel se bani pehchan (F03-AC4) */
@@ -129,31 +130,12 @@ export function clearCart(): void {
   saveCart([]);
 }
 
-// ---- "Mere orders" (spec 7.5: key gvs.v1, orders ≤ 20). Qadam 10 ka history.ts isi shakal ko parhe ga. ----
-export const HISTORY_KEY = 'gvs.v1';
-export interface SavedOrder {
-  id: string;
-  last4: string;
-  at: string;
-}
+// ---- "Mere orders" (spec 7.5: key gvs.v1, orders ≤ 20) — Qadam 10 se history.ts ke zariye (ek hi schema) ----
+export { HISTORY_KEY, type SavedOrder } from './history';
 
 /** Order number + aakhri 4 hindse browser mein mehfooz (F04-AC10). Naya sab se upar. */
-export function rememberOrder(o: SavedOrder, ls: Pick<Storage, 'getItem' | 'setItem'> | undefined = globalThis.localStorage): void {
-  try {
-    if (!ls) return;
-    let data: Record<string, unknown> = { v: 1 };
-    try {
-      const parsed = JSON.parse(ls.getItem(HISTORY_KEY) ?? 'null') as Record<string, unknown> | null;
-      if (parsed && parsed.v === 1) data = parsed;
-    } catch {
-      /* kharab data: naye se */
-    }
-    const prev = Array.isArray(data.orders) ? (data.orders as SavedOrder[]).filter((x) => x && x.id !== o.id) : [];
-    data.orders = [o, ...prev].slice(0, 20);
-    ls.setItem(HISTORY_KEY, JSON.stringify(data));
-  } catch {
-    /* storage band: chhor do */
-  }
+export function rememberOrder(o: SavedOrder): void {
+  updateHistory((h) => addOrder(h, o));
 }
 
 /** Test ke liye: memory store saaf */

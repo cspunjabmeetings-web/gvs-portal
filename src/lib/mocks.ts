@@ -1,5 +1,5 @@
 // spec: S18 /mock-tests (muft mocks ki list: naam, sawal, waqt), S19 /mock-tests/<slug> (saare sawal page ke sath), F15-AC1, F15-AC8 (≤ 100 sawal,
-//       test ke dauran network nahin), F13-AC2 jaisa: sirf verified sawal; chhupa (visible=0) mock = 404. (Mitaya = 410: Qadam 11b.)
+//       test ke dauran network nahin), F13-AC2 jaisa: sirf verified sawal; chhupa (visible=0) mock = 404; mitaya (deleted_at) = 410 (F12-AC5, P-06).
 import type { QuizMcq } from './daily';
 
 export const MOCK_MAX_QUESTIONS = 100;
@@ -33,15 +33,17 @@ export async function publicMocks(db: D1Database): Promise<MockCard[]> {
 
 type Row = { id: number; subject: string; question: string; options_json: string; answer_index: number; explanation: string | null };
 
-/** S19: ek mock aur us ke jaanche hue sawal (import ki tarteeb mein, ≤ 100). Na mile / chhupa / sawal 0 → null */
-export async function mockBySlug(db: D1Database, rawSlug: string): Promise<MockFull | null> {
+/** S19: ek mock aur us ke jaanche hue sawal (import ki tarteeb mein, ≤ 100). Mitaya → 'gone' (410); na mile / chhupa / sawal 0 → null (404) */
+export async function mockBySlug(db: D1Database, rawSlug: string): Promise<MockFull | 'gone' | null> {
   const slug = rawSlug.toLowerCase();
   if (!isMockSlug(slug)) return null;
   const mock = await db
-    .prepare('SELECT id, slug, name, minutes, summary FROM mocks WHERE slug = ?1 AND visible = 1 AND deleted_at IS NULL')
+    .prepare('SELECT id, slug, name, minutes, summary, visible, deleted_at FROM mocks WHERE slug = ?1')
     .bind(slug)
-    .first<{ id: number; slug: string; name: string; minutes: number; summary: string | null }>();
+    .first<{ id: number; slug: string; name: string; minutes: number; summary: string | null; visible: number; deleted_at: string | null }>();
   if (!mock) return null;
+  if (mock.deleted_at) return 'gone';
+  if (mock.visible !== 1) return null;
   const { results } = await db
     .prepare(`SELECT id, subject, question, options_json, answer_index, explanation FROM mcqs WHERE mock_id = ?1 AND verified = 1 ORDER BY id LIMIT ${MOCK_MAX_QUESTIONS}`)
     .bind(mock.id)

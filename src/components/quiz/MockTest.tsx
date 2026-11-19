@@ -2,17 +2,19 @@
 //       aakhri 5 min, waqt khatam par khud jama), F15-AC5 (jama se pehle tasdeeq), F15-AC7 (band ho to wahin se jari; owner ka faisla 1a:
 //       band page par timer rukta hai; faisla 2: ek waqt mein ek adhoora mock), F15-AC8 (sab sawal page ke sath, koi network nahin),
 //       F15-AC9 (chalte test mein ad nahin; `result` sirf jama ke baad), design.md 6.7, F13-AC6 (bookmark + "Ghalti batayen")
-// Qadam 11a: jama ke baad chhota nateeja. Poora result (mazmoon-war, tashreeh, pack, share, history) Qadam 11b.
+// Qadam 11b: jama ke baad MockResult (F15-AC6); nateeja history mocks[slug] mein + ghalat mazameen weakSubjects mein (owner ka faisla 1a, 2a).
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { QuizMcq } from '../../lib/daily';
-import { loadHistory, setMockProgress, toggleBookmark, updateHistory, HISTORY_EVENT, type History } from '../../lib/history';
-import { answer, answeredCount, formatClock, goTo, newProgress, readProgress, scoreMock, submitMessage, toggleFlag, unansweredCount, type MockProgress } from '../../lib/mock-engine';
+import { loadHistory, recordMock, setMockProgress, toggleBookmark, updateHistory, HISTORY_EVENT, type History } from '../../lib/history';
+import { answer, answeredCount, formatClock, goTo, newProgress, readProgress, scoreMock, submitMessage, toggleFlag, unansweredCount, wrongSubjects, type MockProgress } from '../../lib/mock-engine';
 import { track } from '../../lib/analytics';
 import { waLink } from '../../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../../lib/site-settings';
 import QuizCard from './QuizCard';
 import Timer from './Timer';
 import MockPalette, { PaletteLegend } from './MockPalette';
+import MockResult from './MockResult';
+import type { Pack } from './ScoreCard';
 
 export interface MockInfo {
   slug: string;
@@ -24,14 +26,14 @@ export interface MockInfo {
 const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
 const SAVE_EVERY_MS = 5000;
 
-type Phase = { k: 'start' } | { k: 'test' } | { k: 'done'; score: number; total: number; percent: number; usedMs: number; auto: boolean };
+type Phase = { k: 'start' } | { k: 'test' } | { k: 'done'; progress: MockProgress; usedMs: number; auto: boolean };
 
 function showResultAd(show: boolean) {
   const el = document.querySelector<HTMLElement>('[data-result-ad]');
   if (el) el.hidden = !show;
 }
 
-export default function MockTest(p: { mock: MockInfo; items: QuizMcq[] }) {
+export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pack | null }) {
   const { mock, items } = p;
   const totalMs = mock.minutes * 60_000;
   const [phase, setPhase] = useState<Phase>({ k: 'start' });
@@ -92,11 +94,12 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[] }) {
     live.current = false;
     confirmBox.current?.close();
     palette.current?.close();
-    updateHistory((h) => setMockProgress(h, null));
-    const s = scoreMock(progRef.current, items);
+    const final = progRef.current;
+    const s = scoreMock(final, items);
+    updateHistory((h) => recordMock(h, mock.slug, { score: s.score, total: s.total, bySubject: s.bySubject, at: new Date().toISOString(), name: mock.name }, wrongSubjects(final, items)));
     track('mock_submit', { mock: mock.slug, score: s.score, questions: s.total, auto });
     setResume(null);
-    setPhase({ k: 'done', score: s.score, total: s.total, percent: s.percent, usedMs, auto });
+    setPhase({ k: 'done', progress: final, usedMs, auto });
     requestAnimationFrame(() => document.querySelector('[data-mock]')?.scrollIntoView({ block: 'start' }));
   }
 
@@ -181,29 +184,22 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[] }) {
       </section>
     );
 
-  // ---------------- Jama ho gaya (11a: chhota nateeja) ----------------
+  // ---------------- Result (F15-AC6, Qadam 11b) ----------------
   if (phase.k === 'done')
     return (
-      <section class="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 text-center" data-mock data-mock-done>
-        <p class="font-semibold" role="status">
-          {phase.auto ? 'Waqt khatam. Test khud jama ho gaya.' : 'Test jama ho gaya.'}
-        </p>
-        <p class="text-4xl font-bold tabular" data-mock-score>
-          {phase.score}/{phase.total}
-        </p>
-        <p class="text-sm text-muted">
-          <span class="tabular" data-mock-percent>
-            {phase.percent}%
-          </span>{' '}
-          · waqt laga <span class="tabular">{formatClock(phase.usedMs)}</span>
-        </p>
-        <button type="button" onClick={() => setPhase({ k: 'start' })} class={`${btn} bg-primary text-on-primary`} data-mock-again>
-          Dobara dein
-        </button>
-        <a href="/mock-tests" class={`${btn} border border-border`}>
-          Doosre mock tests
-        </a>
-      </section>
+      <MockResult
+        name={mock.name}
+        slug={mock.slug}
+        progress={phase.progress}
+        items={items}
+        usedMs={phase.usedMs}
+        auto={phase.auto}
+        pack={p.pack}
+        onAgain={() => {
+          setPhase({ k: 'start' });
+          requestAnimationFrame(() => document.querySelector('[data-mock]')?.scrollIntoView({ block: 'start' }));
+        }}
+      />
     );
 
   // ---------------- Test (F15-AC3..AC5) ----------------

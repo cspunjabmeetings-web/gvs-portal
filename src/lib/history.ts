@@ -19,6 +19,8 @@ export interface MockEntry {
   total: number;
   bySubject: Record<string, [number, number]>;
   at: string;
+  /** Qadam 11b (owner ka faisla 2a): /my-history par naam; purane entries mein na ho to slug */
+  name?: string;
 }
 export interface SavedOrder {
   id: string;
@@ -50,7 +52,10 @@ export function normalize(raw: unknown): History {
   if (isObj(raw.daily))
     for (const [d, e] of Object.entries(raw.daily))
       if (isObj(e) && isNum(e.score) && isNum(e.total)) h.daily[d] = { score: e.score, total: e.total, wrongIds: Array.isArray(e.wrongIds) ? e.wrongIds.filter(isNum) : [] };
-  if (isObj(raw.mocks)) for (const [k, e] of Object.entries(raw.mocks)) if (isObj(e) && isNum(e.score) && isNum(e.total)) h.mocks[k] = e as unknown as MockEntry;
+  if (isObj(raw.mocks))
+    for (const [k, e] of Object.entries(raw.mocks))
+      if (isObj(e) && isNum(e.score) && isNum(e.total) && typeof e.at === 'string')
+        h.mocks[k] = { score: e.score, total: e.total, at: e.at, bySubject: isObj(e.bySubject) ? (e.bySubject as MockEntry['bySubject']) : {}, ...(typeof e.name === 'string' ? { name: e.name } : {}) };
   if (isObj(raw.mockProgress)) h.mockProgress = raw.mockProgress;
   if (Array.isArray(raw.bookmarks)) h.bookmarks = [...new Set(raw.bookmarks.filter(isNum))].slice(0, LIMITS.bookmarks);
   if (isObj(raw.weakSubjects)) for (const [k, n] of Object.entries(raw.weakSubjects)) if (isNum(n)) h.weakSubjects[k] = n;
@@ -109,6 +114,18 @@ export function homeHints(h: History, today: string): { remindStreak: number | n
 /** Adhoora mock rakho (null = mitao). Doosre mock ka purana progress badal jata hai. */
 export function setMockProgress(h: History, p: Record<string, unknown> | null): History {
   return { ...h, mockProgress: p };
+}
+
+/**
+ * F15-AC6 / 7.5: mock ka sab se naya nateeja mocks[slug] mein; ghalat jawabon ke mazameen weakSubjects mein (owner ka faisla 1a).
+ * Adhoora progress bhi mit jata hai.
+ */
+export function recordMock(h: History, slug: string, entry: MockEntry, wrongSubjects: string[]): History {
+  const next = structuredClone(h);
+  next.mocks[slug] = entry;
+  next.mockProgress = null;
+  for (const s of wrongSubjects) next.weakSubjects[s] = (next.weakSubjects[s] ?? 0) + 1;
+  return next;
 }
 
 // ---------- Bookmarks, orders ----------

@@ -10,7 +10,7 @@
 - [x] 8 Admin Settings
 - [x] 9 parser, Content tab
 - [x] 10 Daily test, practice, history
-- [ ] 11 Mock tests
+- [x] 11 Mock tests
 - [ ] 12 Notes
 - [ ] 13 Jobs
 - [ ] 14 Baqi static pages

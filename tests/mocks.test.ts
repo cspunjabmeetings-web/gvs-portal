@@ -1,4 +1,4 @@
-// spec: S18, S19, F15-AC1 (list: naam, sawal, waqt), F15-AC8 (saare sawal ek dafa, ≤ 100), sirf verified sawal; chhupa mock 404
+// spec: S18, S19, F15-AC1 (list: naam, sawal, waqt), F15-AC8 (saare sawal ek dafa, ≤ 100), sirf verified sawal; chhupa mock 404, mitaya 410 (F12-AC5)
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { startD1 } from './helpers/d1';
 import { adminReq, SECRET } from './helpers/admin';
@@ -49,7 +49,7 @@ describe('S18 publicMocks (F15-AC1)', () => {
 describe('S19 mockBySlug (F15-AC8)', () => {
   it('saare jaanche sawal import ki tarteeb mein, jawab + tashreeh ke sath', async () => {
     await imp(mockText('PPSC Educator Mock 1', 6, 25));
-    const m = await mockBySlug(d1.db, 'PPSC-Educator-Mock-1');
+    const m = (await mockBySlug(d1.db, 'PPSC-Educator-Mock-1')) as Exclude<Awaited<ReturnType<typeof mockBySlug>>, 'gone' | null>;
     expect(m).toMatchObject({ slug: 'ppsc-educator-mock-1', name: 'PPSC Educator Mock 1', minutes: 25, questions: 6 });
     expect(m!.items.map((x) => x.question)).toEqual(Array.from({ length: 6 }, (_, i) => `PPSC Educator Mock 1 sawal ${i + 1}?`));
     expect(m!.items[0]).toMatchObject({ subject: 'Pakistan Studies', options: ['1930', '1940', '1947'], answerIndex: 1 });
@@ -57,18 +57,19 @@ describe('S19 mockBySlug (F15-AC8)', () => {
 
   it('100 sawal tak (mock 100 ki hadd)', async () => {
     await imp(mockText('Bara Mock', MOCK_MAX_QUESTIONS, 120));
-    expect((await mockBySlug(d1.db, 'bara-mock'))!.items).toHaveLength(MOCK_MAX_QUESTIONS);
+    expect(((await mockBySlug(d1.db, 'bara-mock')) as { items: unknown[] }).items).toHaveLength(MOCK_MAX_QUESTIONS);
   });
 
-  it('na mile, chhupa, mitaya, sawal 0, ghalat slug → null (404)', async () => {
+  it('na mile, chhupa, sawal 0, ghalat slug → null (404); mitaya → gone (410, F12-AC5)', async () => {
     await imp(mockText('Chhupa', 3));
     await imp(mockText('Khali', 2));
     await d1.db.prepare("UPDATE mocks SET visible = 0 WHERE slug = 'chhupa'").run();
     await d1.db.prepare("UPDATE mcqs SET verified = 0 WHERE question LIKE 'Khali%'").run();
     for (const s of ['nahin-hai', 'chhupa', 'khali', '../etc', 'a b', '']) expect(await mockBySlug(d1.db, s), s).toBeNull();
     await imp(mockText('Mitaya', 2));
-    await d1.db.prepare("UPDATE mocks SET deleted_at = 'x' WHERE slug = 'mitaya'").run();
-    expect(await mockBySlug(d1.db, 'mitaya')).toBeNull();
+    await d1.db.prepare("UPDATE mocks SET deleted_at = 'x', visible = 0 WHERE slug = 'mitaya'").run();
+    expect(await mockBySlug(d1.db, 'mitaya')).toBe('gone');
+    expect(await mockBySlug(d1.db, 'MITAYA')).toBe('gone');
   });
 
   it('isMockSlug', () => {

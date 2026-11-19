@@ -98,7 +98,9 @@ function ItemCard(p: { item: ParsedItem; dup: DupInfo }) {
       <p class="font-semibold">
         Job: {it.org} — {it.post}
       </p>
-      <p class="text-sm text-accent-text">Yeh job hai; yahan save nahin hogi. Jobs tab (Qadam 13) mein daalein.</p>
+      <p class="text-sm text-accent-text">
+        Yeh job hai; yahan save nahin hogi. <a href="#jobs">Jobs tab</a> mein daalein.
+      </p>
     </article>
   );
 }

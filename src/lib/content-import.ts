@@ -58,7 +58,7 @@ function insertMcqs(db: D1Database, rows: McqRow[], verified: boolean, at: strin
 }
 
 /** `base` aur `base-N` jo pehle se hain (mitaye hue samet — un ka URL 410 rehta hai) */
-async function takenSlugs(db: D1Database, table: 'mocks' | 'notes', bases: string[]): Promise<Set<string>> {
+export async function takenSlugs(db: D1Database, table: 'mocks' | 'notes' | 'jobs', bases: string[]): Promise<Set<string>> {
   const taken = new Set<string>();
   for (const base of new Set(bases)) {
     // slug mein sirf a-z 0-9 - hain, is liye LIKE mein escape ki zaroorat nahin

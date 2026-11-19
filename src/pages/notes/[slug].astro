@@ -1,0 +1,118 @@
+---
+// spec: S21 /notes/<slug> (on-demand, D1), F16-AC1..AC5, design.md 6.8: Breadcrumbs → H1 → khulasa → matn (≤ 68ch) → `inline` ad (teesre hisse ke baad)
+//       → 5 MCQs quiz → mutalliqa notes → pack → `bottom` ad. F16-AC3: description = Khulasa. Mitaya = 410, chhupa/na mila = 404 (F12-AC5, P-06).
+//       9.2: `set:html` SIRF markdown.ts ke natije par; JSON-LD sirf schema-ld.ts ke jsonLd se. Pack catalog se (usool 7).
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import NoteQuiz from '../../components/quiz/NoteQuiz.tsx';
+import { notePage } from '../../lib/notes';
+import { adCut, renderMarkdown } from '../../lib/markdown';
+import { articleSchema, breadcrumbSchema, jsonLd } from '../../lib/schema-ld';
+import { getProduct } from '../../lib/catalog';
+
+export const prerender = false;
+
+const page = await notePage(env.DB, Astro.params.slug ?? '');
+if (page === 'gone') {
+  return new Response('Yeh note hata diya gaya hai. Doosre muft notes: /notes', { status: 410, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+}
+if (!page) {
+  return new Response('Yeh note nahin mila.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+}
+const { note, quiz, related, practiceHref } = page;
+const body = renderMarkdown(note.body);
+/** Inline ad teesre `##` hisse ke baad; kam hisse hon to matn ke baad (design.md 6.8) */
+const cut = adCut(body.sections);
+const beforeAd = body.sections.slice(0, cut).join('');
+const afterAd = body.sections.slice(cut).join('');
+const pack = getProduct('mcq-pack');
+const title = `${note.title} | GVS Academy`;
+const description = (note.summary ?? `${note.title}: ${note.subject} ke muft notes, sath 5 sawal ka quiz.`).slice(0, 160);
+
+const base = Astro.site ?? Astro.url;
+const abs = (p: string) => new URL(p, base).href;
+const crumbs = [
+  { name: 'Home', url: abs('/') },
+  { name: 'Notes', url: abs('/notes') },
+  { name: note.title, url: abs(`/notes/${note.slug}`) },
+];
+const ld = [
+  articleSchema({ title: note.title, description: note.summary, url: abs(`/notes/${note.slug}`), datePublished: note.createdAt, dateModified: note.updatedAt, section: note.subject, logo: abs('/images/logo.svg') }),
+  breadcrumbSchema(crumbs),
+];
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
+---
+<Base title={title} description={description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Notes', href: '/notes' }, { label: note.title }]} />
+    <article class="mt-3" data-note={note.slug}>
+      <p class="text-sm font-semibold text-primary">{note.subject}</p>
+      <h1 class="mt-1 max-w-[68ch]">{note.title}</h1>
+      {note.summary && <p class="mt-2 max-w-[68ch] text-lg text-muted" data-note-summary>{note.summary}</p>}
+      <div class="note-body mt-6" data-note-body>
+        <Fragment set:html={beforeAd} />
+        <AdSlot slot="inline" />
+        <Fragment set:html={afterAd} />
+      </div>
+    </article>
+
+    <section class="mt-8 max-w-xl" aria-labelledby="quiz-h">
+      <h2 id="quiz-h">Apni tayyari jaanchein: 5 sawal</h2>
+      <p class="mt-1 mb-4 text-sm text-muted">{note.subject} ke sawal. Option dabate hi jawab aur tashreeh nazar aaye gi.</p>
+      <NoteQuiz client:visible subject={note.subject} practiceHref={practiceHref} items={quiz} />
+      <noscript>
+        <ol class="mt-4 flex flex-col gap-3">
+          {
+            quiz.map((q) => (
+              <li class="rounded-xl border border-border bg-surface p-3">
+                <p class="font-semibold">{q.question}</p>
+                <p class="text-sm">Jawab: {q.options[q.answerIndex]}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </noscript>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="mt-8" aria-labelledby="related-h" data-related>
+          <h2 id="related-h">{note.subject} ke aur notes</h2>
+          <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((n) => (
+              <li>
+                <a href={`/notes/${n.slug}`} class="flex h-full flex-col gap-1 rounded-xl border border-border bg-surface p-4 no-underline" data-related-note={n.slug}>
+                  <span class="font-semibold text-text">{n.title}</span>
+                  {n.summary && <span class="text-sm text-muted">{n.summary}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      pack && (
+        <section class="mt-8" aria-labelledby="pack-h" data-note-pack>
+          <h2 id="pack-h" class="mb-2">Aur tayyari chahiye?</h2>
+          <p class="mb-4 max-w-[68ch] text-muted">Mazmoon-war MCQs ka tayyar pack WhatsApp par. Order ke liye sirf naam aur WhatsApp number.</p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <ProductCard product={pack} headingLevel="h3" />
+          </div>
+        </section>
+      )
+    }
+
+    <p class="mt-6 flex flex-wrap gap-x-6">
+      <a href="/notes" class="inline-flex min-h-[44px] items-center">Saare notes</a>
+      {practiceHref && <a href={practiceHref} class="inline-flex min-h-[44px] items-center">{note.subject} ke muft MCQs</a>}
+    </p>
+
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

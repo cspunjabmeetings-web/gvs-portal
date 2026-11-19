@@ -3,6 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { adminJson } from '../../lib/admin-fetch';
 import { PARSER_LIMITS } from '../../lib/parser';
 import type { AdminNoteRow } from '../../lib/admin-content';
+import NoteBody from '../NoteBody';
 
 const btn = 'min-h-[44px] rounded-lg px-3 text-sm font-semibold';
 const input = 'min-h-[44px] w-full rounded-lg border border-border bg-surface px-3';
@@ -61,6 +62,12 @@ function NoteForm(p: { note: FullNote; subjects: string[]; onDone: () => void; o
         Matn (## heading, - list, **mota**)
       </label>
       <textarea id={`${pre}-body`} rows={12} maxLength={PARSER_LIMITS.noteBody} value={body} onInput={(e) => setBody((e.target as HTMLTextAreaElement).value)} class="rounded-lg border border-border bg-surface p-2 font-mono text-sm" spellcheck={false} />
+      <details class="rounded-lg border border-border p-2" data-note-form-preview>
+        <summary class="min-h-[44px] cursor-pointer content-center font-medium">Visitor ko kaisa dikhe ga</summary>
+        <div class="mt-2">
+          <NoteBody md={body} />
+        </div>
+      </details>
       {error && (
         <p class="text-sm text-wrong" role="alert">
           {error}

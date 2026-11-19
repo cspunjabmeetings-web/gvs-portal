@@ -9,7 +9,7 @@
 - [x] 7 Admin login, Orders, Notifications
 - [x] 8 Admin Settings
 - [x] 9 parser, Content tab
-- [ ] 10 Daily test, practice, history
+- [x] 10 Daily test, practice, history
 - [ ] 11 Mock tests
 - [ ] 12 Notes
 - [ ] 13 Jobs

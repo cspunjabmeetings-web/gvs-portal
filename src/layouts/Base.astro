@@ -30,6 +30,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <meta name="theme-color" content="#0D1410" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+    {/* F16-AC5: page ka JSON-LD (sirf schema-ld.ts ka jsonLd) */}
+    <slot name="head" />
   </head>
   <body>
     <a href="#main" class="sr-only-focusable bg-accent text-on-accent px-4 py-2">Seedha mazmoon par jayen</a>

@@ -1,0 +1,95 @@
+---
+// spec: S20 /notes (on-demand, D1): mazmoon ke hisab se notes ki list (F16-AC1); intent page list: Ad "Haan" (top + bottom); title/description seo.json
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import DailyTestCard from '../../components/DailyTestCard.astro';
+import seo from '../../data/seo.json';
+import { publicNotes, type NoteGroup } from '../../lib/notes';
+
+export const prerender = false;
+
+const meta = seo.pages['/notes'];
+let groups: NoteGroup[] = [];
+let failed = false;
+try {
+  groups = await publicNotes(env.DB);
+} catch {
+  failed = true;
+}
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Notes' }]} />
+    <h1 class="mt-3">Muft notes</h1>
+    <AdSlot slot="top" />
+    <p class="max-w-[68ch]">
+      Job tests ke liye mukhtasar notes, mazmoon ke hisab se. Har note ke neeche usi mazmoon ke 5 sawal hain, taake parhne ke foran baad apni
+      tayyari jaanch sakein. Sign up ki zaroorat nahin.
+    </p>
+
+    {
+      failed ? (
+        <p class="mt-5 rounded-xl bg-surface-2 p-4" role="alert">Notes abhi load nahin hue. Thori der baad page dobara kholen.</p>
+      ) : groups.length === 0 ? (
+        <p class="mt-5 rounded-xl bg-surface-2 p-4" data-notes-empty>Muft notes jald aayenge. Tab tak aaj ka muft test dein.</p>
+      ) : (
+        <>
+          {groups.length > 1 && (
+            <nav class="mt-5" aria-label="Mazameen">
+              <ul class="flex flex-wrap gap-2">
+                {groups.map((g) => (
+                  <li>
+                    <a href={`#${g.slug}`} class="inline-flex min-h-[44px] items-center rounded-full border border-border px-4 text-sm font-semibold no-underline">
+                      {g.subject} <span class="tabular ml-1 text-muted">({g.notes.length})</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+          {groups.map((g) => (
+            <section class="mt-8 scroll-mt-4" id={g.slug} aria-labelledby={`h-${g.slug}`} data-note-group={g.subject}>
+              <h2 id={`h-${g.slug}`}>{g.subject}</h2>
+              <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+                {g.notes.map((n) => (
+                  <li>
+                    <a href={`/notes/${n.slug}`} class="flex h-full flex-col gap-1 rounded-xl border border-border bg-surface p-4 no-underline" data-note-card={n.slug}>
+                      <span class="font-semibold text-text">{n.title}</span>
+                      {n.summary && <span class="text-sm text-muted">{n.summary}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              {g.practiceHref && (
+                <p class="mt-2">
+                  <a href={g.practiceHref} class="inline-flex min-h-[44px] items-center text-sm font-semibold">
+                    {g.subject} ke muft MCQs →
+                  </a>
+                </p>
+              )}
+            </section>
+          ))}
+        </>
+      )
+    }
+
+    <section class="mt-8 max-w-[68ch]" aria-labelledby="how-heading">
+      <h2 id="how-heading">Notes se tayyari kaise karein</h2>
+      <ol class="mt-3 flex list-decimal flex-col gap-1 pl-5">
+        <li>Apne test ka mazmoon chunein aur note dhyan se parhein.</li>
+        <li>Note ke neeche 5 sawal hal karein. Har jawab ke sath tashreeh milti hai.</li>
+        <li>Jo sawal ghalat hon, note ka wohi hissa dobara parhein.</li>
+        <li>Phir usi mazmoon ki MCQs practice aur rozana test dein.</li>
+      </ol>
+    </section>
+
+    <section class="mt-8">
+      <DailyTestCard />
+    </section>
+
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

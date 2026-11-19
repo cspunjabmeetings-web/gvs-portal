@@ -140,6 +140,15 @@
     .container-page { padding-inline: 24px; }
   }
   .tabular { font-variant-numeric: tabular-nums; }
+  /* F16-AC2, design.md 6.8: note ka matn (markdown.ts ke tags), ≤ 68ch. Sirf seedhe bachay — beech ka AdSlot na badle */
+  .note-body { max-width: 68ch; }
+  .note-body > h2 { margin-top: 1.75rem; }
+  .note-body > h3 { margin-top: 1.25rem; }
+  .note-body > p { margin-top: 0.75rem; }
+  .note-body > ul { margin-top: 0.75rem; padding-left: 1.25rem; list-style: disc; }
+  .note-body > ul > li + li { margin-top: 0.25rem; }
+  .note-body > :first-child { margin-top: 0; }
+  .note-body a { overflow-wrap: anywhere; }
   /* F13-AC3/AC4, design QuizCard: tashreeh narmi se khule, sahih par chhota "shabash" asar (reduced-motion par upar wala qaida band karta hai) */
   .anim-reveal { animation: gvs-reveal 220ms ease-out both; }
   .anim-pop { animation: gvs-pop 260ms ease-out; }

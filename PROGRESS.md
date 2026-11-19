@@ -11,7 +11,7 @@
 - [x] 9 parser, Content tab
 - [x] 10 Daily test, practice, history
 - [x] 11 Mock tests
-- [ ] 12 Notes
+- [x] 12 Notes
 - [ ] 13 Jobs
 - [ ] 14 Baqi static pages
 - [ ] 15 SEO, ads, analytics, manifest

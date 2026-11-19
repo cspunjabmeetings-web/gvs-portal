@@ -1,7 +1,8 @@
 // spec: A06 Content preview, design.md ImportPreview ("ginti chips, har cheez visitor wale rup mein, ghaltiyan --wrong list mein"),
 //       F11-AC2 (ginti, visitor jaisa rup, ghaltiyan line ke sath), F11-AC7 (ek jaisa sawal ki khabardari)
-// Note ka matn abhi saada (markdown ka asal design Qadam 12 mein — owner ka faisla).
+// Qadam 12: note ka matn markdown.ts se (visitor wala rup, F16-AC2).
 import { useState } from 'preact/hooks';
+import NoteBody from '../NoteBody';
 import type { ComponentChildren } from 'preact';
 import type { ParseResult, ParsedItem, ParsedMcq } from '../../lib/parser';
 
@@ -86,8 +87,9 @@ function ItemCard(p: { item: ParsedItem; dup: DupInfo }) {
         <p class="text-sm text-muted">{it.summary}</p>
         <details>
           <summary class="min-h-[44px] cursor-pointer content-center font-medium">Matn dekhein</summary>
-          <p class="text-xs text-muted">Saada shakal; headings aur list ka asal design Qadam 12 mein.</p>
-          <pre class="mt-2 whitespace-pre-wrap break-words font-sans text-sm">{it.body}</pre>
+          <div class="mt-2">
+            <NoteBody md={it.body} />
+          </div>
         </details>
       </article>
     );

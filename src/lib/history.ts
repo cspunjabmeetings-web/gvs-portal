@@ -104,6 +104,13 @@ export function homeHints(h: History, today: string): { remindStreak: number | n
   };
 }
 
+// ---------- Adhoora mock (F15-AC7; 7.5: ek waqt mein ek — owner ka faisla) ----------
+
+/** Adhoora mock rakho (null = mitao). Doosre mock ka purana progress badal jata hai. */
+export function setMockProgress(h: History, p: Record<string, unknown> | null): History {
+  return { ...h, mockProgress: p };
+}
+
 // ---------- Bookmarks, orders ----------
 
 export function toggleBookmark(h: History, id: number): History {

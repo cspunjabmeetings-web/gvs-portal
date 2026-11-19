@@ -1,5 +1,6 @@
 // spec: F13-AC3 (bare option cards ≥ 44px; dabate hi hara ✓ / surkh ✕ + sahih hara; tashreeh narmi se; koi network nahin, < 100 ms),
-//       F13-AC6 (bookmark ☆ + "Ghalti batayen" WhatsApp link sawal #id ke sath), F14-AC3, design.md QuizCard + hosla afzai
+//       F13-AC6 (bookmark ☆ + "Ghalti batayen" WhatsApp link sawal #id ke sath), F14-AC3, design.md QuizCard + hosla afzai;
+//       mode 'select' = mock test (design.md 6.7: jawab foran nahin dikhta, sirf chuna jata hai, badal sakte hain)
 import type { QuizMcq } from '../../lib/daily';
 
 const LETTERS = 'ABCDE';
@@ -11,9 +12,11 @@ export default function QuizCard(p: {
   bookmarked: boolean;
   onBookmark: () => void;
   reportHref: string;
+  mode?: 'instant' | 'select';
 }) {
   const { q, picked } = p;
-  const answered = picked !== null;
+  const select = p.mode === 'select';
+  const answered = !select && picked !== null;
   const right = answered && picked === q.answerIndex;
 
   return (
@@ -37,7 +40,11 @@ export default function QuizCard(p: {
         {q.options.map((o, i) => {
           const isAnswer = i === q.answerIndex;
           const isPicked = i === picked;
-          const tone = !answered
+          const tone = select
+            ? isPicked
+              ? 'border-primary bg-primary-soft font-semibold'
+              : 'border-border bg-surface hover:border-primary'
+            : !answered
             ? 'border-border bg-surface hover:border-primary'
             : isAnswer
               ? `border-correct bg-correct-bg text-correct font-semibold ${isPicked ? 'anim-pop' : ''}`
@@ -50,10 +57,11 @@ export default function QuizCard(p: {
                 type="button"
                 disabled={answered}
                 onClick={() => p.onPick(i)}
+                aria-pressed={select ? isPicked : undefined}
                 class={`flex min-h-[56px] w-full items-center gap-3 rounded-xl border-2 px-3 py-2 text-left disabled:cursor-default ${tone}`}
                 data-option={i}
               >
-                <span class={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-bold ${answered && (isAnswer || isPicked) ? 'border-current' : 'border-border'}`} aria-hidden="true">
+                <span class={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-bold ${select && isPicked ? 'border-primary bg-primary text-on-primary' : answered && (isAnswer || isPicked) ? 'border-current' : 'border-border'}`} aria-hidden="true">
                   {answered && isAnswer ? '✓' : answered && isPicked ? '✕' : LETTERS[i]}
                 </span>
                 <span class="flex-1">{o}</span>

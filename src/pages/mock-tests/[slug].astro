@@ -1,0 +1,41 @@
+---
+// spec: S19 /mock-tests/<slug> (on-demand, D1): shuru → sawal + palette + timer → jama (F15-AC2..AC5, AC7); F15-AC8: saare sawal page ke sath
+//       (test ke dauran network nahin); F15-AC9: chalte test mein ad nahin, `result` sirf jama ke baad; title/description mock ke naam/khulase se.
+//       Na mile / chhupa = 404 (mitaya = 410: Qadam 11b).
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import MockTest from '../../components/quiz/MockTest.tsx';
+import { mockBySlug } from '../../lib/mocks';
+
+export const prerender = false;
+
+const mock = await mockBySlug(env.DB, Astro.params.slug ?? '');
+if (!mock) {
+  return new Response('Yeh mock test nahin mila.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+}
+const title = `${mock.name}: muft online mock test | GVS Academy`;
+const description = (mock.summary ?? `${mock.name}: ${mock.questions} sawal, ${mock.minutes} minute. Timer ke sath muft online mock test, bina sign up.`).slice(0, 160);
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
+---
+<Base title={title} description={description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Mock tests', href: '/mock-tests' }, { label: mock.name }]} />
+    <h1 class="mt-3">{mock.name}</h1>
+    {mock.summary && <p class="mt-2 max-w-[68ch] text-muted">{mock.summary}</p>}
+    <div class="mt-5 max-w-xl">
+      <MockTest client:load mock={{ slug: mock.slug, name: mock.name, minutes: mock.minutes, summary: mock.summary }} items={mock.items} />
+      <noscript>
+        <p class="mt-4 rounded-xl bg-surface-2 p-4">Test dene ke liye browser mein JavaScript chalu karein.</p>
+        <ol class="mt-4 flex list-decimal flex-col gap-2 pl-5">
+          {mock.items.map((q) => <li>{q.question}</li>)}
+        </ol>
+      </noscript>
+    </div>
+    <div class="max-w-xl" data-result-ad hidden>
+      <AdSlot slot="result" />
+    </div>
+    <p class="mt-6"><a href="/mock-tests" class="inline-flex min-h-[44px] items-center">Doosre mock tests</a></p>
+  </div>
+</Base>

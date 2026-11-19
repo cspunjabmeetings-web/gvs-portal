@@ -1,4 +1,4 @@
-// spec: 7.5, F13-AC8 (streak, Pakistan ki tareekh), F17-AC4 (storage band), F17-AC6 (200 KB chhantai), F04-AC10 (orders ≤ 20), bookmarks ≤ 500
+// spec: 7.5, F01-AC3 + F17-AC5 (homeHints), F13-AC8 (streak, Pakistan ki tareekh), F17-AC4 (storage band), F17-AC6 (200 KB chhantai), F04-AC10 (orders ≤ 20), bookmarks ≤ 500
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   emptyHistory,
@@ -13,6 +13,8 @@ import {
   saveHistory,
   updateHistory,
   _resetHistoryMemory,
+  homeHints,
+  clearHistory,
   HISTORY_KEY,
   LIMITS,
 } from '../src/lib/history';
@@ -134,6 +136,33 @@ describe('200 KB ki hadd (F17-AC6)', () => {
   it('chhota data waisa hi', () => {
     const h = recordDaily(emptyHistory(), '2026-11-18', r(5));
     expect(prune(h)).toBe(h);
+  });
+});
+
+describe('Home: yaad dihani aur "Aap ke liye" (F01-AC3, F17-AC5)', () => {
+  it('khali history → kuch nahin', () => {
+    expect(homeHints(emptyHistory(), '2026-11-19')).toEqual({ remindStreak: null, weak: null });
+  });
+  it('kal test diya, aaj nahin → yaad dihani; aaj de diya → nahin; parson ka → streak toot gayi, yaad dihani nahin', () => {
+    const h = recordDaily(recordDaily(emptyHistory(), '2026-11-17', r(5)), '2026-11-18', r(6));
+    expect(homeHints(h, '2026-11-19').remindStreak).toBe(2);
+    expect(homeHints(recordDaily(h, '2026-11-19', r(7)), '2026-11-19').remindStreak).toBeNull();
+    expect(homeHints(h, '2026-11-20').remindStreak).toBeNull();
+  });
+  it('kamzor mazmoon ka card: naam, ghalat ginti, /mcqs slug (practice.ts wala)', () => {
+    const h = recordDaily(emptyHistory(), '2026-11-19', r(6, ['Pakistan Studies', 'Pakistan Studies', 'English']));
+    expect(homeHints(h, '2026-11-19').weak).toEqual({ subject: 'Pakistan Studies', slug: 'pakistan-studies', wrong: 2 });
+  });
+});
+
+describe('Sab history mitayen (F17-AC1)', () => {
+  it('sirf gvs.v1 khali hota hai; cart ki key nahin chhuti', () => {
+    const s = fakeStore();
+    s.setItem('gvs.cart.v1', '{"v":1,"items":[1]}');
+    saveHistory(addOrder(recordDaily(emptyHistory(), '2026-11-19', r(7)), { id: 'GVS-2611-0001', last4: '1234', at: 'x' }), s);
+    clearHistory(s);
+    expect(loadHistory(s)).toEqual(emptyHistory());
+    expect(s.getItem('gvs.cart.v1')).toBe('{"v":1,"items":[1]}');
   });
 });
 

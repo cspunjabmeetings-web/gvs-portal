@@ -97,6 +97,24 @@ describe('/track (F06-AC9)', () => {
   });
 });
 
+// spec: S28 /my-history, F17-AC1, F17-AC3 (hadein saaf likhi hon), F21-AC3 (noindex)
+describe('/my-history (F17)', () => {
+  it.skipIf(!built.includes('/my-history'))('noindex, ad nahin, hadein ka dabba, history island', () => {
+    const h = html('/my-history');
+    expect(h).toMatch(/<meta name="robots" content="noindex, nofollow"/);
+    expect(h).not.toMatch(/data-ad-slot=/);
+    const limits = decode(h.match(/<section[^>]*data-limits[\s\S]*?<\/section>/)?.[0] ?? '');
+    expect(limits).toMatch(/Phone ya browser badlein/);
+    expect(limits).toMatch(/data saaf karne/);
+    expect(limits).toMatch(/Incognito/);
+    expect(limits).toMatch(/server par nahin/);
+    expect(h).toMatch(/component-url="[^"]*MyHistory/);
+  });
+  it.skipIf(!built.includes('/'))('Home par "Aap ke liye" island (F01-AC3, F17-AC5)', () => {
+    expect(html('/')).toMatch(/component-url="[^"]*HomeForYou/);
+  });
+});
+
 // spec: 6.1 AnnouncementBar (har public page par, Header se pehle), F10-AC3, F10-AC7
 describe.skipIf(built.length === 0)('AnnouncementBar (F10-AC3)', () => {
   it.each(built)('%s: AnnouncementBar island Header se pehle', (r) => {

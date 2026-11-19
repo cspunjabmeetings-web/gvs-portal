@@ -1,0 +1,31 @@
+---
+// spec: S28 /my-history (static + client), F17-AC1..AC4, intent 11.4 (hadein saaf likhi hon); noindex (F21-AC3), koi ad nahin
+import Base from '../layouts/Base.astro';
+import MyHistory from '../components/MyHistory.tsx';
+import seo from '../data/seo.json';
+
+const meta = seo.pages['/my-history'];
+---
+<Base title={meta.title} description={meta.description} noindex>
+  <div class="container-page py-6">
+    <h1>Meri history</h1>
+    <p class="mt-2 max-w-[68ch] text-muted">Aap ke scores, streak, bookmarks aur orders. Sign up ki zaroorat nahin.</p>
+
+    <section class="mt-5 max-w-xl rounded-xl border border-border bg-surface-2 p-4" aria-labelledby="limits-h" data-limits>
+      <h2 id="limits-h" class="text-lg">Yeh history kahan rehti hai?</h2>
+      <ul class="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm">
+        <li>Sirf isi phone aur isi browser mein. Hamare server par nahin jati.</li>
+        <li>Phone ya browser badlein to purani history wahan nahin hogi.</li>
+        <li>Browser ka data saaf karne par history mit jati hai.</li>
+        <li>Incognito (private) mode mein history save nahin hoti.</li>
+      </ul>
+    </section>
+
+    <div class="mt-6 max-w-xl">
+      <MyHistory client:load />
+      <noscript>
+        <p class="rounded-xl bg-surface-2 p-4">History dekhne ke liye browser mein JavaScript chalu karein.</p>
+      </noscript>
+    </div>
+  </div>
+</Base>

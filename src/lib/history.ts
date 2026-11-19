@@ -3,6 +3,7 @@
 //       F04-AC10 ("Mere orders", ≤ 20), bookmarks ≤ 500
 // Pure functions + chhota storage layer. Server par kuch nahin jata.
 import { addDays } from './pkdate';
+import { slugify } from './slug';
 
 export const HISTORY_KEY = 'gvs.v1';
 export const HISTORY_EVENT = 'gvs:history';
@@ -90,6 +91,19 @@ export function weakestSubject(h: History): string | null {
   return best;
 }
 
+/**
+ * Home ke liye (F01-AC3, F17-AC5): streak chal rahi ho aur aaj ka test baqi → yaad dihani;
+ * kamzor mazmoon ho → us ki practice ka link (/mcqs/<slug>, practice.ts wala slug).
+ */
+export function homeHints(h: History, today: string): { remindStreak: number | null; weak: { subject: string; slug: string; wrong: number } | null } {
+  const streak = currentStreak(h, today);
+  const subject = weakestSubject(h);
+  return {
+    remindStreak: streak >= 1 && !doneToday(h, today) ? streak : null,
+    weak: subject ? { subject, slug: slugify(subject, 'mazmoon'), wrong: h.weakSubjects[subject] } : null,
+  };
+}
+
 // ---------- Bookmarks, orders ----------
 
 export function toggleBookmark(h: History, id: number): History {
@@ -167,6 +181,12 @@ export function saveHistory(h: History, ls: Store | null = store()): History {
   }
   return p;
 }
+
+/** F17-AC4: localStorage chal raha hai? (band ho to history sirf is page ke khulne tak) */
+export const historyStorageOk = () => store() !== null;
+
+/** "Sab history mitayen" (sirf is browser se; cart alag key hai, nahin chhuti) */
+export const clearHistory = (ls: Store | null = store()) => saveHistory(emptyHistory(), ls);
 
 /** load → badlo → save */
 export function updateHistory(fn: (h: History) => History, ls: Store | null = store()): History {

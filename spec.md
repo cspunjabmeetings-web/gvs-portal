@@ -764,7 +764,7 @@ Jobs/notes/mocks/mcqs ke pages SSR hain (alag API nahin).
 | E20 | `GET/POST /api/admin/notes`, `DELETE /api/admin/notes/:id` | Dekhna, badalna, chhupana, mitana |
 | E21 | `GET/POST /api/admin/jobs`, `DELETE /api/admin/jobs/:id`, `POST /api/admin/jobs/delete-old` | Jobs; "Sab purani mita dein" (tasdeeq ke sath) |
 | E22 | `POST /api/admin/jobs/:id/image` | Tasveer R2 mein; 150 KB se bari rad; qism ki jaanch |
-| E23 | `POST /api/admin/daily-pins`, `DELETE /api/admin/daily-pins/:date` | Kisi din ke sawal pin (P-03 manzoor) |
+| E23 | `GET /api/admin/daily-pins`, `POST /api/admin/daily-pins`, `DELETE /api/admin/daily-pins/:date` | Kisi din ke sawal pin (P-03 manzoor); GET = aaj se 60 din aage tak ke pins (Qadam 10c, owner ki manzoori) |
 | E24 | `GET/POST /api/admin/settings` | Settings, har value ki jaanch ke sath |
 | E25 | `GET /api/admin/export` | Orders ka CSV |
 
@@ -866,6 +866,7 @@ API POST /api/admin/jobs
 API DELETE /api/admin/jobs/[id]
 API POST /api/admin/jobs/delete-old
 API POST /api/admin/jobs/[id]/image
+API GET /api/admin/daily-pins
 API POST /api/admin/daily-pins
 API DELETE /api/admin/daily-pins/[date]
 API GET /api/admin/settings
@@ -1401,6 +1402,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.2 | 16 Nov 2026 | Owner ka CHANGE REQUEST: `npm run verify`, GitHub Actions CI, PR template; har qadam branch + PR (3.2 mein files) |
 | 0.3.3 | 17 Nov 2026 | Qadam 5 (owner ka CHANGE REQUEST): DEPS mein `@types/node` (devDep); `tests/` ab typecheck mein (`tests/tsconfig.json`, `npm run typecheck` = `astro check` + `tsc -p tests`) |
 | 0.3.4 | 18 Nov 2026 | Qadam 8: owner ki tajweez (kai elaan + news ticker) FU-09 mein aage ke version ke liye darj; V1 mein koi tabdeeli nahin |
+| 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

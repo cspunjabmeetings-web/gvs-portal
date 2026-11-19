@@ -1,9 +1,10 @@
 ---
-// spec: S01, F01-AC1, F01-AC2, F01-AC5, F01-AC6, F01-AC7; F21-AC1, F21-AC8
-// Bahar: streak reminder F01-AC3 (Qadam 10), taza jobs F01-AC4 (Qadam 13)
+// spec: S01, F01-AC1, F01-AC2, F01-AC3 (streak ki yaad dihani), F01-AC5, F01-AC6, F01-AC7; F17-AC5 (Aap ke liye); F21-AC1, F21-AC8
+// Bahar: taza jobs F01-AC4 (Qadam 13)
 import Base from '../layouts/Base.astro';
 import DoorCard from '../components/DoorCard.astro';
 import DailyTestCard from '../components/DailyTestCard.astro';
+import HomeForYou from '../components/HomeForYou.tsx';
 import ProductCard from '../components/ProductCard.astro';
 import OrderSteps from '../components/OrderSteps.astro';
 import FAQ from '../components/FAQ.astro';
@@ -58,6 +59,7 @@ const faq = [
 
   <section class="container-page py-4">
     <DailyTestCard />
+    <HomeForYou client:idle />
   </section>
 
   <section class="container-page py-4" aria-labelledby="popular-heading">

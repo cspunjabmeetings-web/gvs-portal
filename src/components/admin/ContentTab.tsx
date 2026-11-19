@@ -1,5 +1,5 @@
 // spec: A05 Content (paste/.txt upload), A06 preview, F11-AC1..AC10, P-02 (preview browser mein), 8.7 (tukron mein import + progress bar)
-// 9c: andar 4 chhote tabs — Naya content | Sawal | Mock | Notes (F12 lists, E18–E20).
+// 9c: andar chhote tabs — Naya content | Sawal | Mock | Notes (F12 lists, E18–E20); 10c: Rozana pin (A09, E23).
 import { useEffect, useState } from 'preact/hooks';
 import { parseContent, type ParseResult, type ParsedMcq } from '../../lib/parser';
 import { allMcqs, buildChunks, hashMcqs, IMPORT_BODY_LIMIT, UPLOAD_LIMIT, type Chunk } from '../../lib/content-chunks';
@@ -7,13 +7,15 @@ import ContentPreview, { type DupInfo } from './ContentPreview';
 import McqList from './McqList';
 import MockList from './MockList';
 import NoteList from './NoteList';
+import DailyPins from './DailyPins';
 
-type Sub = 'new' | 'mcqs' | 'mocks' | 'notes';
+type Sub = 'new' | 'mcqs' | 'mocks' | 'notes' | 'pins';
 const SUBS: { id: Sub; label: string }[] = [
   { id: 'new', label: 'Naya content' },
   { id: 'mcqs', label: 'Sawal' },
   { id: 'mocks', label: 'Mock' },
   { id: 'notes', label: 'Notes' },
+  { id: 'pins', label: 'Rozana pin' },
 ];
 
 const btn = 'min-h-[44px] rounded-lg px-4 font-semibold';
@@ -218,6 +220,8 @@ export default function ContentTab() {
               setSub('mcqs');
             }}
           />
+        ) : sub === 'pins' ? (
+          <DailyPins subjects={subjects} />
         ) : (
           <NoteList subjects={subjects} />
         )}

@@ -1,7 +1,7 @@
-// spec: F15-AC3 (palette ki halat), F15-AC4 (timer, aakhri 5 minute), F15-AC5 (tasdeeq ka paigham), F15-AC7 + 7.5 (mockProgress), owner ke faislay 1a + 2
+// spec: F15-AC6 (result: review, mazmoon-war, kamzor, share), F15-AC3 (palette ki halat), F15-AC4 (timer, aakhri 5 minute), F15-AC5 (tasdeeq ka paigham), F15-AC7 + 7.5 (mockProgress), owner ke faislay 1a + 2
 import { describe, it, expect, beforeEach } from 'vitest';
-import { answer, answeredCount, cellOf, formatClock, goTo, isWarn, newProgress, readProgress, scoreMock, submitMessage, toggleFlag, unansweredCount, WARN_MS } from '../src/lib/mock-engine';
-import { emptyHistory, loadHistory, saveHistory, setMockProgress, updateHistory, _resetHistoryMemory } from '../src/lib/history';
+import { answer, answeredCount, cellOf, formatClock, goTo, isWarn, newProgress, readProgress, reviewItems, scoreMock, shareText, submitMessage, toggleFlag, unansweredCount, weakestOf, wrongSubjects, WARN_MS } from '../src/lib/mock-engine';
+import { emptyHistory, homeHints, loadHistory, normalize, recordMock, saveHistory, setMockProgress, updateHistory, _resetHistoryMemory } from '../src/lib/history';
 
 const qs = [
   { id: 11, subject: 'English', answerIndex: 0 },
@@ -81,5 +81,49 @@ describe('mehfooz progress (F15-AC7, 7.5)', () => {
     expect((loadHistory(st).mockProgress as { slug: string }).slug).toBe('doosra');
     updateHistory((h) => setMockProgress(h, null), st);
     expect(loadHistory(st).mockProgress).toBeNull();
+  });
+});
+
+describe('result (F15-AC6, Qadam 11b)', () => {
+  const rq = qs.map((q) => ({ ...q, question: `Q${q.id}?`, options: ['a', 'b', 'c'], explanation: `T${q.id}` }));
+  const done = answer(answer(answer(newProgress('m', 20), 11, 0), 12, 0), 13, 2); // 11 sahih, 12 ghalat, 13 sahih, 14 chhora
+
+  it('har sawal: sahih / ghalat / chhora, aap ka jawab', () => {
+    expect(reviewItems(done, rq).map((r) => [r.n, r.status, r.picked])).toEqual([
+      [1, 'right', 0],
+      [2, 'wrong', 0],
+      [3, 'right', 2],
+      [4, 'skipped', null],
+    ]);
+  });
+  it('ghalat jawabon ke mazameen (chhore hue nahin)', () => {
+    expect(wrongSubjects(done, qs)).toEqual(['English']);
+  });
+  it('sab se kamzor mazmoon: sab se kam feesad; sab sahih → null', () => {
+    expect(weakestOf({ English: [1, 2], Urdu: [1, 4], Maths: [3, 3] })).toBe('Urdu');
+    expect(weakestOf({ English: [2, 2] })).toBeNull();
+  });
+  it('share ka matn: mock, score, link — koi naam/phone nahin', () => {
+    const t = shareText('PPSC Mock 1', { score: 18, total: 25, percent: 72 }, 'https://gvs.test/mock-tests/ppsc-mock-1');
+    expect(t).toBe('Main ne GVS Academy ka muft mock test "PPSC Mock 1" diya: 18/25 (72%). Aap bhi dein: https://gvs.test/mock-tests/ppsc-mock-1');
+    expect(t).not.toMatch(/03\d{9}|\+92/);
+  });
+});
+
+describe('history mein mock (7.5, owner ke faislay 1a + 2a)', () => {
+  it('recordMock: naam ke sath sab se naya nateeja, adhoora mita, ghalat mazameen weakSubjects + Home "Aap ke liye"', () => {
+    let h = setMockProgress(emptyHistory(), newProgress('m', 20) as unknown as Record<string, unknown>);
+    h = recordMock(h, 'ppsc-1', { score: 1, total: 4, bySubject: { English: [0, 2], Urdu: [1, 2] }, at: '2026-11-19T05:00:00Z', name: 'PPSC 1' }, ['English', 'English']);
+    h = recordMock(h, 'ppsc-1', { score: 3, total: 4, bySubject: { English: [1, 2], Urdu: [2, 2] }, at: '2026-11-19T06:00:00Z', name: 'PPSC 1' }, ['English']);
+    expect(h.mocks['ppsc-1']).toMatchObject({ score: 3, name: 'PPSC 1' });
+    expect(h.mockProgress).toBeNull();
+    expect(h.weakSubjects).toEqual({ English: 3 });
+    expect(homeHints(h, '2026-11-19').weak).toEqual({ subject: 'English', slug: 'english', wrong: 3 });
+  });
+  it('normalize: naam string ho to rehta; kharab entry (at nahin) chhoot jati; ghalat naam hat jata', () => {
+    const h = normalize({ v: 1, mocks: { a: { score: 1, total: 2, at: 'x', bySubject: {}, name: 'A' }, b: { score: 1, total: 2 }, c: { score: 1, total: 2, at: 'y', name: 5 } } });
+    expect(Object.keys(h.mocks)).toEqual(['a', 'c']);
+    expect(h.mocks.a.name).toBe('A');
+    expect(h.mocks.c.name).toBeUndefined();
   });
 });

@@ -99,3 +99,44 @@ export function readProgress(raw: unknown, slug: string, qs: readonly MockQ[], m
   const idx = typeof r.idx === 'number' && Number.isInteger(r.idx) ? Math.max(0, Math.min(qs.length - 1, r.idx)) : 0;
   return { slug, answers, flagged, remainingMs: Math.min(rem, max), savedAt: typeof r.savedAt === 'string' ? r.savedAt : '', idx };
 }
+
+// ---------------- Result (F15-AC6, Qadam 11b) ----------------
+
+export interface ReviewQ extends MockQ {
+  question: string;
+  options: string[];
+  explanation: string | null;
+}
+export type ReviewStatus = 'right' | 'wrong' | 'skipped';
+export interface ReviewItem {
+  n: number;
+  q: ReviewQ;
+  picked: number | null;
+  status: ReviewStatus;
+}
+
+/** Har sawal: aap ka jawab, sahih/ghalat/chhora */
+export function reviewItems(p: MockProgress, qs: readonly ReviewQ[]): ReviewItem[] {
+  return qs.map((q, i) => {
+    const picked = p.answers[q.id] ?? null;
+    return { n: i + 1, q, picked, status: picked === null ? 'skipped' : picked === q.answerIndex ? 'right' : 'wrong' };
+  });
+}
+
+/** Har GHALAT jawab ka mazmoon (chhore hue nahin — jaldi jama karne par kamzori na barhe). Owner ka faisla 1a: weakSubjects mein jate hain */
+export const wrongSubjects = (p: MockProgress, qs: readonly MockQ[]) => qs.filter((q) => p.answers[q.id] !== undefined && p.answers[q.id] !== q.answerIndex).map((q) => q.subject);
+
+/** Sab se kam feesad wala mazmoon (sab poore sahih hon to null; barabar ho to pehla) */
+export function weakestOf(bySubject: Record<string, [number, number]>): string | null {
+  let best: string | null = null;
+  let ratio = 1;
+  for (const [s, [ok, total]] of Object.entries(bySubject)) {
+    const r = total ? ok / total : 1;
+    if (r < ratio) (best = s), (ratio = r);
+  }
+  return best;
+}
+
+/** WhatsApp share ka matn — sirf mock, score, link (koi naam/phone nahin) */
+export const shareText = (name: string, s: { score: number; total: number; percent: number }, url: string) =>
+  `Main ne GVS Academy ka muft mock test "${name}" diya: ${s.score}/${s.total} (${s.percent}%). Aap bhi dein: ${url}`;

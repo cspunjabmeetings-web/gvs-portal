@@ -1,4 +1,4 @@
-// spec: S28 /my-history, F17-AC1 (scores, streak, mock results, bookmarks, "Mere orders" + status link), F17-AC2 (sirf browser),
+// spec: S28 /my-history, F17-AC1 (scores, streak, mock results (naam + feesad, Qadam 11b faisla 2a), bookmarks, "Mere orders" + status link), F17-AC2 (sirf browser),
 //       F17-AC4 (localStorage band/khali par bhi chale), intent 11.4. Server ko kuch nahin bhejta.
 import { useEffect, useState } from 'preact/hooks';
 import { clearHistory, currentStreak, doneToday, historyStorageOk, loadHistory, weakestSubject, HISTORY_EVENT, type History } from '../lib/history';
@@ -119,11 +119,12 @@ export default function MyHistory() {
             {mocks.map(([slug, m]) => (
               <li key={slug} class="flex items-center justify-between gap-2 px-4 py-3">
                 <span class="min-w-0 break-words">
-                  {slug.replace(/-/g, ' ')}
+                  <a href={`/mock-tests/${slug}`}>{m.name || slug.replace(/-/g, ' ')}</a>
                   <span class="block text-xs text-muted">{fmtAt(m.at)}</span>
                 </span>
-                <span class="tabular font-semibold">
+                <span class="tabular whitespace-nowrap text-right font-semibold">
                   {m.score} / {m.total}
+                  <span class="block text-xs font-normal text-muted">{m.total ? Math.round((m.score / m.total) * 100) : 0}%</span>
                 </span>
               </li>
             ))}

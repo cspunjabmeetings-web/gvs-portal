@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { TrackData } from '../lib/track';
 import { formatRemaining, OVERDUE_MSG } from '../lib/timer';
 import { addToCart, itemDetail } from '../lib/cart';
+import { track } from '../lib/analytics';
 import { toDisplay, waLink } from '../lib/phone';
 import { whatsappNumber } from '../lib/site-settings';
 import { govtFeeLine } from '../lib/order-message';
@@ -60,6 +61,8 @@ export default function TrackApp() {
       const res = await fetch(`/api/track?id=${encodeURIComponent(q.id)}&last4=${encodeURIComponent(q.last4)}`, { cache: 'no-store', signal: AbortSignal.timeout(10_000) });
       const data = (await res.json()) as { ok?: boolean; order?: TrackData; error?: { message?: string } };
       if (res.ok && data.ok && data.order) {
+        // F23-AC1: sirf darja (order number/raqam nahin); polling par dobara nahin
+        if (!quiet) track('track_view', { status: data.order.status });
         setOrder(data.order);
         setError(null);
       } else if (!quiet) {
@@ -110,7 +113,10 @@ export default function TrackApp() {
     let skipped = 0;
     for (const it of o.items) {
       const r = addToCart({ id: it.id, name: it.name, price: it.price, fields: it.fields, govtFeeExtra: it.govtFeeExtra, jobId: it.jobId, jobTitle: it.jobTitle, govtFee: it.govtFee, documents: it.documents });
-      if (r.ok) added++;
+      if (r.ok) {
+        added++;
+        track('add_to_cart', { product: it.id, source: 'reorder' });
+      }
       else skipped++;
     }
     setReorderMsg(

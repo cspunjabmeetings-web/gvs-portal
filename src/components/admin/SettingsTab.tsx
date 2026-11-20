@@ -15,6 +15,7 @@ interface LoadResponse {
   ok?: boolean;
   settings?: EditableSettings;
   agent_enabled?: boolean;
+  ads_provider?: string;
   products?: Product[];
   error?: { message?: string; field?: string };
 }
@@ -134,6 +135,7 @@ export default function SettingsTab() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [agentOn, setAgentOn] = useState(false);
+  const [adsProvider, setAdsProvider] = useState('house');
   const [loadError, setLoadError] = useState('');
   const [busy, setBusy] = useState<SectionId | null>(null);
   const [msg, setMsg] = useState<{ section: SectionId; ok: boolean; text: string; field?: string } | null>(null);
@@ -145,6 +147,7 @@ export default function SettingsTab() {
     setDraft(toDraft(data.settings));
     setProducts(data.products ?? []);
     setAgentOn(!!data.agent_enabled);
+    setAdsProvider(data.ads_provider ?? 'house');
   }
 
   async function load() {
@@ -433,6 +436,15 @@ export default function SettingsTab() {
             Pehle se login phones 7 din tak login rehte hain. Sab ko foran bahar karna ho to <code>SESSION_SECRET</code> bhi naya lamba random rakhein.
           </li>
         </ol>
+      </section>
+
+      {/* F22-AC2: ads_provider — sirf dikhe (owner ka faisla Qadam 15b: 2a) */}
+      <section class="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4" data-section="ads">
+        <h2 class="text-lg">Ishtihar (ads)</h2>
+        <p data-ads-provider={adsProvider}>
+          Abhi: <strong>{adsProvider === 'adsense' ? 'Google AdSense' : 'GVS ke apne ishtihar'}</strong>
+        </p>
+        <p class="text-sm text-muted">Google AdSense ki approval ke baad yahan badla ja sake ga. Ishtihar ki jagahein pehle se tay hain.</p>
       </section>
 
       {/* F10-AC6: Version 2, dikhe lekin band */}

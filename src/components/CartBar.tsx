@@ -8,6 +8,7 @@ import { validateName, validatePhone } from '../lib/validators';
 import { toDisplay, waLink } from '../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../lib/site-settings';
 import { TurnstileWidget } from '../lib/turnstile-client';
+import { track } from '../lib/analytics';
 
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-PK')}`;
 
@@ -68,6 +69,7 @@ export default function CartBar() {
     if (phase.k !== 'sending' && items.length > 0) setPhase({ k: 'form' });
     setServerError(null);
     dialog.current?.showModal();
+    track('open_order_form', { items: items.length }); // F23-AC1
   };
   const closeSheet = () => dialog.current?.close();
 
@@ -106,6 +108,7 @@ export default function CartBar() {
     turnstile.current?.reset(); // token ek dafa chalta hai
 
     if (res.ok && data.ok && data.id && data.message && data.whatsappUrl) {
+      track('order_created', { items: items.length }); // F23-AC2: order number/raqam nahin
       rememberOrder({ id: data.id, last4: data.last4 ?? p.value.slice(-4), at: new Date().toISOString() });
       clearCart(); // F04-AC10
       openedSent.current = false;
@@ -121,6 +124,7 @@ export default function CartBar() {
   // F04-AC7: sirf pehli dafa (server bhi sirf pehli dafa record karta hai)
   function markOpened(id: string, last4: string) {
     if (openedSent.current) return;
+    track('whatsapp_opened', { fallback: false });
     openedSent.current = true;
     fetch(`/api/orders/${encodeURIComponent(id)}/whatsapp-opened`, {
       method: 'POST',
@@ -225,7 +229,7 @@ export default function CartBar() {
             <p class="rounded-xl bg-wrong-bg p-3 font-medium text-wrong" role="alert">
               Server se rabta nahin ho saka. Fikr na karein, aap ka order seedha WhatsApp par bhej dein. Aap ki list yahan mehfooz hai.
             </p>
-            <a href={waLink(phase.number, phase.message)} target="_blank" rel="noopener" class={btnPrimary}>
+            <a href={waLink(phase.number, phase.message)} target="_blank" rel="noopener" onClick={() => track('whatsapp_opened', { fallback: true })} class={btnPrimary}>
               WhatsApp par seedha order bhejein
             </a>
             {copyButtons(phase.number, phase.message)}

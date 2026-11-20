@@ -2,6 +2,7 @@
 //       F20-AC2 (job ka naam + documents + sarkari fee ka snapshot: CartBar aur seedhe WhatsApp message mein), F03 (order list), F03-AC6 (orders band).
 import { useEffect, useState } from 'preact/hooks';
 import { addToCart, CART_MSG } from '../lib/cart';
+import { track } from '../lib/analytics';
 import { cachedSettings, refreshSettings } from '../lib/site-settings';
 
 export interface JobApplyProps {
@@ -23,6 +24,7 @@ export default function JobApply(p: JobApplyProps) {
   }, []);
 
   function add() {
+    track('job_apply_click', { org: p.org }); // F23-AC1
     const title = `${p.org} ${p.post}`.replace(/\s+/g, ' ').trim();
     const r = addToCart({
       id: 'job-apply',
@@ -35,6 +37,7 @@ export default function JobApply(p: JobApplyProps) {
       ...(p.govtFee !== null ? { govtFee: p.govtFee } : {}),
       ...(p.documents.length ? { documents: p.documents.slice(0, 20) } : {}),
     });
+    if (r.ok) track('add_to_cart', { product: 'job-apply', source: 'job' });
     setMsg(r.ok ? { ok: true, text: `${CART_MSG.added} Neeche "WhatsApp par order karein" dabayen.` } : { ok: false, text: CART_MSG[r.reason] });
   }
 

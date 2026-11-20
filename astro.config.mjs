@@ -61,6 +61,13 @@ export default defineConfig({
         access: 'public',
         default: '',
       }),
+      // F23 + Q-02: GA4 Measurement ID (G-XXXX). Khali = analytics band, koi request nahin (owner ka faisla Qadam 15b:
+      // account abhi nahin; Qadam 18 mein).
+      PUBLIC_GA_ID: envField.string({
+        context: 'client',
+        access: 'public',
+        default: '',
+      }),
     },
   },
   vite: {

@@ -1,4 +1,4 @@
-# spec: 3.1 Hosting (Workers + static assets, P-01), 4.1 D1 (Qadam 5). R2 Qadam 13 mein.
+# spec: 3.1 Hosting (Workers + static assets, P-01), 4.1 D1 (Qadam 5), 4.4 R2 (Qadam 13c).
 name = "gvs-portal"
 main = "@astrojs/cloudflare/entrypoints/server"
 compatibility_date = "2026-11-01"
@@ -16,3 +16,9 @@ database_name = "gvs"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
 
+
+# spec: 4.4 R2 (sirf job tasveerein, E22). Abhi sirf local (Miniflare). Asal bucket (`wrangler r2 bucket create gvs-images`)
+# aur custom domain `img.<domain>` (P-11) owner ki ijazat se Qadam 18 mein; phir PUBLIC_IMG_BASE = https://img.<domain>
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "gvs-images"

@@ -12,7 +12,7 @@
 - [x] 10 Daily test, practice, history
 - [x] 11 Mock tests
 - [x] 12 Notes
-- [ ] 13 Jobs
+- [x] 13 Jobs
 - [ ] 14 Baqi static pages
 - [ ] 15 SEO, ads, analytics, manifest
 - [ ] 16 V2 tayyari (band)

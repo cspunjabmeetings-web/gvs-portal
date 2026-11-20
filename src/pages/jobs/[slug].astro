@@ -2,7 +2,8 @@
 // spec: S24 /jobs/<slug> (on-demand, D1), F18-AC2 (ishtihar ka link, taleem, documents, tareeqa number wari, akhri tareekh, official link,
 //       "GVS niji academy hai"), F18-AC4 (band: "Is post ki akhri tareekh guzar chuki hai", us idare ki khuli jobs, apply button band),
 //       F18-AC6 (JobPosting schema NAHIN — sirf BreadcrumbList), F20-AC1 ("Hum apply kar dein"), F19-AC2 (Apply service Nahin → button nahin),
-//       F12-AC5 + P-06 (mitayi 410, chhupi 404), intent 14.2 (title), design.md 6.9; Ad "Haan" (top + bottom). Tasveer Qadam 13c.
+//       F12-AC5 + P-06 (mitayi 410, chhupi 404), intent 14.2 (title), design.md 6.9; Ad "Haan" (top + bottom).
+//       Qadam 13c: ishtihar ki tasveer R2 custom domain se (4.4, P-11; PUBLIC_IMG_BASE), F21-AC9 (alt, width/height, lazy).
 //       ppsc/fpsc/nts ke apne static route files hain (A-12) — woh is se pehle chalte hain.
 import { env } from 'cloudflare:workers';
 import Base from '../../layouts/Base.astro';
@@ -14,6 +15,8 @@ import { jobBySlug, daysLeft, fmtDate, jobTitle } from '../../lib/jobs';
 import { pkDate } from '../../lib/pkdate';
 import { formatPrice, getProduct } from '../../lib/catalog';
 import { breadcrumbSchema, jsonLd } from '../../lib/schema-ld';
+import { jobImage } from '../../lib/image-resize';
+import { PUBLIC_IMG_BASE } from 'astro:env/client';
 
 export const prerender = false;
 
@@ -37,6 +40,7 @@ const ld = breadcrumbSchema([
   { name: 'Jobs', url: new URL('/jobs', base).href },
   { name: `${job.org} ${job.post}`, url: new URL(`/jobs/${job.slug}`, base).href },
 ]);
+const img = jobImage(job.imageKey, PUBLIC_IMG_BASE, `${job.org} ${job.post} ka ishtihar`);
 const ext = 'inline-flex min-h-[44px] items-center font-semibold break-all';
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
 ---
@@ -107,6 +111,14 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
 
       <section class="mt-6" aria-labelledby="links-h">
         <h2 id="links-h">Official maloomat</h2>
+        {
+          img && (
+            <a href={img.src} target="_blank" rel="noopener" class="mt-3 block" data-job-image>
+              <img src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" decoding="async" class="h-auto w-full rounded-xl border border-border" />
+              <span class="sr-only"> (poori tasveer naye tab mein)</span>
+            </a>
+          )
+        }
         <p class="mt-2">
           <a href={job.officialUrl} target="_blank" rel="noopener nofollow" class={ext} data-official-link>
             Official link kholen <span aria-hidden="true">&nbsp;↗</span><span class="sr-only"> (naye tab mein)</span>

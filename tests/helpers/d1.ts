@@ -1,4 +1,4 @@
-// spec: 10.1 (D1 tests), owner ka faisla (A): vitest 5 + wrangler getPlatformProxy (asal local D1 / Miniflare)
+// spec: 10.1 (D1 tests), owner ka faisla (A): vitest 5 + wrangler getPlatformProxy (asal local D1 / Miniflare); 4.4 R2 (Qadam 13c)
 import { getPlatformProxy } from 'wrangler';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,7 +22,7 @@ export function migrationStatements(): string[] {
 }
 
 export async function startD1() {
-  const proxy = await getPlatformProxy<{ DB: D1Database }>({ persist: false });
+  const proxy = await getPlatformProxy<{ DB: D1Database; IMAGES: R2Bucket }>({ persist: false });
   const db = proxy.env.DB;
   const migrate = async () => {
     const { results } = await db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND name <> 'd1_migrations'").all<{ name: string }>();
@@ -32,5 +32,5 @@ export async function startD1() {
     await db.batch(migrationStatements().map((s) => db.prepare(s)));
   };
   await migrate();
-  return { db, reset: migrate, dispose: () => proxy.dispose() };
+  return { db, images: proxy.env.IMAGES, reset: migrate, dispose: () => proxy.dispose() };
 }

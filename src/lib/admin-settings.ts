@@ -1,5 +1,5 @@
 // spec: E24 GET/POST /api/admin/settings (F10-AC1..AC7), 8.1, 9.2 (CSRF: Origin + JSON), intent 9.9, 12.4
-// F10-AC5: password badalne ka koi endpoint nahin. F10-AC6: agent_enabled sirf parhne ke liye.
+// F10-AC5: password badalne ka koi endpoint nahin. F10-AC6: agent_enabled sirf parhne ke liye. F22-AC2: ads_provider bhi sirf parhne ke liye.
 import { fail, ok, readJson, API_MSG, type ApiResult } from './api';
 import { adminPost, requireAdmin } from './admin-auth';
 import { getSettings, serializeSetting, type Settings } from './settings';
@@ -18,7 +18,8 @@ const productList = () => activeProducts().map((p) => ({ id: p.id, name: p.name,
 const productIds = () => new Set(activeProducts().map((p) => p.id));
 
 function view(s: Settings) {
-  return { settings: pickEditable(s), agent_enabled: s.agent_enabled, products: productList() };
+  // F22-AC2: ads_provider sirf parhne ke liye (owner ka faisla Qadam 15b: 2a — AdSense approval ke baad)
+  return { settings: pickEditable(s), agent_enabled: s.agent_enabled, ads_provider: s.ads_provider, products: productList() };
 }
 
 /** E24 GET */

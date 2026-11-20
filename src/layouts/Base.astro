@@ -1,6 +1,6 @@
 ---
 // spec: 3.1, 6.1 (har page ka dhancha; AnnouncementBar sab se upar, F10-AC3), F21-AC1 (title/description/canonical), F21-AC9 (lang="en"),
-//       F21-AC6 (Open Graph/Twitter card; default 1200x630 og.png, job ki tasveer ho to wohi)
+//       F21-AC6 (Open Graph/Twitter card; default 1200x630 og.png, job ki tasveer ho to wohi), F23-AC3 (analytics deferred; admin par nahin)
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -65,5 +65,14 @@ const ogImage = new URL(og.src, base).href;
     {chrome && <Footer />}
     {/* spec 6.1: CartBar har page par, admin par nahin (chrome=false) */}
     {chrome && <CartBar client:idle />}
+    <script>
+      // F23: page ke khud chalne wale events + GA4 (deferred; PUBLIC_GA_ID khali = band). Admin par analytics nahin.
+      import { PUBLIC_GA_ID } from 'astro:env/client';
+      import { autoEvents, initAnalytics } from '../lib/analytics';
+      if (!location.pathname.startsWith('/admin')) {
+        autoEvents();
+        initAnalytics(PUBLIC_GA_ID);
+      }
+    </script>
   </body>
 </html>

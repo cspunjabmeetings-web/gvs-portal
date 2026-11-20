@@ -193,7 +193,8 @@ describe('storage (F17-AC2, AC4)', () => {
 
 describe('analytics.ts (F23-AC1/AC2 ka dhancha)', () => {
   it('PII wali keys aur lambe matn nahin jate', () => {
-    track('daily_test_complete', { score: 8, questions: 10, name: 'Ali', phone: '0300', order_id: 'GVS-1', note: 'x'.repeat(200) });
+    // jaan boojh kar ghalat keys (TS inhein rokta hai; runtime bhi rad kare)
+    track('daily_test_complete', { score: 8, questions: 10, name: 'Ali', phone: '0300', order_id: 'GVS-1', note: 'x'.repeat(200) } as never);
     expect(_queued().at(-1)).toEqual({ name: 'daily_test_complete', params: { score: 8, questions: 10 } });
   });
 });

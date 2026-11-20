@@ -97,6 +97,7 @@ const fid = (key: string) => `${p.id}-${key}`;
 <script>
   // spec: F03-AC1 (foran, bina network), F03-AC3, F03-AC4, F03-AC6, F02-AC2 (ghalti ka paigham)
   import { addToCart, CART_MSG } from '../lib/cart';
+  import { track } from '../lib/analytics';
   import { validateFieldValue } from '../lib/validators';
 
   // <select> bhi yahi cheezein rakhta hai (value, required, checkValidity, setCustomValidity, dataset)
@@ -154,5 +155,6 @@ const fid = (key: string) => `${p.id}-${key}`;
       fields,
     });
     show(form, res.ok ? CART_MSG.added : CART_MSG[res.reason], res.ok);
+    if (res.ok) track('add_to_cart', { product: form.dataset.addToCart!, source: 'card' }); // F23-AC1
   });
 </script>

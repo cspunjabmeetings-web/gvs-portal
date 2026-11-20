@@ -65,3 +65,6 @@ export async function readJson(request: Request, limit = PUBLIC_BODY_LIMIT): Pro
 
 /** Visitor ka IP (sirf hash karne ke liye; kabhi save/log nahin) */
 export const clientIp = (request: Request) => request.headers.get('CF-Connecting-IP') ?? 'unknown';
+
+/** CHANGE REQUEST Qadam 17a: preview link (Cloudflare ka `*.workers.dev`) Google mein na aaye (middleware noindex lagata hai) */
+export const isPreviewHost = (host: string) => host === 'workers.dev' || host.endsWith('.workers.dev');

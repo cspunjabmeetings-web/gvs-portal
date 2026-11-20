@@ -44,7 +44,7 @@
       ],
       "includes": ["Us post/test ke past papers", "GVS ke apne hal aur tashreeh", "PDF file WhatsApp par"],
       "sample": null,
-      "fileHint": "PastPapers/{postName}.pdf",
+      "fileHint": "Past-Papers/{postName}.pdf",
       "active": true
     },
     {
@@ -67,7 +67,7 @@
       ],
       "includes": ["Chune hue mahine ke ahem current affairs", "Pakistan aur dunya ki khabrein, mukhtasar", "PDF file WhatsApp par"],
       "sample": null,
-      "fileHint": "CurrentAffairs/{month}.pdf",
+      "fileHint": "Current-Affairs/{month}.pdf",
       "active": true
     },
     {

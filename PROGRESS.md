@@ -15,6 +15,6 @@
 - [x] 13 Jobs
 - [x] 14 Baqi static pages
 - [x] 15 SEO, ads, analytics, manifest
-- [ ] 16 V2 tayyari (band)
+- [x] 16 V2 tayyari (band)
 - [ ] 17 Preview par poori jaanch, content
 - [ ] 18 Production deploy, Access, backup

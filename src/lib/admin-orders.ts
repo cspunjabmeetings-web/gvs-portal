@@ -1,5 +1,5 @@
 // spec: E11..E14, F08-AC1..AC9, AC12, 8.6 (darjon ki ijazat), SA4 (wada), SA6 (notification), SA7 (event),
-//       9.2 (LIKE wildcard escape, parameterized SQL), 9.4 (note ≤ 500, cancel wajah ≤ 200), A-01, A-08
+//       9.2 (LIKE wildcard escape, parameterized SQL), 9.4 (note ≤ 500, cancel wajah ≤ 200), A-01, A-08, 7.3 v0.3.6 (khulasa updated_at index se)
 // Sirf server par. Endpoints patle; middleware + requireAdmin pehle se jaanch karte hain.
 import * as v from 'valibot';
 import { fail, ok, readJson, API_MSG, type ApiResult } from './api';
@@ -170,7 +170,8 @@ export async function listOrders(request: Request, env: AdminOrdersEnv, deps: { 
            COALESCE(SUM(paid_at >= ?1 AND status IN ('paid','pending','complete')), 0) AS paidToday,
            COALESCE(SUM(completed_at >= ?1 AND status = 'complete'), 0) AS completeToday,
            COALESCE(SUM(CASE WHEN paid_at >= ?1 AND status IN ('paid','pending','complete') THEN total ELSE 0 END), 0) AS earnedToday
-         FROM orders WHERE created_at >= ?1 OR paid_at >= ?1 OR completed_at >= ?1`,
+         FROM orders WHERE updated_at >= ?1`,
+        // v0.3.6: har tabdeeli (banana, paid, complete) updated_at barhati hai → aaj ke saare orders is index range mein
       )
       .bind(start)
       .first<{ newToday: number; paidToday: number; completeToday: number; earnedToday: number }>();

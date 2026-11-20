@@ -684,6 +684,7 @@ Tamam waqt `TEXT` ISO-8601 UTC. `id` jahan `INTEGER` hai wahan `PRIMARY KEY AUTO
 
 Intent ke: `orders(status, created_at)`, `orders(phone)`, `mcqs(subject, verified)`, `jobs(last_date)`, `notifications(read_at, created_at)`.
 Zaroori plumbing (neeche Delta mein): unique `slug` (mocks, notes, jobs), `order_events(order_id)`, `mcqs(mock_id)`, `rate_limits(window_start)`.
+Qadam 17a (v0.3.6, owner ki manzoori; `queries.cost.test` ne pakda): `migrations/0002_order_indexes.sql` mein `orders(created_at)` (admin "Sab" list) aur `orders(updated_at)` (admin ka "aaj" khulasa `WHERE updated_at >= aaj`).
 
 ### 7.4 Delta: intent 12.5 se spec ka farq (sab manzoor: P-03, P-06, P-07, P-12)
 
@@ -1403,6 +1404,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.3 | 17 Nov 2026 | Qadam 5 (owner ka CHANGE REQUEST): DEPS mein `@types/node` (devDep); `tests/` ab typecheck mein (`tests/tsconfig.json`, `npm run typecheck` = `astro check` + `tsc -p tests`) |
 | 0.3.4 | 18 Nov 2026 | Qadam 8: owner ki tajweez (kai elaan + news ticker) FU-09 mein aage ke version ke liye darj; V1 mein koi tabdeeli nahin |
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
+| 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

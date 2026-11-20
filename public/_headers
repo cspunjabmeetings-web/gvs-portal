@@ -1,0 +1,3 @@
+# spec: CHANGE REQUEST Qadam 17a (owner "3 haan"): preview link *.workers.dev Google mein index na ho (static pages; on-demand ke liye middleware)
+https://:sub.workers.dev/*
+  X-Robots-Tag: noindex, nofollow

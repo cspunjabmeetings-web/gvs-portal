@@ -1,4 +1,5 @@
-// spec: 3.1 (Astro, Workers adapter, Tailwind, prefetch), P-01, intent 12.4 (WhatsApp fallback), F04-AC11 (Turnstile site key)
+// spec: 3.1 (Astro, Workers adapter, Tailwind, prefetch), P-01, intent 12.4 (WhatsApp fallback), F04-AC11 (Turnstile site key),
+//       4.4 + P-11 (job tasveerein `img.<domain>` se: PUBLIC_IMG_BASE)
 import { defineConfig, envField, sessionDrivers } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
@@ -28,6 +29,13 @@ export default defineConfig({
         context: 'client',
         access: 'public',
         default: '1x00000000000000000000AA',
+      }),
+      // 4.4 + P-11: R2 custom domain (maslan https://img.<domain>). Khali = job page par tasveer nahin, sirf
+      // "Ishtihar dekhein" link (local/dev; koi /img route nahin — Qadam 13a faisla 2a). Qadam 18 mein asal value.
+      PUBLIC_IMG_BASE: envField.string({
+        context: 'client',
+        access: 'public',
+        default: '',
       }),
     },
   },

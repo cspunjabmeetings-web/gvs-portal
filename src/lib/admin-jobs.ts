@@ -2,7 +2,7 @@
 //       F19-AC2 (zaroori khane; khali fee = default_job_fee → NULL; Apply service Nahin), F19-AC3 (https), F19-AC5 (purani: Mitayen,
 //       "Sab purani mita dein"), F18-AC4/AC5 (khuli = Pakistan ki aaj tak; tareekh barhi to dobara khuli), F12-AC5 + P-06 (deleted_at → 410),
 //       A-12 (ppsc/fpsc/nts reserved), 9.2 (cookie + Origin + JSON).
-// Tasveer (R2, E22, F19-AC4/AC6) Qadam 13c mein.
+//       F19-AC6 (job mitane par us ki R2 tasveer bhi; pehle R2, phir DB). Upload E22 `job-image.ts` mein.
 import * as v from 'valibot';
 import { fail, ok, readJson, sameOrigin, API_MSG, type ApiResult } from './api';
 import { adminPost, requireAdmin } from './admin-auth';
@@ -11,6 +11,7 @@ import { parseContent, type ParsedJob } from './parser';
 import { slugify, uniqueSlug } from './slug';
 import { takenSlugs, type ContentEnv } from './content-import';
 import { pkDate } from './pkdate';
+import { deleteImages, type JobsEnv } from './job-image';
 
 export const JOBS_PAGE = 50;
 /** Ek paste mein zyada se zyada jobs (ek batch) */
@@ -40,6 +41,8 @@ export interface AdminJobRow {
   applyService: boolean;
   ourFee: number | null;
   govtFee: number | null;
+  /** R2 key (E22); null = tasveer nahin */
+  imageKey: string | null;
 }
 export type AdminJobFull = AdminJobRow & Omit<ParsedJob, 'kind' | 'line' | 'source'>;
 
@@ -59,6 +62,7 @@ type JobRow = {
   documents_json: string;
   steps_json: string;
   visible: number;
+  image_key: string | null;
 };
 
 const arr = (json: string): string[] => {
@@ -69,7 +73,7 @@ const arr = (json: string): string[] => {
     return [];
   }
 };
-const toRow = (r: JobRow): AdminJobRow => ({ id: r.id, slug: r.slug, org: r.org, post: r.post, city: r.city, lastDate: r.last_date, visible: r.visible === 1, applyService: r.apply_service === 1, ourFee: r.our_fee, govtFee: r.govt_fee });
+const toRow = (r: JobRow): AdminJobRow => ({ id: r.id, slug: r.slug, org: r.org, post: r.post, city: r.city, lastDate: r.last_date, visible: r.visible === 1, applyService: r.apply_service === 1, ourFee: r.our_fee, govtFee: r.govt_fee, imageKey: r.image_key });
 const toFull = (r: JobRow): AdminJobFull => ({
   ...toRow(r),
   education: r.education,
@@ -81,7 +85,7 @@ const toFull = (r: JobRow): AdminJobFull => ({
 
 const parseId = (raw: string | undefined) => (raw && /^[1-9]\d{0,9}$/.test(raw) ? Number(raw) : null);
 const offsetOf = (u: URL) => Math.max(0, Math.min(1_000_000, Number(u.searchParams.get('offset')) || 0));
-const COLS = 'id, slug, org, post, city, education, last_date, official_url, ad_url, govt_fee, our_fee, apply_service, documents_json, steps_json, visible';
+const COLS = 'id, slug, org, post, city, education, last_date, official_url, ad_url, govt_fee, our_fee, apply_service, documents_json, steps_json, visible, image_key';
 
 async function guardPost(request: Request, env: ContentEnv): Promise<ApiResult | null> {
   return (await requireAdmin(request, env)) ?? adminPost(request);
@@ -197,14 +201,17 @@ export async function saveJobs(request: Request, env: ContentEnv, deps: { now?: 
 }
 
 /** E21 DELETE /:id (F12-AC5): deleted_at → URL 410. DELETE ki hifazat cookie + Origin (body nahin) */
-export async function deleteJob(request: Request, env: ContentEnv, rawId: string | undefined, deps: { now?: () => Date } = {}): Promise<ApiResult> {
+export async function deleteJob(request: Request, env: JobsEnv, rawId: string | undefined, deps: { now?: () => Date } = {}): Promise<ApiResult> {
   const denied = (await requireAdmin(request, env)) ?? (sameOrigin(request) ? null : fail(403, 'origin', API_MSG.origin));
   if (denied) return denied;
   const id = parseId(rawId);
   if (!id) return fail(404, 'not_found', JOBS_MSG.not_found);
   const at = (deps.now ?? (() => new Date()))().toISOString();
   try {
-    const res = await env.DB.prepare('UPDATE jobs SET deleted_at = ?2, visible = 0, updated_at = ?2 WHERE id = ?1 AND deleted_at IS NULL').bind(id, at).run();
+    const row = await env.DB.prepare('SELECT image_key FROM jobs WHERE id = ?1 AND deleted_at IS NULL').bind(id).first<{ image_key: string | null }>();
+    if (!row) return fail(404, 'not_found', JOBS_MSG.not_found);
+    await deleteImages(env, [row.image_key]);
+    const res = await env.DB.prepare('UPDATE jobs SET deleted_at = ?2, visible = 0, image_key = NULL, updated_at = ?2 WHERE id = ?1 AND deleted_at IS NULL').bind(id, at).run();
     if (res.meta.changes !== 1) return fail(404, 'not_found', JOBS_MSG.not_found);
     return ok({ id });
   } catch {
@@ -213,7 +220,7 @@ export async function deleteJob(request: Request, env: ContentEnv, rawId: string
 }
 
 /** E21 POST delete-old { confirm: true } (F19-AC5): sirf woh jin ki aakhri tareekh guzar chuki (Pakistan ki aaj se pehle) */
-export async function deleteOldJobs(request: Request, env: ContentEnv, deps: { now?: () => Date } = {}): Promise<ApiResult> {
+export async function deleteOldJobs(request: Request, env: JobsEnv, deps: { now?: () => Date } = {}): Promise<ApiResult> {
   const denied = await guardPost(request, env);
   if (denied) return denied;
   const body = await readJson(request, 1024);
@@ -221,7 +228,9 @@ export async function deleteOldJobs(request: Request, env: ContentEnv, deps: { n
   if (!v.is(v.object({ confirm: v.literal(true) }), body.data)) return fail(400, 'confirm', JOBS_MSG.confirm);
   const now = (deps.now ?? (() => new Date()))();
   try {
-    const res = await env.DB.prepare('UPDATE jobs SET deleted_at = ?2, visible = 0, updated_at = ?2 WHERE deleted_at IS NULL AND last_date < ?1').bind(pkDate(now), now.toISOString()).run();
+    const { results } = await env.DB.prepare('SELECT image_key FROM jobs WHERE deleted_at IS NULL AND last_date < ?1 AND image_key IS NOT NULL').bind(pkDate(now)).all<{ image_key: string }>();
+    await deleteImages(env, results.map((r) => r.image_key));
+    const res = await env.DB.prepare('UPDATE jobs SET deleted_at = ?2, visible = 0, image_key = NULL, updated_at = ?2 WHERE deleted_at IS NULL AND last_date < ?1').bind(pkDate(now), now.toISOString()).run();
     return ok({ deleted: res.meta.changes });
   } catch {
     return fail(503, 'unavailable', API_MSG.unavailable);

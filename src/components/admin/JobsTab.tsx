@@ -1,13 +1,14 @@
 // spec: A07 Jobs (text/form se job, khuli jobs ki list, "Purani jobs": Mitayen, Sab purani mita dein), E21, F19-AC1 (paste = form:
 //       dono `# JOB` text ban kar wahi parser), F19-AC2, AC3, AC5, F18-AC5 (tareekh barhayen → wapas Khuli), design.md 6.10 (360px).
-// Tasveer lagana Qadam 13c mein.
-import { useEffect, useState } from 'preact/hooks';
+//       Qadam 13c: list mein har job par "Tasveer lagayen/badlein" (F19-AC4: browser mein WebP, ≤ 1200px, ≤ 150 KB → E22).
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import { adminJson } from '../../lib/admin-fetch';
 import { parseContent, type ParsedJob } from '../../lib/parser';
 import { EMPTY_JOB_FORM, JOB_FORM_MSG, daysLeftLabel, formFromJob, hasBreaker, jobText, type JobForm } from '../../lib/job-form';
 import type { AdminJobFull, AdminJobRow } from '../../lib/admin-jobs';
 import JobPreview from './JobPreview';
+import { IMAGE_TYPES, shrinkImage, type Shrunk } from '../../lib/image-resize';
 
 const btn = 'min-h-[44px] rounded-lg px-3 text-sm font-semibold';
 const input = 'min-h-[44px] w-full rounded-lg border border-border bg-surface px-3';
@@ -193,6 +194,97 @@ function JobEditor(p: { id?: number; initial?: JobForm; meta: Meta; onSaved: (ms
   );
 }
 
+const kb = (n: number) => `${Math.max(1, Math.round(n / 1024))} KB`;
+
+/** F19-AC4 + E22: file chuno → browser mein chhoti → dekh kar upload. Purani tasveer server par mit jati hai */
+function JobImage(p: { job: AdminJobRow; onDone: (msg: string) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [shot, setShot] = useState<(Shrunk & { ok: true }) | null>(null);
+  const [url, setUrl] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => () => url && URL.revokeObjectURL(url), [url]);
+
+  function reset() {
+    setShot(null);
+    setUrl('');
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  async function pick(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    setError('');
+    if (!file) return;
+    setBusy(true);
+    const r = await shrinkImage(file);
+    setBusy(false);
+    if (!r.ok) {
+      reset();
+      return setError(r.message);
+    }
+    setShot(r);
+    setUrl(URL.createObjectURL(r.blob));
+  }
+
+  async function upload() {
+    if (!shot) return;
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/jobs/${p.job.id}/image?w=${shot.w}&h=${shot.h}`, {
+        method: 'POST',
+        headers: { 'Content-Type': shot.type },
+        body: shot.blob,
+        cache: 'no-store',
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (res.status === 401) return location.reload();
+      const data = (await res.json()) as { ok?: boolean; error?: { message?: string } };
+      if (!res.ok || !data.ok) return setError(data.error?.message || 'Internet ya server ka masla. Dobara koshish karein.');
+      reset();
+      p.onDone(p.job.imageKey ? 'Tasveer badal di gayi.' : 'Tasveer lag gayi.');
+    } catch {
+      setError('Internet ya server ka masla. Dobara koshish karein.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const id = `job-img-${p.job.id}`;
+  return (
+    <div class="flex flex-col gap-2" data-job-image-box>
+      <input ref={fileRef} id={id} type="file" accept={IMAGE_TYPES.join(',')} class="sr-only" onChange={pick} data-job-image-input />
+      {!shot && (
+        <button type="button" disabled={busy} onClick={() => fileRef.current?.click()} class={`${btn} border border-border disabled:opacity-60`} data-job-image-btn>
+          {busy ? 'Tasveer chhoti ho rahi hai…' : p.job.imageKey ? 'Tasveer badlein' : 'Tasveer lagayen'}
+        </button>
+      )}
+      {shot && (
+        <div class="flex flex-col gap-2 rounded-lg bg-surface-2 p-2">
+          <img src={url} alt="Nayi tasveer ka preview" width={shot.w} height={shot.h} class="h-auto max-h-60 w-full rounded-lg object-contain" />
+          <p class="text-sm tabular" data-job-image-info>
+            {shot.w}×{shot.h} · {kb(shot.blob.size)} · {shot.type === 'image/webp' ? 'WebP' : 'JPG'}
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" disabled={busy} onClick={upload} class={`${btn} bg-primary text-on-primary disabled:opacity-60`} data-job-image-upload>
+              {busy ? 'Upload ho rahi hai…' : 'Upload karein'}
+            </button>
+            <button type="button" disabled={busy} onClick={reset} class={`${btn} border border-border disabled:opacity-60`}>
+              Wapas
+            </button>
+          </div>
+        </div>
+      )}
+      {error && (
+        <p class="text-sm text-wrong" role="alert" data-job-image-error>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function JobList(p: { tab: 'open' | 'old'; meta: Meta; onMeta: (m: Meta) => void; onEdit: (j: AdminJobFull) => void }) {
   const [items, setItems] = useState<AdminJobRow[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -283,6 +375,11 @@ function JobList(p: { tab: 'open' | 'old'; meta: Meta; onMeta: (m: Meta) => void
                   </span>
                 )}
                 {!j.applyService && <span>Apply service nahin</span>}
+                {j.imageKey && (
+                  <span class="font-semibold text-primary" data-image-badge>
+                    Tasveer ✓
+                  </span>
+                )}
               </p>
               <p class="break-all text-xs text-muted">/jobs/{j.slug}</p>
               <div class="grid grid-cols-3 gap-2">
@@ -296,6 +393,13 @@ function JobList(p: { tab: 'open' | 'old'; meta: Meta; onMeta: (m: Meta) => void
                   Mitayen
                 </button>
               </div>
+              <JobImage
+                job={j}
+                onDone={(m) => {
+                  setNotice(m);
+                  void load();
+                }}
+              />
             </li>
           ))}
         </ul>

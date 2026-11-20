@@ -1,0 +1,85 @@
+---
+// spec: S29 /how-to-order (static), F25-AC1 ("GVS niji academy hai"), F25-AC4 (4 qadam, payment, refund ka link, HowTo schema),
+//       F25-AC5 + intent 13/15.3 (ad nahin), intent 9.2–9.5 (order, payment, track), 9.10 (refund ka link).
+//       Payment ke numbers page par likhe nahin: order ke baad track page / WhatsApp par (purana ya jaali number na chale).
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import WorkHours from '../components/WorkHours.astro';
+import seo from '../data/seo.json';
+import { ORDER_STEPS } from '../lib/order-steps';
+import { howToSchema, jsonLd } from '../lib/schema-ld';
+import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
+import { toDisplay, waLink } from '../lib/phone';
+
+const meta = seo.pages['/how-to-order'];
+const url = new URL('/how-to-order', Astro.site ?? Astro.url).href;
+const ld = howToSchema({ name: 'GVS Academy se order kaise karein', description: meta.description, url, steps: [...ORDER_STEPS] });
+const number = PUBLIC_WHATSAPP_FALLBACK;
+---
+<Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Order kaise karein' }]} />
+    <h1 class="mt-3">Order kaise karein: 4 asaan qadam</h1>
+    <p class="mt-2 max-w-[68ch] text-muted">Na sign up, na password. Order WhatsApp par jata hai aur aap ko order number milta hai jis se aap darja dekh sakte hain.</p>
+
+    <ol class="mt-6 flex max-w-[68ch] flex-col gap-3" data-how-steps>
+      {
+        ORDER_STEPS.map((s, i) => (
+          <li id={`qadam-${i + 1}`} class="flex gap-3 rounded-xl border border-border bg-surface p-4">
+            <span class="tabular inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-on-primary" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span>
+              <span class="block font-semibold">{s.t}</span>
+              <span class="block text-muted">{s.d}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="max-w-[68ch]">
+      <section class="mt-8" aria-labelledby="pay-h">
+        <h2 id="pay-h">Payment kaise karein</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Payment <strong>JazzCash</strong> ya <strong>Easypaisa</strong> se hoti hai.</li>
+          <li>Payment ka number aur account ka naam order ke baad <a href="/track">Order track karein</a> wale page par aur hamare WhatsApp par milta hai.</li>
+          <li>Payment sirf usi number par karein jo hamare WhatsApp ya track page par likha ho. Kisi aur number se aaya paigham ho to pehle hum se poochh lein.</li>
+          <li>Payment ke baad screenshot WhatsApp par bhejein, sath order number likhein (maslan GVS-2611-0001).</li>
+          <li>Job apply ya sarkari scheme ke kaam mein <strong>sarkari fee alag</strong> hai; woh official challan par jati hai, hamari fee mein shamil nahin.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="time-h">
+        <h2 id="time-h">Kaam kab shuru hota hai</h2>
+        <p class="mt-3">
+          Waqt payment milne ke baad shuru hota hai. Hum <WorkHours /> kaam karte hain; is ke baad aane wali payment par kaam agle din subah shuru hota hai.
+          Har order ka andaza track page par ulti ginti ki shakal mein nazar aata hai. Jis kaam ke liye documents chahiye (maslan job apply), us ka
+          waqt documents milne ke baad shuru hota hai.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="track-h">
+        <h2 id="track-h">Order ka darja dekhein</h2>
+        <p class="mt-3">
+          <a href="/track">Order track karein</a> par apna order number likhein. Wahan darja (Order mila, Payment mil gayi, Kaam jari hai, Mukammal), bacha hua waqt aur
+          zaroori hidayat nazar aati hain. Isi browser se kiye gaye orders <a href="/my-history">Meri history</a> mein bhi mehfooz rehte hain.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="refund-h">
+        <h2 id="refund-h">Cancel aur refund</h2>
+        <p class="mt-3">
+          Order cancel karna ho to WhatsApp par likhein. Kab poori raqam wapas hoti hai aur kab nahin, yeh <a href="/terms#refund">refund policy</a> mein saaf likha hai.
+        </p>
+      </section>
+
+      <p class="mt-8 rounded-lg bg-surface-2 px-4 py-3">
+        Koi sawal ho to WhatsApp karein:
+        <a href={waLink(number)} class="font-semibold tabular" rel="noopener" data-whatsapp-number>{toDisplay(number)}</a>.
+        GVS niji academy hai, sarkari idara nahin.
+      </p>
+    </div>
+  </div>
+</Base>

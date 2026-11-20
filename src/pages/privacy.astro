@@ -1,0 +1,91 @@
+---
+// spec: S32 /privacy (static), F25-AC1, F25-AC2 (ads, cookies, analytics aur localStorage ka zikr), F25-AC5 (ad nahin), intent 15.4,
+//       7.5 (browser ki history), F24-AC3 (90 din baad naam/phone mitna), SA5 (IP sirf hash), F04-AC11 (Turnstile), F23 (analytics mein PII nahin).
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import seo from '../data/seo.json';
+
+const meta = seo.pages['/privacy'];
+const ext = { target: '_blank', rel: 'noopener nofollow' };
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Privacy' }]} />
+    <div class="max-w-[68ch]">
+      <h1 class="mt-3">Privacy policy</h1>
+      <p class="mt-2 text-sm text-muted">Aakhri tabdeeli: 20 November 2026</p>
+      <p class="mt-3">
+        Yeh page batata hai ke GVS Academy ka portal aap ki kaun si maloomat rakhta hai, kis liye aur kitni der. Muft test, MCQs, notes aur jobs
+        dekhne ke liye koi account ya sign up nahin chahiye. GVS niji academy hai, sarkari idara nahin.
+      </p>
+
+      <section class="mt-8" aria-labelledby="order-h">
+        <h2 id="order-h">Order ki maloomat</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Order par hum sirf <strong>naam</strong>, <strong>WhatsApp number</strong> aur order ki tafseel (maslan course code ya class) lete hain.</li>
+          <li>Yeh maloomat sirf order poora karne aur aap se WhatsApp par rabta ke liye hai. Hum ise bechte ya kisi ko dete nahin.</li>
+          <li>Order mukammal ya cancel hone ke <strong>90 din baad</strong> naam aur number mita diye jate hain; sirf order number, cheez aur raqam hisab ke liye rehte hain.</li>
+          <li>Job apply jaise kaam ke documents sirf WhatsApp par aate hain, sirf usi kaam mein istemal hote hain aur kaam ke baad hata diye jate hain. Portal par documents upload nahin hote.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="storage-h">
+        <h2 id="storage-h">Aap ke browser mein (localStorage)</h2>
+        <p class="mt-3">
+          Kuch cheezein sirf aap ke apne phone/browser mein <strong>localStorage</strong> aur <strong>sessionStorage</strong> mein rehti hain, hamare server par nahin jatin:
+        </p>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Rozana test ke scores, streak, mock test ke nateeje aur bookmarks (<a href="/my-history">Meri history</a>).</li>
+          <li>Order list (cart) aur aap ke pichhle orders ke number, taake aap darja dekh sakein.</li>
+          <li>Site ki aam settings (maslan WhatsApp number) chand minute ke liye, taake page jaldi khule.</li>
+        </ul>
+        <p class="mt-3">"Meri history" par "Sab history mitayen" se, ya browser ka data saaf karke, aap yeh sab khud mita sakte hain. Doosre phone par yeh history nahin jati.</p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="cookies-h">
+        <h2 id="cookies-h">Cookies</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Visitors ke liye hamari apni koi login cookie nahin. Sirf admin (GVS team) ke login ki cookie hoti hai.</li>
+          <li>Order form par spam rokne ke liye Cloudflare Turnstile chalta hai; yeh apni hifazati cookies ya jaanch istemal kar sakta hai.</li>
+          <li>Neeche likhe analytics aur ads ke tools apni cookies laga sakte hain.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="analytics-h">
+        <h2 id="analytics-h">Analytics</h2>
+        <p class="mt-3">
+          Site behtar banane ke liye hum Google Analytics jaisa tool istemal kar sakte hain jo yeh ginta hai ke kaun se page dekhe gaye aur kitne test
+          mukammal hue. Is mein aap ka <strong>naam, phone number ya order number kabhi nahin bheja jata</strong>. Google ka tareeqa:
+          <a href="https://policies.google.com/technologies/partner-sites" {...ext}>Google partner sites policy</a>.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="ads-h">
+        <h2 id="ads-h">Ishtihar (ads)</h2>
+        <p class="mt-3">
+          Abhi site par sirf GVS Academy ke apne ishtihar hain. Aage chal kar Google AdSense ke ishtihar lag sakte hain. Google aur us ke partners
+          cookies ke zariye aap ki pichhli visits ke hisab se ishtihar dikha sakte hain. Aap personalised ads
+          <a href="https://adssettings.google.com" {...ext}>Google Ad Settings</a> par band kar sakte hain. Tafseel:
+          <a href="https://policies.google.com/technologies/ads" {...ext}>Google advertising policy</a>.
+          Order, payment, track, history aur in qanooni pages par koi ishtihar nahin hota.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="security-h">
+        <h2 id="security-h">Hifazat</h2>
+        <p class="mt-3">
+          Spam aur ghalat istemal rokne ke liye server aap ke IP address ka sirf ek naqabil-e-wapsi "hash" thori der ke liye rakhta hai; asal IP save nahin hota.
+          Hum kabhi password, OTP ya bank ki maloomat nahin maangte.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="contact-h">
+        <h2 id="contact-h">Sawal ya maloomat mitwana</h2>
+        <p class="mt-3">
+          Apni order ki maloomat pehle mitwana chahein ya koi sawal ho to <a href="/contact">WhatsApp par rabta</a> karein, sath order number likhein.
+          Is policy mein tabdeeli hui to isi page par nayi tareekh ke sath likhi jaye gi.
+        </p>
+      </section>
+    </div>
+  </div>
+</Base>

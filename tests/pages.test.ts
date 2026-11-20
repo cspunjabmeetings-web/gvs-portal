@@ -138,3 +138,68 @@ describe('/daily-test (F13-AC7)', () => {
     expect(h).toMatch(/component-url="[^"]*DailyTest/);
   });
 });
+
+// spec: Qadam 14 (11: "saari pages 404 ke baghair"), F25-AC1..AC5 (static/qanooni pages), F02-AC1 (refund link har paid page par)
+describe.skipIf(built.length === 0)('Qadam 14: static pages (F25, F02-AC1)', () => {
+  const src = (r: string) => {
+    const base = join(process.cwd(), 'src', 'pages', r === '/' ? 'index' : r.slice(1));
+    return [`${base}.astro`, join(base, 'index.astro')].find((p) => existsSync(p));
+  };
+  // Manifest ke static routes jin ka page on-demand nahin (prerender = false wale dist mein nahin hote)
+  const prerendered = Object.keys(pages).filter((r) => {
+    const f = src(r);
+    return !f || !/export const prerender = false/.test(readFileSync(f, 'utf8'));
+  });
+  const LEGAL = ['/how-to-order', '/about', '/contact', '/privacy', '/terms', '/404'];
+
+  it('spec ke har static (prerendered) PAGE ki file src mein bhi hai aur dist mein bhi', () => {
+    for (const r of prerendered) {
+      expect(src(r), `src: ${r}`).toBeTruthy();
+      expect(existsSync(file(r)), `dist: ${r}`).toBe(true);
+    }
+  });
+
+  it.each(LEGAL)('%s: "GVS niji academy hai, sarkari idara nahin" (F25-AC1), ad nahin (F25-AC5)', (r) => {
+    const h = html(r);
+    expect(decode(mainOf(h).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ')).toContain('GVS niji academy hai, sarkari idara nahin');
+    expect(h).not.toMatch(/data-ad-slot/);
+  });
+
+  it('/privacy: ads, cookies, analytics aur localStorage ka zikr (F25-AC2)', () => {
+    const t = decode(mainOf(html('/privacy')).replace(/<[^>]+>/g, ' ')).toLowerCase();
+    for (const w of ['ishtihar', 'adsense', 'cookies', 'analytics', 'localstorage']) expect(t, w).toContain(w);
+  });
+
+  it('/terms#refund: intent 9.10 ki 5 sharait (F25-AC3)', () => {
+    const h = html('/terms');
+    const box = h.match(/<section[^>]*id="refund"[\s\S]*?<\/section>/)?.[0] ?? '';
+    expect(box).not.toBe('');
+    expect((box.match(/<li/g) ?? []).length).toBe(5);
+    const t = decode(box.replace(/<[^>]+>/g, ' '));
+    for (const w of ['poori raqam wapas', 'sahih file muft', '24 ghante', 'refund nahin', 'Sarkari fee']) expect(t).toContain(w);
+  });
+
+  it('/how-to-order: 4 qadam, payment, refund link, HowTo JSON-LD (F25-AC4)', () => {
+    const h = html('/how-to-order');
+    expect((mainOf(h).match(/<li id="qadam-\d"/g) ?? []).length).toBe(4);
+    expect(h).toMatch(/JazzCash/);
+    expect(h).toMatch(/href="\/terms#refund"/);
+    const ld = JSON.parse(h.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] ?? '{}') as { '@type'?: string; step?: { name: string }[] };
+    expect(ld['@type']).toBe('HowTo');
+    expect(ld.step?.map((s) => s.name)).toEqual(['Cheez chunein', 'Naam aur number dein', 'WhatsApp par bhejein', 'Payment aur delivery']);
+  });
+
+  it('/404: darwazon ke links, noindex', () => {
+    const h = html('/404');
+    for (const href of ['/job-prep', '/vu', '/board', '/career']) expect(h).toContain(`href="${href}"`);
+    expect(h).toMatch(/<meta name="robots" content="noindex/);
+  });
+
+  it('/contact: WhatsApp link (Settings se taza hone wala)', () => {
+    expect(html('/contact')).toMatch(/<a[^>]*href="https:\/\/wa\.me\/92\d{10}"[^>]*data-whatsapp-number/);
+  });
+
+  it.each(built.filter((r) => /data-add-to-cart=/.test(html(r))))('%s: paid page par refund policy ka link (F02-AC1)', (r) => {
+    expect(html(r)).toMatch(/href="\/terms#refund"/);
+  });
+});

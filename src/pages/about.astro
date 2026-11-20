@@ -1,0 +1,71 @@
+---
+// spec: S30 /about (static), F25-AC1 ("GVS niji academy hai, sarkari idara nahin"), F25-AC5 (ad nahin), intent 15.4 (AdSense ki tayyari),
+//       intent 14 (sarkari brand ka dhoka nahin), usool 7 (wada wohi jo pura ho). Owner ka faisla (Qadam 14): naam ki jagah "GVS Academy team".
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import seo from '../data/seo.json';
+
+const meta = seo.pages['/about'];
+const doors = [
+  { t: 'Job ki tayyari', d: 'Rozana muft test, mazmoon-war MCQs, mock tests, notes aur taza jobs ki maloomat.', href: '/job-prep' },
+  { t: 'VU Corner', d: 'Virtual University ke students ke liye course code ke mutabiq tayyari ke packs.', href: '/vu' },
+  { t: 'Board Classes', d: '9th se 12th tak class aur mazmoon ke mutabiq test papers.', href: '/board' },
+  { t: 'Career Desk', d: 'CV banwana, online job apply aur sarkari schemes ke form mein madad.', href: '/career' },
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'About' }]} />
+    <div class="max-w-[68ch]">
+      <h1 class="mt-3">GVS Academy: hum kaun hain</h1>
+      <p class="mt-3">
+        GVS Academy ek <strong>niji (private) academy</strong> hai, sarkari idara nahin. Hum job tests, Virtual University aur board classes ki tayyari
+        mein madad karte hain, aur online forms jaise kaam aap ki taraf se kar dete hain. Yeh portal GVS Academy team chalati hai.
+      </p>
+
+      <section class="mt-8" aria-labelledby="do-h">
+        <h2 id="do-h">Hum kya karte hain</h2>
+        <ul class="mt-3 flex flex-col gap-3">
+          {
+            doors.map((x) => (
+              <li class="rounded-xl border border-border bg-surface p-4">
+                <a href={x.href} class="font-semibold">
+                  {x.t}
+                </a>
+                <p class="mt-1 text-muted">{x.d}</p>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-3">
+          Rozana test, MCQs, mock tests aur notes muft hain aur in ke liye sign up nahin chahiye. Paid packs aur services ki qeemat
+          <a href="/plans">rate list</a> par saaf likhi hai.
+        </p>
+      </section>
+
+      <section class="mt-8" aria-labelledby="dont-h">
+        <h2 id="dont-h">Hum kya nahin karte</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Hum PPSC, FPSC, NTS, VU, board ya kisi sarkari idare ki taraf se nahin. Un ke faislay, test aur nateeje wohi idare khud dete hain.</li>
+          <li>Hum naukri, admission ya pass hone ka wada nahin karte. Hum tayyari aur kaghazi kaam mein madad karte hain.</li>
+          <li>Hum sarkari fee wapas nahin kar sakte; woh official challan par idare ko jati hai.</li>
+          <li>Hum aap ka password, OTP ya bank ki maloomat kabhi nahin maangte.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="rules-h">
+        <h2 id="rules-h">Hamare usool</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li><strong>Wada wohi jo pura ho.</strong> Har pack mein jo likha hai wohi milta hai, aur kaam ka waqt track page par nazar aata hai.</li>
+          <li><strong>Qeemat saaf.</strong> Jo qeemat likhi hai wohi; "rate ke liye inbox karein" nahin.</li>
+          <li><strong>Kam se kam maloomat.</strong> Order ke liye sirf naam aur WhatsApp number. Tafseel <a href="/privacy">Privacy policy</a> mein.</li>
+          <li><strong>Likhi hui refund policy.</strong> Kab raqam wapas hoti hai, yeh <a href="/terms#refund">Terms</a> mein likha hai.</li>
+        </ul>
+      </section>
+
+      <p class="mt-8 rounded-lg bg-surface-2 px-4 py-3">
+        Rabta sirf WhatsApp par: <a href="/contact">Contact</a>. GVS niji academy hai, sarkari idara nahin.
+      </p>
+    </div>
+  </div>
+</Base>

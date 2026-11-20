@@ -1,0 +1,73 @@
+---
+// spec: S33 /terms (static), F25-AC1, F25-AC3 (refund policy, intent 9.10 — owner ka faisla Qadam 14: tajweez shuda alfaz hi final),
+//       F25-AC5 (ad nahin), F02-AC1 (paid pages ka refund link `/terms#refund`), F02-AC4 (sarkari fee alag), F24-AC1 (payment na aaye to cancel).
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import seo from '../data/seo.json';
+
+const meta = seo.pages['/terms'];
+const refund = [
+  'Payment ke baad aur kaam shuru hone se pehle cancel: poori raqam wapas.',
+  'Ghalat ya adhoori file mili: sahih file muft, ya poori raqam wapas.',
+  'Wade ke 24 ghante baad bhi order na mila: aap chahein to poori raqam wapas.',
+  'Digital file mil jane ke baad "pasand nahin aayi": refund nahin, kyun ke file wapas nahin hoti. Isi liye har pack ka muft namoona pehle dikhaya jata hai.',
+  'Sarkari fee (challan) GVS wapas nahin kar sakta; woh sarkari idare ke usool par hai.',
+];
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Terms' }]} />
+    <div class="max-w-[68ch]">
+      <h1 class="mt-3">Terms aur refund policy</h1>
+      <p class="mt-2 text-sm text-muted">Aakhri tabdeeli: 20 November 2026</p>
+      <p class="mt-3">
+        GVS Academy ka portal istemal karne ka matlab hai ke aap neeche ki sharait se mutafiq hain. GVS niji academy hai, sarkari idara nahin;
+        hum kisi sarkari idare, board ya university ki taraf se nahin.
+      </p>
+
+      <section class="mt-8" aria-labelledby="free-h">
+        <h2 id="free-h">Muft content</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Muft test, MCQs, mock tests aur notes sirf tayyari ke liye hain. Hum jaanch kar daalte hain, phir bhi ghalti ho sakti hai; nazar aaye to "Ghalti batayen" dabayen.</li>
+          <li>Jobs ki maloomat official ishtihar se li jati hai. Apply se pehle akhri tareekh, sharait aur fee hamesha official website ya ishtihar se tasdeeq karein.</li>
+          <li>Portal ka content apne liye parhein; use copy karke bechna ya doosri site par daalna mana hai.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="orders-h">
+        <h2 id="orders-h">Orders aur payment</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Qeemat wohi jo order ke waqt <a href="/plans">rate list</a> par likhi ho. Order ka hisab server catalog se karta hai.</li>
+          <li>Job apply aur sarkari schemes mein <strong>qeemat mein sarkari fee shamil nahin</strong>; woh official challan par alag jati hai.</li>
+          <li>Kaam ka waqt payment (aur jahan zaroori ho, documents) milne ke baad shuru hota hai. Andaza track page par nazar aata hai.</li>
+          <li>Payment muqarrara waqt mein na aaye to order khud cancel ho sakta hai; dobara order kiya ja sakta hai.</li>
+          <li>Kaam aap ki di hui maloomat par hota hai (maslan course code, class, documents). Ghalat maloomat ki wajah se hone wali ghalti hamari zimmedari nahin; batayen to hum durust karne ki koshish karte hain.</li>
+          <li>Hum naukri, admission ya kisi imtihan mein kamyabi ka wada nahin karte; faisla hamesha mutalliqa idara karta hai.</li>
+        </ul>
+      </section>
+
+      <section id="refund" class="mt-8 scroll-mt-4 rounded-xl border-2 border-primary bg-surface p-4" aria-labelledby="refund-h" data-refund>
+        <h2 id="refund-h">Refund policy</h2>
+        <p class="mt-2">Order cancel karna ho to WhatsApp par likhein; portal par khud cancel nahin hota. Refund in sharait par:</p>
+        <ul class="mt-3 flex flex-col gap-3">
+          {
+            refund.map((r) => (
+              <li class="flex gap-2">
+                <span class="font-bold text-primary" aria-hidden="true">•</span>
+                <span>{r}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="change-h">
+        <h2 id="change-h">Tabdeeli aur rabta</h2>
+        <p class="mt-3">
+          In sharait mein tabdeeli hui to isi page par nayi tareekh ke sath likhi jaye gi. Sawal ho to <a href="/contact">WhatsApp par rabta</a> karein.
+          Maloomat ke istemal ke baare mein <a href="/privacy">Privacy policy</a> dekhein.
+        </p>
+      </section>
+    </div>
+  </div>
+</Base>

@@ -41,3 +41,14 @@ export function faqSchema(items: { q: string; a: string }[]) {
     mainEntity: items.map((it) => ({ '@type': 'Question', name: it.q, acceptedAnswer: { '@type': 'Answer', text: it.a } })),
   };
 }
+
+/** F25-AC4: /how-to-order par HowTo (wohi qadam jo page par dikhte hain) */
+export function howToSchema(h: { name: string; description: string; url: string; steps: { t: string; d: string }[] }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: h.name,
+    description: h.description,
+    step: h.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.t, text: s.d, url: `${h.url}#qadam-${i + 1}` })),
+  };
+}

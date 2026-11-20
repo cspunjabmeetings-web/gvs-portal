@@ -8,6 +8,7 @@ import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct } from '../lib/catalog';
+import { jsonLd, productSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/current-affairs'];
 const product = getProduct('current-affairs');
@@ -25,8 +26,12 @@ const faq = [
     a: 'Rozana test aur MCQs practice mein Current Affairs ke sawal bhi aate hain, tareekh ke sath.',
   },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = product ? [productSchema({ name: product.name, description: meta.description, url: ldUrl, base: ldBase, products: [product] })] : [];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Current affairs' }]} />
     <h1 class="mt-3">Monthly current affairs PDF</h1>

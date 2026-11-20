@@ -1,5 +1,6 @@
 ---
-// spec: 3.1, 6.1 (har page ka dhancha; AnnouncementBar sab se upar, F10-AC3), F21-AC1 (title/description/canonical), F21-AC9 (lang="en")
+// spec: 3.1, 6.1 (har page ka dhancha; AnnouncementBar sab se upar, F10-AC3), F21-AC1 (title/description/canonical), F21-AC9 (lang="en"),
+//       F21-AC6 (Open Graph/Twitter card; default 1200x630 og.png, job ki tasveer ho to wohi)
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -12,10 +13,16 @@ interface Props {
   /** false sirf admin jaisi screens ke liye (spec 6.1) */
   chrome?: boolean;
   noindex?: boolean;
+  /** F21-AC6: share ki tasveer (poora ya site-relative URL); warna default og.png */
+  image?: { src: string; width: number; height: number; alt: string };
+  ogType?: 'website' | 'article';
 }
 
-const { title, description, chrome = true, noindex = false } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const { title, description, chrome = true, noindex = false, image, ogType = 'website' } = Astro.props;
+const base = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, base).href;
+const og = image ?? { src: '/images/og.png', width: 1200, height: 630, alt: 'GVS Academy: muft MCQs, mock tests, notes aur jobs' };
+const ogImage = new URL(og.src, base).href;
 ---
 <!doctype html>
 <html lang="en">
@@ -26,6 +33,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:site_name" content="GVS Academy" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(og.width)} />
+    <meta property="og:image:height" content={String(og.height)} />
+    <meta property="og:image:alt" content={og.alt} />
+    <meta property="og:locale" content="en_PK" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#0F5132" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0D1410" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />

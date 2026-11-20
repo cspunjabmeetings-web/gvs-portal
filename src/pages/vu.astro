@@ -10,6 +10,7 @@ import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct, formatPrice, type Product } from '../lib/catalog';
+import { jsonLd, productSchema, faqSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/vu'];
 const packs = ['vu-quick', 'vu-smart', 'vu-complete', 'vu-topper']
@@ -38,8 +39,12 @@ const faq = [
     a: 'Nahin. GVS niji academy hai aur Virtual University se mutalliq nahin. Packs GVS ki apni tayyari ka material hain; official handouts VU ke LMS par hain.',
   },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.description, url: ldUrl, base: ldBase, products: packs }), faqSchema(faq)];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'VU Corner' }]} />
     <h1 class="mt-3">VU Corner: midterm aur final packs</h1>

@@ -8,6 +8,7 @@ import OrderSteps from '../components/OrderSteps.astro';
 import FAQ from '../components/FAQ.astro';
 import seo from '../data/seo.json';
 import { getProduct } from '../lib/catalog';
+import { jsonLd, serviceSchema, faqSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/apply-service'];
 const product = getProduct('job-apply');
@@ -37,8 +38,12 @@ const faq = [
     a: 'Documents sirf WhatsApp par, sirf usi form ke liye istemal hote hain, aur kaam ke baad hata diye jate hain. Portal par koi document upload nahin hota.',
   },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = [serviceSchema({ name: 'Online job apply service', description: meta.description, url: ldUrl, base: ldBase, serviceType: 'Online job application help', products: product ? [product] : [] }), faqSchema(faq)];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Career Desk', href: '/career' }, { label: 'Online apply service' }]} />
     <h1 class="mt-3">Online job apply service: hum form bhar dein</h1>

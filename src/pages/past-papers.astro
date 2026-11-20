@@ -8,6 +8,7 @@ import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct } from '../lib/catalog';
+import { jsonLd, productSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/past-papers'];
 const product = getProduct('past-papers');
@@ -25,8 +26,12 @@ const faq = [
     a: 'Koi nahin keh sakta. Past papers se pattern aur ahem topics samajh aate hain; tayyari poore syllabus ki zaroori hai.',
   },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = product ? [productSchema({ name: product.name, description: meta.description, url: ldUrl, base: ldBase, products: [product] })] : [];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Solved past papers' }]} />
     <h1 class="mt-3">Solved past papers: apni post ke mutabiq</h1>

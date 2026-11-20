@@ -1,4 +1,4 @@
-# spec: F07-AC4 (/admin band), F21-AC4 (/admin, /api band; sitemap link Qadam 15)
+# spec: F07-AC4 (/admin band), F21-AC4 (/admin, /api band; "Sitemap:" line build par astro.config se judti hai, domain SITE_URL)
 User-agent: *
 Disallow: /admin
 Disallow: /api/

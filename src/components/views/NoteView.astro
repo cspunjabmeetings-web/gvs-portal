@@ -40,7 +40,7 @@ const ld = [
   breadcrumbSchema(crumbs),
 ];
 ---
-<Base title={title} description={description}>
+<Base title={title} description={description} ogType="article">
   <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Notes', href: '/notes' }, { label: note.title }]} />

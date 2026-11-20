@@ -1,8 +1,9 @@
 ---
-// spec: 6.1 Footer (About, Contact, Privacy, Terms, How-to-order, WhatsApp number, "GVS niji academy hai")
+// spec: 6.1 Footer (About, Contact, Privacy, Terms, How-to-order, WhatsApp number, "GVS niji academy hai"), F26-AC1 (Home screen par rakhein)
 // WhatsApp number hard-code nahin: build fallback (intent 12.4); Qadam 5 ke baad /api/settings se.
 import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
 import Logo from './Logo.astro';
+import InstallHint from './InstallHint.tsx';
 import { toDisplay, waLink } from '../lib/phone';
 
 const number = PUBLIC_WHATSAPP_FALLBACK;
@@ -44,6 +45,10 @@ const year = new Date().getFullYear();
         {display}
       </a>
     </div>
+  </div>
+
+  <div class="container-page pb-4">
+    <InstallHint client:idle />
   </div>
 
   <div class="container-page pb-8">

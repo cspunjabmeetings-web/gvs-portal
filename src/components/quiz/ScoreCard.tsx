@@ -1,6 +1,7 @@
 // spec: F13-AC5 (score, streak, kamzor mazmoon; share, ghalat dobara, "Kal phir aayein" + pack), design.md ScoreCard (streak amber SVG)
 // Alfaz: intent 27 aur qaida 10 — bare wade wale alfaz nahin (banned-words golden test).
 import type { ComponentChildren } from 'preact';
+import InstallHint from '../InstallHint';
 
 /** Catalog se (usool 7: wada wohi jo catalog mein) */
 export interface Pack {
@@ -55,6 +56,8 @@ export default function ScoreCard(p: {
         )}
       </div>
       <p class="font-semibold">Kal phir aayein — naye 10 sawal.</p>
+      {/* F26-AC1 (owner ka faisla 2b): wapas aane ka asaan rasta */}
+      <InstallHint compact />
       {p.pack && (
         <a href={p.pack.href} class="flex w-full flex-col rounded-xl bg-accent p-3 text-on-accent no-underline" data-pack>
           <span class="font-bold">{p.pack.name}</span>

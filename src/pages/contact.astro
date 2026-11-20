@@ -1,0 +1,56 @@
+---
+// spec: S31 /contact (static), F25-AC1, F25-AC5 (ad nahin), intent 15.4; F10-AC7 + intent 12.4 (number `data-whatsapp-number` se Settings ka
+//       taza; build ki value sirf fallback). Owner ka faisla (Qadam 14): sirf WhatsApp (email/pata nahin). Kaam ke ghante Settings se (WorkHours).
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import WorkHours from '../components/WorkHours.astro';
+import seo from '../data/seo.json';
+import { PUBLIC_WHATSAPP_FALLBACK } from 'astro:env/client';
+import { toDisplay, waLink } from '../lib/phone';
+
+const meta = seo.pages['/contact'];
+const number = PUBLIC_WHATSAPP_FALLBACK;
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Contact' }]} />
+    <div class="max-w-[68ch]">
+      <h1 class="mt-3">GVS Academy se rabta</h1>
+      <p class="mt-3">Hum se rabta sirf WhatsApp par hota hai. Message karein; hum <WorkHours /> jawab dete hain.</p>
+
+      <p class="mt-5 text-sm font-semibold text-muted" id="wa-label">WhatsApp number (dabayen to chat khule gi)</p>
+      <a
+        href={waLink(number)}
+        rel="noopener"
+        aria-describedby="wa-label"
+        class="tabular mt-2 flex min-h-[56px] items-center justify-center rounded-xl bg-primary px-4 text-lg font-semibold text-on-primary no-underline"
+        data-whatsapp-number
+        data-contact-wa>{toDisplay(number)}</a
+      >
+
+      <section class="mt-8" aria-labelledby="tips-h">
+        <h2 id="tips-h">Jaldi jawab ke liye</h2>
+        <ul class="mt-3 flex list-disc flex-col gap-2 pl-5">
+          <li>Order ke baare mein ho to <strong>order number</strong> zaroor likhein (maslan GVS-2611-0001).</li>
+          <li>Payment ki ho to screenshot bhejein.</li>
+          <li>Ek hi message mein poori baat likhein; awaz ke paigham ki jagah likha hua behtar hai.</li>
+        </ul>
+      </section>
+
+      <section class="mt-8" aria-labelledby="self-h">
+        <h2 id="self-h">Pehle khud dekh lein</h2>
+        <ul class="mt-3 flex flex-col gap-2">
+          <li><a href="/track" class="inline-flex min-h-[44px] items-center font-semibold">Order ka darja dekhein</a></li>
+          <li><a href="/how-to-order" class="inline-flex min-h-[44px] items-center font-semibold">Order kaise karein</a></li>
+          <li><a href="/plans" class="inline-flex min-h-[44px] items-center font-semibold">Qeematein (rate list)</a></li>
+          <li><a href="/terms#refund" class="inline-flex min-h-[44px] items-center font-semibold">Refund policy</a></li>
+        </ul>
+      </section>
+
+      <p class="mt-8 rounded-lg bg-surface-2 px-4 py-3">
+        <strong>Hoshiyar rahein:</strong> hum kabhi password, OTP ya bank ki maloomat nahin maangte. Kisi aur number se GVS ke naam par paigham aaye to
+        isi number par poochh lein. GVS niji academy hai, sarkari idara nahin.
+      </p>
+    </div>
+  </div>
+</Base>

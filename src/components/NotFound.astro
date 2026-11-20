@@ -1,0 +1,62 @@
+---
+// spec: S34 /404 (darwazon ke links), F25-AC1 ("GVS niji academy hai"), F25-AC5 (ad nahin), F12-AC5 + P-06 (mitaya = 410 "hata diya gaya").
+// /404 page aur on-demand pages (jobs/notes/mock-tests/mcqs) ka sanjha "nahin mila" page. Status route file set karti hai.
+import Base from '../layouts/Base.astro';
+import DoorCard from './DoorCard.astro';
+import seo from '../data/seo.json';
+
+interface Props {
+  /** missing = 404, gone = 410 */
+  kind?: 'missing' | 'gone';
+  /** maslan "Yeh job" — warna aam "Yeh page" */
+  what?: string;
+  /** muannas (maslan "job"): "nahin mili", "hata di gayi" */
+  fem?: boolean;
+  /** mutalliqa list, maslan { label: 'Doosri khuli jobs', href: '/jobs' } */
+  back?: { label: string; href: string };
+}
+const { kind = 'missing', what = 'Yeh page', fem = false, back } = Astro.props;
+const meta = seo.pages['/404'];
+const heading = kind === 'gone' ? `${what} hata ${fem ? 'di gayi' : 'diya gaya'} hai` : `${what} nahin ${fem ? 'mili' : 'mila'}`;
+const more = [
+  { label: 'Taza jobs', href: '/jobs' },
+  { label: 'Aaj ka muft test', href: '/daily-test' },
+  { label: 'Muft MCQs', href: '/mcqs' },
+  { label: 'Order track karein', href: '/track' },
+];
+---
+<Base title={meta.title} description={meta.description} noindex>
+  <div class="container-page py-8" data-not-found={kind}>
+    <h1>{heading}</h1>
+    <p class="mt-2 max-w-[68ch] text-muted">
+      {kind === 'gone' ? 'Yeh ab portal par maujood nahin.' : 'Link ghalat ho sakta hai, ya yeh cheez ab maujood nahin.'} Neeche se dobara shuru karein.
+    </p>
+    {
+      back && (
+        <p class="mt-4">
+          <a href={back.href} class="inline-flex min-h-[44px] items-center rounded-lg bg-primary px-4 font-semibold text-on-primary no-underline" data-not-found-back>
+            {back.label}
+          </a>
+        </p>
+      )
+    }
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <DoorCard icon="book" title="Job ki tayyari" line="Rozana muft MCQs, mock tests, notes aur jobs." href="/job-prep" />
+      <DoorCard icon="cap" title="VU Corner" line="Course code ke mutabiq Quick se Topper tak packs." href="/vu" />
+      <DoorCard icon="paper" title="Board Classes" line="9th se 12th ke test papers." href="/board" />
+      <DoorCard icon="brief" title="Career Desk" line="CV, job apply aur sarkari services." href="/career" />
+    </div>
+    <ul class="mt-6 grid gap-2 sm:grid-cols-2">
+      {
+        more.map((l) => (
+          <li>
+            <a href={l.href} class="flex min-h-[44px] items-center rounded-lg bg-surface-2 px-3 font-semibold text-text no-underline hover:bg-primary-soft">
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6 text-sm text-muted">GVS niji academy hai, sarkari idara nahin.</p>
+  </div>
+</Base>

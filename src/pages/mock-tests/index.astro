@@ -9,6 +9,7 @@ import DailyTestCard from '../../components/DailyTestCard.astro';
 import seo from '../../data/seo.json';
 import { publicMocks, type MockCard } from '../../lib/mocks';
 import { getProduct } from '../../lib/catalog';
+import RefundLine from '../../components/RefundLine.astro';
 
 export const prerender = false;
 
@@ -77,6 +78,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
           <div class="grid gap-4 md:grid-cols-2">
             <ProductCard product={series} />
           </div>
+          <RefundLine />
         </section>
       )
     }

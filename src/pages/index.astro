@@ -12,6 +12,7 @@ import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct, type Product } from '../lib/catalog';
+import RefundLine from '../components/RefundLine.astro';
 
 const meta = seo.pages['/'];
 const popular = ['vu-smart', 'mcq-pack', 'past-papers', 'cv-cover']
@@ -72,6 +73,7 @@ const faq = [
     <div class="grid gap-4 md:grid-cols-2">
       {popular.map((p) => <ProductCard product={p} />)}
     </div>
+    <RefundLine />
     <p class="mt-4"><a href="/plans">Saari qeematein dekhein</a></p>
   </section>
 

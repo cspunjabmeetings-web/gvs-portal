@@ -1,0 +1,24 @@
+---
+// spec: design.md 6.9 JobCard (S22, S23, S24): idara, post, shehar, akhri tareekh + baqi din; band = muted (F18-AC1, AC4)
+import { daysLeft, fmtDate, type JobCard } from '../lib/jobs';
+
+interface Props {
+  job: JobCard;
+  today: string;
+}
+const { job, today } = Astro.props;
+const closed = job.lastDate < today;
+---
+<a
+  href={`/jobs/${job.slug}`}
+  class:list={['flex h-full flex-col gap-1 rounded-xl border border-border p-4 no-underline', closed ? 'bg-surface-2' : 'bg-surface']}
+  data-job-card={job.slug}
+>
+  <span class:list={['text-xs font-semibold', closed ? 'text-muted' : 'text-primary']}>{job.org}</span>
+  <span class:list={['font-semibold', closed ? 'text-muted' : 'text-text']}>{job.post}</span>
+  {job.city && <span class="text-sm text-muted">{job.city}</span>}
+  <span class="text-sm text-muted">
+    Akhri tareekh: <span class="tabular">{fmtDate(job.lastDate)}</span>
+    <span class:list={['ml-1 font-semibold', closed ? 'text-muted' : 'text-accent-text']} data-days-left>· {daysLeft(job.lastDate, today)}</span>
+  </span>
+</a>

@@ -46,6 +46,24 @@ describe('WhatsApp message (intent 9.3)', () => {
     const list = addItem([], { id: 'job-apply', name: 'Online job apply service', price: 300, govtFeeExtra: true, fields: { jobName: 'PPSC Educator' } }).items;
     expect(buildOrderMessage({ items: list, name: 'Sara' })).toMatch(/Sarkari fee alag, official challan par/);
   });
+
+  it('F20-AC2 (13b): job se aaya order — job ka naam ek dafa, sarkari fee ki raqam, documents (seedha message bhi)', () => {
+    const list = addItem([], {
+      id: 'job-apply',
+      name: 'Online job apply service',
+      price: 500,
+      govtFeeExtra: true,
+      fields: { jobName: 'PPSC Educator (BPS-14)' },
+      jobId: '7',
+      jobTitle: 'PPSC Educator (BPS-14)',
+      govtFee: 700,
+      documents: ['CNIC', 'Domicile'],
+    }).items;
+    const msg = buildOrderMessage({ items: list, name: 'Sara' });
+    expect(msg).toContain('1. Online job apply service (PPSC Educator (BPS-14)) - Rs. 500');
+    expect(msg).toContain('   (Sarkari fee Rs. 700 alag, official challan par)');
+    expect(msg).toContain('   Documents: CNIC, Domicile');
+  });
 });
 
 describe('validators (F04-AC1)', () => {

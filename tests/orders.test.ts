@@ -189,6 +189,7 @@ describe('POST /api/orders (E02)', () => {
     expect(a.body.total).toBe(500);
     expect(a.body.message).toContain('Documents: CNIC, Degree');
     expect(a.body.message).toContain('PPSC Educator');
+    expect(a.body.message).toContain('Sarkari fee Rs. 800 alag, official challan par'); // F20-AC2 (13b)
     expect((await order({ ...job('2'), phone: '03009999999' })).body.total).toBe(300); // default_job_fee
     const closed = await order({ ...job('3'), phone: '03008888888' });
     expect(closed.status).toBe(400);

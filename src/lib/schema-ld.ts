@@ -32,3 +32,12 @@ export function articleSchema(a: { title: string; description: string | null; ur
     publisher: org,
   };
 }
+
+/** intent page list: /jobs/ppsc|fpsc|nts par FAQPage (FAQ component ke wohi sawal) */
+export function faqSchema(items: { q: string; a: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((it) => ({ '@type': 'Question', name: it.q, acceptedAnswer: { '@type': 'Answer', text: it.a } })),
+  };
+}

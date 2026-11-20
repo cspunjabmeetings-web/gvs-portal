@@ -1,0 +1,58 @@
+---
+// spec: S23 /jobs/ppsc (F18-AC3, A-12 reserved slug). Matn aam rehnumai hai (owner ka faisla 13b-3a); owner tasdeeq kare.
+import OrgJobsPage from '../../components/OrgJobsPage.astro';
+
+export const prerender = false;
+
+const faq = [
+  { q: 'Kya GVS Academy PPSC ka daftar hai?', a: 'Nahin. GVS niji academy hai. Hum sirf online form bharne mein madad karte hain. Faisla aur test PPSC ka hota hai.' },
+  { q: 'PPSC ka online form kahan bharte hain?', a: 'PPSC ki official website par account bana kar. Har job ke page par official link diya gaya hai.' },
+  { q: 'Sarkari fee kaise jama hoti hai?', a: 'Form ke baad challan banta hai jo bank mein jama hota hai. Yeh fee hamari service fee se alag hai.' },
+  { q: 'Hum apply kar dein to mujhe kya bhejna hoga?', a: 'Job ke page par di gayi documents ki list, jaise CNIC, degree aur domicile ki tasveerein, WhatsApp par.' },
+];
+---
+<OrgJobsPage path="/jobs/ppsc" org="PPSC" fullName="Punjab Public Service Commission" officialUrl="https://www.ppsc.gop.pk" faq={faq}>
+  <section>
+    <h2>PPSC kya hai?</h2>
+    <p>
+      PPSC, yani Punjab Public Service Commission, Punjab hukumat ka idara hai jo sooba Punjab ke bohat se sarkari mahkamon ke liye bharti karta hai.
+      Educator, lecturer, inspector, assistant aur doosri kai posts ke ishtihar PPSC ki taraf se aate hain. Har ishtihar mein post ka naam, scale,
+      taleem, umar ki hadd, seats aur akhri tareekh likhi hoti hai.
+    </p>
+    <p>
+      Har post ki shartein alag hoti hain. Is liye apply karne se pehle us post ka poora ishtihar dhyan se parhein, khaas taur par taleem, umar
+      aur domicile ki shart.
+    </p>
+  </section>
+  <section>
+    <h2>PPSC ka online form kaise bharein</h2>
+    <p>
+      Pehle PPSC ki official website par apna account banayen. Phir apni taleem, tajurba aur rabte ki maloomat sahih sahih likhein. Us ke baad
+      jis post par apply karna hai use chunein aur form jama karein. Form ke baad challan banta hai jo bank mein jama hota hai. Challan ki raseed
+      aur form ki copy sambhal kar rakhein.
+    </p>
+    <p>
+      Aam ghaltiyan: naam ya CNIC number ki ghalat spelling, purani tasveer, aur akhri din tak intezar. Akhri dinon mein website par rush hota hai,
+      is liye form pehle bharna behtar hai.
+    </p>
+  </section>
+  <section>
+    <h2>Test ka aam pattern</h2>
+    <p>
+      Aksar posts ke liye pehle likhit test hota hai jo zyada tar MCQs par mabni hota hai, phir interview. Sawal aam taur par general knowledge,
+      Pakistan Studies, Islamiat, current affairs, English aur us post ke mazmoon se aate hain. Har ishtihar aur syllabus mein asal pattern likha hota
+      hai, wohi dekhein.
+    </p>
+    <p>
+      Tayyari ke liye hamara <a href="/daily-test">rozana muft test</a>, <a href="/mcqs">mazmoon-war MCQs</a> aur
+      <a href="/mock-tests">muft mock tests</a> istemal karein.
+    </p>
+  </section>
+  <section>
+    <h2>Hum kaise madad karte hain</h2>
+    <p>
+      Kisi bhi job ke page par "Hum apply kar dein" dabayen. Hum aap ke documents le kar online form bhar dete hain aur challan aur form ki copy
+      WhatsApp par bhej dete hain. Hamari fee alag hai aur sarkari fee alag, official challan par. Tafseel <a href="/apply-service">apply service</a> par.
+    </p>
+  </section>
+</OrgJobsPage>

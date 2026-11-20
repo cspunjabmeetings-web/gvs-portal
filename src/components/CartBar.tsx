@@ -3,7 +3,7 @@
 // Server/Turnstile ki kharabi (network, 5xx, 10 s timeout) par F05: "WhatsApp par seedha order bhejein", cart khali nahin.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { CART_EVENT, CART_MSG, cartTotal, clearCart, itemDetail, loadCart, ordersOpen, rememberOrder, removeFromCart, type CartItem } from '../lib/cart';
-import { buildOrderMessage } from '../lib/order-message';
+import { buildOrderMessage, govtFeeLine } from '../lib/order-message';
 import { validateName, validatePhone } from '../lib/validators';
 import { toDisplay, waLink } from '../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../lib/site-settings';
@@ -195,7 +195,7 @@ export default function CartBar() {
               <span>
                 <span class="block font-semibold">{it.name}</span>
                 {itemDetail(it) && <span class="block text-sm text-muted">{itemDetail(it).trim().slice(1, -1)}</span>}
-                {it.govtFeeExtra && <span class="block text-sm text-muted">Sarkari fee alag</span>}
+                {it.govtFeeExtra && <span class="block text-sm text-muted">{typeof it.govtFee === 'number' ? govtFeeLine(it.govtFee) : 'Sarkari fee alag'}</span>}
               </span>
               <span class="flex items-center gap-1">
                 <span class="tabular font-semibold whitespace-nowrap">{rs(it.price)}</span>

@@ -12,6 +12,10 @@ export interface CartItem {
   fields: Record<string, string>;
   govtFeeExtra?: boolean;
   jobId?: string;
+  /** Job apply (F20-AC2): sirf dikhane/seedhe WhatsApp message ke liye snapshot; server job se dobara leta hai */
+  jobTitle?: string;
+  govtFee?: number;
+  documents?: string[];
 }
 
 export const MAX_ITEMS = 10; // intent 7.4

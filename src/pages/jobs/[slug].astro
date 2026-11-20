@@ -1,0 +1,183 @@
+---
+// spec: S24 /jobs/<slug> (on-demand, D1), F18-AC2 (ishtihar ka link, taleem, documents, tareeqa number wari, akhri tareekh, official link,
+//       "GVS niji academy hai"), F18-AC4 (band: "Is post ki akhri tareekh guzar chuki hai", us idare ki khuli jobs, apply button band),
+//       F18-AC6 (JobPosting schema NAHIN — sirf BreadcrumbList), F20-AC1 ("Hum apply kar dein"), F19-AC2 (Apply service Nahin → button nahin),
+//       F12-AC5 + P-06 (mitayi 410, chhupi 404), intent 14.2 (title), design.md 6.9; Ad "Haan" (top + bottom). Tasveer Qadam 13c.
+//       ppsc/fpsc/nts ke apne static route files hain (A-12) — woh is se pehle chalte hain.
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import JobCard from '../../components/JobCard.astro';
+import JobApply from '../../components/JobApply.tsx';
+import { jobBySlug, daysLeft, fmtDate, jobTitle } from '../../lib/jobs';
+import { pkDate } from '../../lib/pkdate';
+import { formatPrice, getProduct } from '../../lib/catalog';
+import { breadcrumbSchema, jsonLd } from '../../lib/schema-ld';
+
+export const prerender = false;
+
+const now = new Date();
+const page = await jobBySlug(env.DB, Astro.params.slug ?? '', now);
+if (page === 'gone') {
+  return new Response('Yeh job hata di gayi hai. Doosri khuli jobs: /jobs', { status: 410, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+}
+if (!page) {
+  return new Response('Yeh job nahin mili.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+}
+const { job, sameOrg } = page;
+const today = pkDate(now);
+const product = getProduct('job-apply');
+const canApply = job.open && job.applyService && !!product;
+const title = jobTitle(job);
+const description = `${job.org} ${job.post}: akhri tareekh ${fmtDate(job.lastDate)}. Documents, apply ka tareeqa aur official link. Chahein to hum apply kar dein.`.slice(0, 155);
+const base = Astro.site ?? Astro.url;
+const ld = breadcrumbSchema([
+  { name: 'Home', url: new URL('/', base).href },
+  { name: 'Jobs', url: new URL('/jobs', base).href },
+  { name: `${job.org} ${job.post}`, url: new URL(`/jobs/${job.slug}`, base).href },
+]);
+const ext = 'inline-flex min-h-[44px] items-center font-semibold break-all';
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
+---
+<Base title={title} description={description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Jobs', href: '/jobs' }, { label: `${job.org} ${job.post}` }]} />
+    <article class="mt-3 max-w-[68ch]" data-job={job.slug} data-job-open={job.open ? '1' : '0'}>
+      <p class="text-sm font-semibold text-primary">{job.org}</p>
+      <h1 class="mt-1">{job.post}</h1>
+      {job.city && <p class="mt-1 text-muted">{job.city}</p>}
+
+      <div class:list={['mt-4 rounded-xl p-4', job.open ? 'bg-accent text-on-accent' : 'border border-border bg-surface-2']} data-last-date>
+        <p class="text-sm">Akhri tareekh</p>
+        <p class="text-xl font-bold">
+          <span class="tabular">{fmtDate(job.lastDate)}</span> · <span data-days-left>{daysLeft(job.lastDate, today)}</span>
+        </p>
+        {job.open && <p class="text-sm">Is din raat 11:59 tak (Pakistan waqt).</p>}
+      </div>
+
+      {
+        !job.open && (
+          <p class="mt-4 rounded-xl border border-wrong bg-wrong-bg p-4 font-semibold text-wrong" role="status" data-job-closed>
+            Is post ki akhri tareekh guzar chuki hai.
+          </p>
+        )
+      }
+
+      <AdSlot slot="top" />
+
+      {
+        job.education && (
+          <section class="mt-6" aria-labelledby="edu-h">
+            <h2 id="edu-h">Taleem</h2>
+            <p class="mt-2">{job.education}</p>
+          </section>
+        )
+      }
+
+      {
+        job.documents.length > 0 && (
+          <section class="mt-6" aria-labelledby="docs-h">
+            <h2 id="docs-h">Zaroori documents</h2>
+            <ul class="mt-2 flex flex-col gap-1" data-job-docs>
+              {job.documents.map((d) => (
+                <li class="flex gap-2">
+                  <span class="text-correct" aria-hidden="true">✓</span>
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        job.steps.length > 0 && (
+          <section class="mt-6" aria-labelledby="steps-h">
+            <h2 id="steps-h">Apply ka tareeqa</h2>
+            <ol class="mt-2 flex list-decimal flex-col gap-1 pl-5" data-job-steps>
+              {job.steps.map((s) => (
+                <li>{s}</li>
+              ))}
+            </ol>
+          </section>
+        )
+      }
+
+      <section class="mt-6" aria-labelledby="links-h">
+        <h2 id="links-h">Official maloomat</h2>
+        <p class="mt-2">
+          <a href={job.officialUrl} target="_blank" rel="noopener nofollow" class={ext} data-official-link>
+            Official link kholen <span aria-hidden="true">&nbsp;↗</span><span class="sr-only"> (naye tab mein)</span>
+          </a>
+        </p>
+        {
+          job.adUrl && (
+            <p>
+              <a href={job.adUrl} target="_blank" rel="noopener nofollow" class={ext} data-ad-link>
+                Ishtihar dekhein <span aria-hidden="true">&nbsp;↗</span><span class="sr-only"> (naye tab mein)</span>
+              </a>
+            </p>
+          )
+        }
+        {job.govtFee !== null && <p class="mt-2">Sarkari fee: <strong>{formatPrice(job.govtFee)}</strong> (official challan par, hamari fee se alag)</p>}
+      </section>
+
+      <section class="mt-6 rounded-2xl border border-border bg-surface p-4" aria-labelledby="apply-h" data-apply-box>
+        <h2 id="apply-h" class="text-lg">Hum apply kar dein?</h2>
+        {
+          canApply ? (
+            <>
+              <p class="mt-1 text-sm">
+                Hamari fee <strong data-job-fee>{formatPrice(job.fee)}</strong>. Qeemat mein sarkari fee shamil nahin; woh alag, official challan par.
+                Order ke baad documents WhatsApp par bhejein.
+              </p>
+              <div class="mt-3">
+                <JobApply
+                  client:idle
+                  jobId={job.id}
+                  org={job.org}
+                  post={job.post}
+                  fee={job.fee}
+                  govtFee={job.govtFee}
+                  documents={job.documents}
+                  productName={product!.name}
+                />
+              </div>
+              <noscript>
+                <p class="text-sm">Order ke liye browser mein JavaScript chalu karein, ya WhatsApp par rabta karein.</p>
+              </noscript>
+            </>
+          ) : !job.open ? (
+            <p class="mt-1 text-sm" data-no-apply>Akhri tareekh guzarne ki wajah se is post ke liye apply band hai.</p>
+          ) : (
+            <p class="mt-1 text-sm" data-no-apply>Is post ke liye hamari apply service nahin. Official link se khud apply karein.</p>
+          )
+        }
+      </section>
+
+      <p class="mt-6 rounded-xl bg-surface-2 p-4 text-sm" data-disclaimer>
+        GVS Academy niji academy hai, sarkari idara nahin. Yeh maloomat official ishtihar se li gayi hai; apply se pehle official link zaroor dekhein.
+      </p>
+    </article>
+
+    {
+      sameOrg.length > 0 && (
+        <section class="mt-8" aria-labelledby="same-h" data-same-org>
+          <h2 id="same-h">{job.org} ki khuli jobs</h2>
+          <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+            {sameOrg.map((j) => (
+              <li>
+                <JobCard job={j} today={today} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <p class="mt-6"><a href="/jobs" class="inline-flex min-h-[44px] items-center">Saari jobs</a></p>
+    <AdSlot slot="bottom" />
+  </div>
+</Base>

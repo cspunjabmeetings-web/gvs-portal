@@ -1,10 +1,11 @@
 ---
 // spec: S01, F01-AC1, F01-AC2, F01-AC3 (streak ki yaad dihani), F01-AC5, F01-AC6, F01-AC7; F17-AC5 (Aap ke liye); F21-AC1, F21-AC8
-// Bahar: taza jobs F01-AC4 (Qadam 13)
+//       F01-AC4 taza jobs (E07, Qadam 13b)
 import Base from '../layouts/Base.astro';
 import DoorCard from '../components/DoorCard.astro';
 import DailyTestCard from '../components/DailyTestCard.astro';
 import HomeForYou from '../components/HomeForYou.tsx';
+import LatestJobs from '../components/LatestJobs.tsx';
 import ProductCard from '../components/ProductCard.astro';
 import OrderSteps from '../components/OrderSteps.astro';
 import FAQ from '../components/FAQ.astro';
@@ -61,6 +62,10 @@ const faq = [
     <DailyTestCard />
     <HomeForYou client:idle />
   </section>
+
+  <div class="container-page" data-latest-jobs-host>
+    <LatestJobs client:idle />
+  </div>
 
   <section class="container-page py-4" aria-labelledby="popular-heading">
     <h2 id="popular-heading" class="mb-4">Mashhoor packs</h2>

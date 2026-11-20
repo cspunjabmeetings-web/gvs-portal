@@ -1,0 +1,58 @@
+---
+// spec: S23 /jobs/nts (F18-AC3, A-12 reserved slug). Matn aam rehnumai hai (owner ka faisla 13b-3a); owner tasdeeq kare.
+import OrgJobsPage from '../../components/OrgJobsPage.astro';
+
+export const prerender = false;
+
+const faq = [
+  { q: 'Kya NTS khud naukri deta hai?', a: 'Nahin. NTS testing ka idara hai. Woh mukhtalif mahkamon ki bharti ke test leta hai; naukri woh mahkama deta hai.' },
+  { q: 'Kya GVS Academy NTS ka hissa hai?', a: 'Nahin. GVS niji academy hai. Hum sirf form bharne aur tayyari mein madad karte hain.' },
+  { q: 'Roll number slip kahan milti hai?', a: 'Aam taur par NTS ki official website se, CNIC number daal kar. Test ki tareekh aur jagah usi par hoti hai.' },
+  { q: 'Test ki fee kahan jama hoti hai?', a: 'Ishtihar mein likhe tareeqe se, aksar bank challan ya online. Yeh hamari service fee se alag hai.' },
+];
+---
+<OrgJobsPage path="/jobs/nts" org="NTS" fullName="National Testing Service" officialUrl="https://www.nts.org.pk" faq={faq}>
+  <section>
+    <h2>NTS kya hai?</h2>
+    <p>
+      NTS, yani National Testing Service, ek testing ka idara hai. Bohat se sarkari aur niji mahkame apni bharti ka test NTS se karwate hain. Is liye
+      NTS ka ishtihar asal mein kisi mahkame ki job ka hota hai, aur NTS us ka test leta hai. Ishtihar mein mahkame ka naam, post, taleem, umar aur
+      akhri tareekh likhi hoti hai.
+    </p>
+    <p>
+      NTS ke kuch tests bharti ke ilawa bhi hote hain, jaise dakhle ya scholarship ke. Is page par sirf jobs ke tests ki baat hai.
+    </p>
+  </section>
+  <section>
+    <h2>NTS ka form kaise bharein</h2>
+    <p>
+      NTS ki official website par us test ka form kholen. Apni maloomat aur taleem likhein, tasveer lagayen, aur test ki fee ishtihar mein likhe
+      tareeqe se jama karein. Fee jama hone ke baad form mukammal hota hai. Test se pehle roll number slip website se nikal lein aur us par likhi
+      tareekh, waqt aur jagah dekh lein.
+    </p>
+    <p>
+      Test ke din CNIC aur roll number slip sath le jayen. Kai tests mein mobile phone le jane ki ijazat nahin hoti, is liye hidayat pehle parh lein.
+    </p>
+    <p>
+      Test ke baad nateeja bhi aam taur par NTS ki website par CNIC number se dekha jata hai. Aage ka faisla, jaise interview ya merit list, us
+      mahkame ki taraf se hota hai jis ki post thi.
+    </p>
+  </section>
+  <section>
+    <h2>Test ka aam pattern</h2>
+    <p>
+      NTS ke job tests aksar MCQs par hote hain. Sawal aam taur par verbal (English), quantitative (hisab), analytical, general knowledge aur us post
+      ke mazmoon se aate hain. Har test ke ishtihar mein us ke hisse aur marks likhe hote hain; tayyari usi ke mutabiq karein.
+    </p>
+    <p>
+      Muft tayyari ke liye <a href="/daily-test">rozana test</a>, <a href="/mcqs">mazmoon-war MCQs</a> aur <a href="/mock-tests">mock tests</a> dein.
+    </p>
+  </section>
+  <section>
+    <h2>Hum kaise madad karte hain</h2>
+    <p>
+      Job ke page par "Hum apply kar dein" dabayen. Hum form bhar kar fee ka challan aur form ki copy WhatsApp par bhejte hain. Hamari fee alag hai aur
+      test ki fee alag, official tareeqe se. Tafseel <a href="/apply-service">apply service</a> par.
+    </p>
+  </section>
+</OrgJobsPage>

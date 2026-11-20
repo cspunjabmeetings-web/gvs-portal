@@ -113,6 +113,9 @@ describe('/my-history (F17)', () => {
   it.skipIf(!built.includes('/'))('Home par "Aap ke liye" island (F01-AC3, F17-AC5)', () => {
     expect(html('/')).toMatch(/component-url="[^"]*HomeForYou/);
   });
+  it.skipIf(!built.includes('/'))('Home par taza jobs island (F01-AC4, E07; Qadam 13b)', () => {
+    expect(html('/')).toMatch(/component-url="[^"]*LatestJobs/);
+  });
 });
 
 // spec: 6.1 AnnouncementBar (har public page par, Header se pehle), F10-AC3, F10-AC7

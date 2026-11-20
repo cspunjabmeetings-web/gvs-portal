@@ -1,0 +1,60 @@
+---
+// spec: S23 /jobs/fpsc (F18-AC3, A-12 reserved slug). Matn aam rehnumai hai (owner ka faisla 13b-3a); owner tasdeeq kare.
+import OrgJobsPage from '../../components/OrgJobsPage.astro';
+
+export const prerender = false;
+
+const faq = [
+  { q: 'Kya GVS Academy FPSC se juri hai?', a: 'Nahin. GVS niji academy hai. Hum sirf online apply mein madad karte hain. Test aur faisla FPSC ka hota hai.' },
+  { q: 'FPSC ki jobs mein kaun apply kar sakta hai?', a: 'Har ishtihar mein taleem, umar aur zone ya domicile ki shartein likhi hoti hain. Apply se pehle woh zaroor parhein.' },
+  { q: 'Kya CSS bhi FPSC karwata hai?', a: 'Haan, CSS ka imtihan bhi FPSC leta hai, lekin us ka tareeqa alag hai. Is page par aam bharti ki jobs ki baat hai.' },
+  { q: 'Fee kitni hai?', a: 'Sarkari fee har post ke ishtihar mein likhi hoti hai aur official challan par jati hai. Hamari service fee alag hai.' },
+];
+---
+<OrgJobsPage path="/jobs/fpsc" org="FPSC" fullName="Federal Public Service Commission" officialUrl="https://www.fpsc.gov.pk" faq={faq}>
+  <section>
+    <h2>FPSC kya hai?</h2>
+    <p>
+      FPSC, yani Federal Public Service Commission, wafaqi hukumat ka idara hai jo wafaqi wizaraton aur mahkamon ki bohat si posts ke liye bharti
+      karta hai. Is ke ishtihar poore mulk ke liye hote hain, lekin aksar seats soobon aur zones mein banti hoti hain. Is liye har post ke sath likha
+      quota aur zone dekhna zaroori hai.
+    </p>
+    <p>
+      Ishtihar mein post, scale, taleem, umar, tajurba aur akhri tareekh di hoti hai. Kuch posts par tajurba zaroori hota hai aur kuch par khaas
+      degree.
+    </p>
+  </section>
+  <section>
+    <h2>FPSC mein online apply kaise karein</h2>
+    <p>
+      FPSC ki official website par account banayen aur apni maloomat, taleem aur tajurba likhein. Phir post chun kar form bharein. Fee ka challan
+      bank mein jama karein aur us ki tafseel form mein darj karein. Aakhir mein form ki copy save ya print kar lein.
+    </p>
+    <p>
+      Documents ki tasveerein saaf hon aur naam har jagah CNIC ke mutabiq ho. Domicile aur degree ki tareekhein sahih likhein, kyun ke baad mein
+      documents ki jaanch hoti hai.
+    </p>
+    <p>
+      Apply karne se pehle yeh bhi dekh lein ke aap ka zone ya soobe ka quota us post mein maujood hai ya nahin. Agar ek se zyada posts par apply
+      karna ho to har post ka alag form aur alag fee hoti hai.
+    </p>
+  </section>
+  <section>
+    <h2>Test aur interview</h2>
+    <p>
+      Aam taur par pehle screening ya likhit test hota hai, phir interview. Kai posts ke test mein general ability, English, current affairs aur us
+      post ka professional mazmoon hota hai. Har post ka syllabus aur pattern FPSC ke ishtihar ya website par diya jata hai.
+    </p>
+    <p>
+      Rozana thori tayyari kafi madad karti hai: <a href="/daily-test">aaj ka muft test</a> dein, <a href="/mcqs">MCQs practice</a> karein aur
+      <a href="/notes">muft notes</a> parhein.
+    </p>
+  </section>
+  <section>
+    <h2>Hamari apply service</h2>
+    <p>
+      Job ke page par "Hum apply kar dein" dabayen aur documents WhatsApp par bhejein. Hum form bhar kar challan aur form ki copy aap ko bhej dete
+      hain. Hamari fee aur sarkari fee alag alag hain. Tafseel <a href="/apply-service">apply service</a> par.
+    </p>
+  </section>
+</OrgJobsPage>

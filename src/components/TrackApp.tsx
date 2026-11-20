@@ -6,6 +6,7 @@ import { formatRemaining, OVERDUE_MSG } from '../lib/timer';
 import { addToCart, itemDetail } from '../lib/cart';
 import { toDisplay, waLink } from '../lib/phone';
 import { whatsappNumber } from '../lib/site-settings';
+import { govtFeeLine } from '../lib/order-message';
 
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-PK')}`;
 const POLL_MS = 60_000;
@@ -108,7 +109,7 @@ export default function TrackApp() {
     let added = 0;
     let skipped = 0;
     for (const it of o.items) {
-      const r = addToCart({ id: it.id, name: it.name, price: it.price, fields: it.fields, govtFeeExtra: it.govtFeeExtra, jobId: it.jobId });
+      const r = addToCart({ id: it.id, name: it.name, price: it.price, fields: it.fields, govtFeeExtra: it.govtFeeExtra, jobId: it.jobId, jobTitle: it.jobTitle, govtFee: it.govtFee, documents: it.documents });
       if (r.ok) added++;
       else skipped++;
     }
@@ -266,6 +267,7 @@ export default function TrackApp() {
                   <span>
                     <span class="block font-medium">{it.name}</span>
                     {(it.jobTitle || itemDetail(it)) && <span class="block text-muted">{it.jobTitle ?? itemDetail(it).trim().slice(1, -1)}</span>}
+                    {(it.govtFeeExtra || typeof it.govtFee === 'number') && <span class="block text-muted" data-govt-fee>{govtFeeLine(it.govtFee)}</span>}
                   </span>
                   <span class="tabular whitespace-nowrap font-semibold">{rs(it.price)}</span>
                 </li>

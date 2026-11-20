@@ -39,7 +39,7 @@ const ld = breadcrumbSchema([
 const img = jobImage(job.imageKey, PUBLIC_IMG_BASE, `${job.org} ${job.post} ka ishtihar`);
 const ext = 'inline-flex min-h-[44px] items-center font-semibold break-all';
 ---
-<Base title={title} description={description}>
+<Base title={title} description={description} image={img ?? undefined}>
   <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Jobs', href: '/jobs' }, { label: `${job.org} ${job.post}` }]} />

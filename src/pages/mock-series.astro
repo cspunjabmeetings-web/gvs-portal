@@ -8,6 +8,7 @@ import OrderSteps from '../components/OrderSteps.astro';
 import FAQ from '../components/FAQ.astro';
 import seo from '../data/seo.json';
 import { getProduct } from '../lib/catalog';
+import { jsonLd, productSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/mock-series'];
 const product = getProduct('mock-series');
@@ -22,8 +23,12 @@ const faq = [
   { q: 'Mahina khatam hone par?', a: 'Series ek mahine ki hai. Agle mahine ke liye dobara order karein.' },
   { q: 'Kya group mein mera number doosron ko dikhega?', a: 'WhatsApp group mein members ke number ek doosre ko nazar aate hain; yeh WhatsApp ka tareeqa hai. Agar yeh pasand nahin to order se pehle WhatsApp par baat kar lein.' },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = product ? [productSchema({ name: product.name, description: meta.description, url: ldUrl, base: ldBase, products: [product] })] : [];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Job ki tayyari', href: '/job-prep' }, { label: 'Mock test series' }]} />
     <h1 class="mt-3">Mock test series: mahana</h1>

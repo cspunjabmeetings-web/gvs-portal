@@ -1,12 +1,14 @@
 ---
 // spec: S16 /mcqs/<mazmoon> (on-demand, D1 + /api/mcqs): 10 sawalon ka set (quiz UI), "Agla set", set ke baad `result` ad (F14-AC2..AC4);
-//       intent page list: Ad "Set ke baad" (quiz ke dauran koi ad nahin, F22-AC3). Ghalat mazmoon = 404. Pehla set page ke sath (SEO + foran).
+//       intent page list: Ad "Set ke baad"; Qadam 15a: FAQ + FAQPage (intent 13) (quiz ke dauran koi ad nahin, F22-AC3). Ghalat mazmoon = 404. Pehla set page ke sath (SEO + foran).
 // View: route file lookup karti hai aur na mile to NotFound (Qadam 14); yeh sirf mili hui cheez dikhata hai.
 import { env } from 'cloudflare:workers';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import Practice from '../../components/quiz/Practice.tsx';
+import FAQ from '../../components/FAQ.astro';
+import { faqSchema, jsonLd } from '../../lib/schema-ld';
 import { practiceSet } from '../../lib/practice';
 import { getProduct, formatPrice, productPage } from '../../lib/catalog';
 
@@ -20,8 +22,28 @@ const p = getProduct('mcq-pack');
 const pack = p && p.price !== null ? { name: p.name, line: p.includes[0] ?? '', price: formatPrice(p.price), href: productPage(p.id) } : null;
 const title = `${subject} MCQs: muft practice, jawab aur tashreeh | GVS Academy`;
 const description = `${subject} ke ${initial.total ? initial.total + ' ' : ''}muft MCQs, 10-10 ke sets mein. Har sawal ka foran jawab aur tashreeh, bina sign up.`.slice(0, 160);
+// intent 13: /mcqs/<mazmoon> par FAQPage (owner ka faisla Qadam 15a: 2a) — wohi sawal jo page par dikhte hain
+const faq = [
+  {
+    q: `Kya ${subject} ke yeh MCQs muft hain?`,
+    a: 'Haan. Saare sawal muft hain aur sign up nahin chahiye. Sawal 10-10 ke sets mein aate hain; har jawab ke sath tashreeh bhi.',
+  },
+  {
+    q: 'Kisi sawal ka jawab ghalat lage to kya karein?',
+    a: 'Sawal ke neeche "Ghalti batayen" dabayen. Sawal ka number WhatsApp par hamare paas aa jata hai, hum jaanch kar theek kar dete hain.',
+  },
+  {
+    q: 'Kya practice ka score save hota hai?',
+    a: 'Practice sets ka score save nahin hota. Jo sawal aap bookmark karein woh isi browser mein rehte hain. Rozana test ka score aur streak "Meri history" mein milte hain.',
+  },
+  {
+    q: 'Aur tayyari kaise karein?',
+    a: 'Rozana 10 sawal ka muft test, timer wale mock tests aur muft notes bhi portal par hain. Ek mazmoon ka tayyar MCQs pack WhatsApp par mangwa sakte hain.',
+  },
+];
 ---
 <Base title={title} description={description} noindex={initial.total === 0}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(faqSchema(faq))} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'MCQs', href: '/mcqs' }, { label: subject }]} />
     <h1 class="mt-3">{subject} MCQs</h1>
@@ -47,6 +69,9 @@ const description = `${subject} ke ${initial.total ? initial.total + ' ' : ''}mu
     </div>
     <div class="max-w-xl" data-result-ad hidden>
       <AdSlot slot="result" />
+    </div>
+    <div class="max-w-xl">
+      <FAQ items={faq} />
     </div>
     <p class="mt-6"><a href="/mcqs" class="inline-flex min-h-[44px] items-center">Doosre mazameen</a></p>
   </div>

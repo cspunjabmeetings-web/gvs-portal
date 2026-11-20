@@ -13,6 +13,7 @@ import AdSlot from '../components/AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct, type Product } from '../lib/catalog';
 import RefundLine from '../components/RefundLine.astro';
+import { jsonLd, organizationSchema, websiteSchema } from '../lib/schema-ld';
 
 const meta = seo.pages['/'];
 const popular = ['vu-smart', 'mcq-pack', 'past-papers', 'cv-cover']
@@ -37,8 +38,12 @@ const faq = [
     a: 'Nahin. GVS Academy niji academy hai. Sarkari fee alag hoti hai aur official challan par jati hai.',
   },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = [organizationSchema(ldBase, meta.description), websiteSchema(ldBase)];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <section class="container-page pt-8 pb-4">
     <h1>Aap kon hain?</h1>
     <p class="mt-2 text-muted max-w-[68ch]">Apna rasta chunein. Tayyari bhi, form bhi, kaam bhi: ek jagah.</p>

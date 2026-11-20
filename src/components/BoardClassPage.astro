@@ -9,6 +9,7 @@ import FAQ from './FAQ.astro';
 import AdSlot from './AdSlot.astro';
 import seo from '../data/seo.json';
 import { getProduct } from '../lib/catalog';
+import { jsonLd, productSchema } from '../lib/schema-ld';
 
 interface Props {
   cls: '9th' | '10th' | '11th' | '12th';
@@ -21,8 +22,12 @@ const { cls, heading, intro, subjects, faq } = Astro.props;
 const meta = seo.pages[`/board/${cls}` as keyof typeof seo.pages];
 const product = getProduct('board-paper');
 const others = (['9th', '10th', '11th', '12th'] as const).filter((c) => c !== cls);
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = product ? [productSchema({ name: `${product.name}: class ${cls}`, description: meta.description, url: ldUrl, base: ldBase, products: [product] })] : [];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Board Classes', href: '/board' }, { label: `${cls} class` }]} />
     <h1 class="mt-3">{heading}</h1>

@@ -8,6 +8,7 @@ import OrderSteps from '../../components/OrderSteps.astro';
 import FAQ from '../../components/FAQ.astro';
 import seo from '../../data/seo.json';
 import { getProduct } from '../../lib/catalog';
+import { jsonLd, serviceSchema } from '../../lib/schema-ld';
 
 const meta = seo.pages['/career/cv'];
 const product = getProduct('cv-cover');
@@ -24,8 +25,12 @@ const faq = [
   { q: 'Agar maloomat mein ghalti ho?', a: 'CV milne ke baad dekh lein; hamari ghalti ho to theek kar ke dobara bhej dete hain.' },
   { q: 'Kya CNIC ya degree ki tasveer bhejna zaroori hai?', a: 'CV ke liye nahin. Sirf likhi hui maloomat kaafi hai. Documents sirf zaroorat par aur sirf WhatsApp par.' },
 ];
+const ldBase = (Astro.site ?? Astro.url).href;
+const ldUrl = new URL(Astro.url.pathname, ldBase).href;
+const ld = product ? [serviceSchema({ name: product.name, description: meta.description, url: ldUrl, base: ldBase, serviceType: 'CV aur cover letter writing', products: [product] })] : [];
 ---
 <Base title={meta.title} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={jsonLd(ld)} />
   <div class="container-page py-6">
     <Breadcrumbs items={[{ label: 'Career Desk', href: '/career' }, { label: 'CV + cover letter' }]} />
     <h1 class="mt-3">CV aur cover letter</h1>

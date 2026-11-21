@@ -3,7 +3,46 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   addItem, removeItem, cartTotal, itemKey, itemDetail, loadCart, saveCart, addToCart, ordersOpen,
   MAX_ITEMS, CART_MSG, _resetMemory, _memoryStore, type CartItem,
+  takeSpotlight, _resetSpotlight, SPOTLIGHT_KEY, SPOTLIGHT_MAX,
 } from '../src/lib/cart';
+
+// spec v0.3.7 F03-AC8: spotlight har browser mein sirf pehli 2 dafa
+describe('F03-AC8: spotlight ki ginti', () => {
+  const fakeLs = () => {
+    const m = new Map<string, string>();
+    return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), m } as unknown as Storage & { m: Map<string, string> };
+  };
+  beforeEach(() => _resetSpotlight());
+
+  it('pehli 2 dafa haan, teesri dafa nahin; ginti localStorage mein', () => {
+    const ls = fakeLs();
+    expect(SPOTLIGHT_MAX).toBe(2);
+    expect(takeSpotlight(ls)).toBe(true);
+    expect(takeSpotlight(ls)).toBe(true);
+    expect(takeSpotlight(ls)).toBe(false);
+    expect(ls.m.get(SPOTLIGHT_KEY)).toBe('2');
+  });
+
+  it('reload ke baad bhi yaad (naya memory, wahi storage)', () => {
+    const ls = fakeLs();
+    ls.setItem(SPOTLIGHT_KEY, '2');
+    _resetSpotlight();
+    expect(takeSpotlight(ls)).toBe(false);
+  });
+
+  it('localStorage band (throw) ya maujood nahin: crash nahin, memory se 2 dafa', () => {
+    const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } } as unknown as Storage;
+    expect(takeSpotlight(broken)).toBe(true);
+    expect(takeSpotlight(null)).toBe(true);
+    expect(takeSpotlight(broken)).toBe(false);
+  });
+
+  it('kharab value ("abc") = 0 samjho', () => {
+    const ls = fakeLs();
+    ls.setItem(SPOTLIGHT_KEY, 'abc');
+    expect(takeSpotlight(ls)).toBe(true);
+  });
+});
 
 const vu = (code: string) => ({ id: 'vu-smart', name: 'VU Smart pack', price: 350, fields: { courseCode: code } });
 

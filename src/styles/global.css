@@ -160,6 +160,17 @@
   .anim-pop { animation: gvs-pop 260ms ease-out; }
   @keyframes gvs-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   @keyframes gvs-pop { 0% { transform: scale(1); } 40% { transform: scale(1.03); } 100% { transform: scale(1); } }
+  /* F03-AC8: order button par spotlight — amber ghera (static) + dhadakti roshni (sirf box-shadow, layout nahin hilta).
+     reduced-motion par upar wala qaida animation ko foran khatam karta hai: sirf static ghera + tip. */
+  .spotlight-pulse {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    animation: gvs-spot 1.2s ease-out infinite;
+  }
+  @keyframes gvs-spot {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 65%, transparent); }
+    100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
   .sr-only-focusable:not(:focus) {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
     clip: rect(0 0 0 0); white-space: nowrap;

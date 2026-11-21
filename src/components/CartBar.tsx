@@ -2,7 +2,7 @@
 // Qadam 5: pehle POST /api/orders (order number, phir "WhatsApp par bhejein").
 // Server/Turnstile ki kharabi (network, 5xx, 10 s timeout) par F05: "WhatsApp par seedha order bhejein", cart khali nahin.
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { CART_EVENT, CART_MSG, cartTotal, clearCart, itemDetail, loadCart, ordersOpen, rememberOrder, removeFromCart, type CartItem } from '../lib/cart';
+import { CART_EVENT, CART_MSG, cartTotal, clearCart, itemDetail, loadCart, ordersOpen, rememberOrder, removeFromCart, takeSpotlight, type CartItem } from '../lib/cart';
 import { buildOrderMessage, govtFeeLine } from '../lib/order-message';
 import { validateName, validatePhone } from '../lib/validators';
 import { toDisplay, waLink } from '../lib/phone';
@@ -38,17 +38,41 @@ export default function CartBar() {
   const tsBox = useRef<HTMLDivElement>(null);
   const turnstile = useRef<TurnstileWidget | null>(null);
   const openedSent = useRef(false);
+  const prevCount = useRef(0);
+  const [spot, setSpot] = useState(false);
+
+  // F03-AC8: 4 s baad, ya kahin bhi tap/key par, spotlight khatam
+  useEffect(() => {
+    if (!spot) return;
+    const off = () => setSpot(false);
+    const t = setTimeout(off, 4000);
+    addEventListener('pointerdown', off, { capture: true });
+    addEventListener('keydown', off, { capture: true });
+    return () => {
+      clearTimeout(t);
+      removeEventListener('pointerdown', off, { capture: true });
+      removeEventListener('keydown', off, { capture: true });
+    };
+  }, [spot]);
 
   useEffect(() => {
     const sync = () => {
-      setItems(loadCart());
+      const now = loadCart();
+      prevCount.current = now.length;
+      setItems(now);
       setOpen(ordersOpen());
     };
     cachedSettings();
     sync();
     // E01: number aur orders_open taza (5 minute cache)
     refreshSettings().then((s) => s && setOpen(s.orders_open));
-    const onCart = (e: Event) => setItems((e as CustomEvent<CartItem[]>).detail ?? loadCart());
+    const onCart = (e: Event) => {
+      const next = (e as CustomEvent<CartItem[]>).detail ?? loadCart();
+      // F03-AC8: khali list mein pehli cheez aayi → button par spotlight (har browser mein pehli 2 dafa)
+      if (prevCount.current === 0 && next.length > 0 && ordersOpen() && takeSpotlight()) setSpot(true);
+      prevCount.current = next.length;
+      setItems(next);
+    };
     // Doosri tab mein badla to yahan bhi
     const onStorage = (e: StorageEvent) => e.key?.startsWith('gvs.cart') && sync();
     addEventListener(CART_EVENT, onCart);
@@ -299,6 +323,10 @@ export default function CartBar() {
 
   return (
     <>
+      {/* F03-AC8: screen reader ko tip ek dafa (region hamesha maujood, matn sirf spotlight par) */}
+      <p role="status" class="sr-only">
+        {spot ? 'Neeche "WhatsApp par order karein" dabayen.' : ''}
+      </p>
       {items.length > 0 && (
         <>
           {/* Patti ke neeche footer chhup na jaye */}
@@ -316,9 +344,23 @@ export default function CartBar() {
                 <span class="tabular font-bold">Kul {rs(total)}</span>
               </button>
               {open ? (
-                <button type="button" onClick={openSheet} class="min-h-[48px] whitespace-nowrap rounded-lg bg-primary px-3 text-sm font-semibold text-on-primary hover:bg-primary-hover sm:px-4 sm:text-base">
-                  WhatsApp par order karein
-                </button>
+                <div class="relative">
+                  {/* F03-AC8: tip button ke upar (absolute → layout nahin hilta), clicks guzar jate hain */}
+                  {spot && (
+                    <div aria-hidden="true" data-spotlight-tip class="anim-reveal pointer-events-none absolute bottom-full right-0 mb-3 w-max max-w-[70vw] rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-on-accent shadow-lg">
+                      Yahan dabayen → WhatsApp par order
+                      <span class="absolute -bottom-1.5 right-6 h-3 w-3 rotate-45 bg-accent" />
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={openSheet}
+                    data-spotlight={spot ? '' : undefined}
+                    class={`min-h-[48px] whitespace-nowrap rounded-lg bg-primary px-3 text-sm font-semibold text-on-primary hover:bg-primary-hover sm:px-4 sm:text-base ${spot ? 'spotlight-pulse' : ''}`}
+                  >
+                    WhatsApp par order karein
+                  </button>
+                </div>
               ) : (
                 <p class="max-w-[55%] text-sm font-medium text-accent-text">{CART_MSG.closed}</p>
               )}

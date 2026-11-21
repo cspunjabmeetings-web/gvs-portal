@@ -261,7 +261,8 @@ describe('CHANGE REQUEST 17a: preview (*.workers.dev) noindex', () => {
     expect(isPreviewHost('localhost')).toBe(false);
   });
   it('public/_headers static pages ke liye workers.dev par X-Robots-Tag; production domain par nahin', () => {
-    const h = readFileSync(join(process.cwd(), 'public/_headers'), 'utf8');
+    // Windows par git checkout CRLF de sakta hai (autocrlf) — line endings ka farq jaanch ka hissa nahin
+    const h = readFileSync(join(process.cwd(), 'public/_headers'), 'utf8').replace(/\r\n/g, '\n');
     // 17b: asal host <worker>.<account>.workers.dev (do hisse) — placeholder ek hi hissa pakadta hai
     expect(h).toMatch(/^https:\/\/:worker\.:account\.workers\.dev\/\*\n {2}X-Robots-Tag: noindex, nofollow$/m);
     expect(h.split('\n').filter((l) => /^\S/.test(l) && !l.startsWith('#'))).toEqual(['https://:worker.:account.workers.dev/*']);

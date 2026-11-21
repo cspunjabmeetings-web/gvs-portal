@@ -116,6 +116,45 @@ export function ordersOpen(): boolean {
   return s?.orders_open !== false;
 }
 
+// ---- F03-AC8 (spec v0.3.7): "WhatsApp par order karein" button par spotlight, har browser mein pehli 2 dafa ----
+export const SPOTLIGHT_KEY = 'gvs.spotlight.v1';
+export const SPOTLIGHT_MAX = 2;
+let spotMemory = 0;
+
+function safeLocal(): Storage | null {
+  try {
+    return globalThis.localStorage ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Khali list mein pehli cheez aayi: spotlight dikhana hai? Haan ho to ginti barhao.
+ * Ginti localStorage mein (reload ke baad yaad); band ho to memory (crash nahin, F03-AC7 ki tarah).
+ */
+export function takeSpotlight(ls: Storage | null = safeLocal()): boolean {
+  let n = spotMemory;
+  try {
+    if (ls) n = Math.max(n, Number(ls.getItem(SPOTLIGHT_KEY)) || 0);
+  } catch {
+    /* storage band: memory */
+  }
+  if (n >= SPOTLIGHT_MAX) return false;
+  spotMemory = n + 1;
+  try {
+    ls?.setItem(SPOTLIGHT_KEY, String(spotMemory));
+  } catch {
+    /* memory hi kaafi */
+  }
+  return true;
+}
+
+/** Sirf tests ke liye */
+export function _resetSpotlight() {
+  spotMemory = 0;
+}
+
 /** Browser mein: list mein daalo aur mehfooz karo */
 export function addToCart(item: Omit<CartItem, 'key'>): AddResult {
   const res = addItem(loadCart(), item, ordersOpen());

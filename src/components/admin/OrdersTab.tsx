@@ -36,6 +36,8 @@ export default function OrdersTab({ focus = '' }: { focus?: string }) {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [summary, setSummary] = useState<ListResponse['summary']>();
+  const [csvBusy, setCsvBusy] = useState(false);
+  const [csvError, setCsvError] = useState('');
   const [work, setWork] = useState({ start: '09:00', end: '22:00' });
   const [payment, setPayment] = useState<ContactInput['payment']>();
   const [loading, setLoading] = useState(true);
@@ -115,6 +117,30 @@ export default function OrdersTab({ focus = '' }: { focus?: string }) {
     }
   }
 
+  // F28-AC1: fetch → file (401 par reload, ghalti par Roman Urdu paigham; JSON file download na ho)
+  async function downloadCsv() {
+    setCsvBusy(true);
+    setCsvError('');
+    try {
+      const res = await fetch('/api/admin/export', { cache: 'no-store', signal: AbortSignal.timeout(30_000) });
+      if (res.status === 401) return location.reload();
+      if (!res.ok) throw new Error();
+      const name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'gvs-orders.csv';
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    } catch {
+      setCsvError('CSV nahin ban saki. Internet dekh kar dobara koshish karein.');
+    } finally {
+      setCsvBusy(false);
+    }
+  }
+
   return (
     <div class="flex flex-col gap-4">
       <section aria-label="Aaj ka khulasa" class="grid grid-cols-2 gap-2" data-summary>
@@ -130,6 +156,19 @@ export default function OrdersTab({ focus = '' }: { focus?: string }) {
           </div>
         ))}
       </section>
+
+      {/* F28-AC1, A10: saare orders ka CSV (hafta war backup) */}
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <p class="text-xs text-muted">Hafta war backup: CSV download kar ke Google Drive mein rakhen.</p>
+        <button type="button" onClick={downloadCsv} disabled={csvBusy} class="min-h-[44px] rounded-lg border border-primary px-4 text-sm font-semibold text-primary disabled:opacity-60" data-export-csv>
+          {csvBusy ? 'Ban rahi hai…' : '⬇ Saare orders CSV'}
+        </button>
+      </div>
+      {csvError && (
+        <p class="text-sm text-wrong" role="alert">
+          ✕ {csvError}
+        </p>
+      )}
 
       <div class="flex flex-col gap-2">
         <label for="orders-q" class="sr-only">

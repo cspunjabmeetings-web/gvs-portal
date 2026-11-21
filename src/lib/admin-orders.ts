@@ -118,9 +118,6 @@ function toOrder(r: Row, s: Settings): AdminOrder {
   };
 }
 
-/** LIKE ke liye: % _ \ ko escape (9.2) */
-export const likeEscape = (s: string) => s.replace(/[\\%_]/g, (c) => '\\' + c);
-
 /** Pakistan ka "aaj" UTC mein kab shuru hua (A-01). Asia/Karachi = UTC+5, DST nahin. */
 export const todayStartUtc = (now: Date) => new Date(`${karachiDate(now)}T00:00:00+05:00`).toISOString();
 
@@ -142,14 +139,16 @@ export async function listOrders(request: Request, env: AdminOrdersEnv, deps: { 
     binds.push(filter);
   }
   if (q) {
-    const parts = ["id LIKE ? ESCAPE '\\'", "name LIKE ? ESCAPE '\\'"];
-    binds.push(`%${likeEscape(q.toUpperCase())}%`, `%${likeEscape(q)}%`);
+    // 17c: instr (LIKE nahin) — D1 mein LIKE pattern ki hadd 50 bytes (escape ke baad lamba ho jata tha); instr ki
+    // koi hadd nahin aur % _ aam harf. lower() = LIKE jaisa ASCII chhote/bare harf ka farq nahin.
+    const parts = ['instr(id, ?) > 0', 'instr(lower(name), lower(?)) > 0'];
+    binds.push(q.toUpperCase(), q);
     // Phone ke hindse: "0300-12" → "30012" (phone 923... mein mehfooz)
     let digits = q.replace(/\D/g, '');
     if (digits.startsWith('0')) digits = digits.slice(1);
     if (digits.length >= 3) {
-      parts.push('phone LIKE ?');
-      binds.push(`%${digits}%`);
+      parts.push('instr(phone, ?) > 0');
+      binds.push(digits);
     }
     where.push(`(${parts.join(' OR ')})`);
   }

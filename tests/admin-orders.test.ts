@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { startD1 } from './helpers/d1';
 import { makeOrder, adminReq, SECRET } from './helpers/admin';
-import { listOrders, setNote, setContacted, changeStatus, likeEscape, todayStartUtc, type AdminOrder } from '../src/lib/admin-orders';
+import { listOrders, setNote, setContacted, changeStatus, todayStartUtc, type AdminOrder } from '../src/lib/admin-orders';
 import { contactMessage, dueLabel, ago, toKarachiInput, fromKarachiInput } from '../src/lib/admin-ui';
 
 let d1: Awaited<ReturnType<typeof startD1>>;
@@ -66,7 +66,17 @@ describe('GET /api/admin/orders (E11)', () => {
     await makeOrder(d1.db, { name: 'Ali Raza' });
     expect((await list({ q: '%' })).body.orders).toEqual([]);
     expect((await list({ q: '_' })).body.orders).toEqual([]);
-    expect(likeEscape('a%b_c\\')).toBe('a\\%b\\_c\\\\');
+    // 17c: % naam mein ho to sirf wohi (seedha harf)
+    const pct = await makeOrder(d1.db, { name: 'Raza 100% Ali' });
+    expect(ids((await list({ q: '0% a' })).body)).toEqual([pct]);
+  });
+
+  it('17c: lambi search (D1 LIKE ki 50 byte hadd) par 503 nahin', async () => {
+    await makeOrder(d1.db, { name: 'Ali Raza' });
+    const long = 'x'.repeat(40) + '%_\\' + 'y'.repeat(20);
+    const r = await list({ q: long });
+    expect(r.status).toBe(200);
+    expect(r.body.orders).toEqual([]);
   });
 
   it('50 ek page; "Aur dikhayen" (offset)', async () => {

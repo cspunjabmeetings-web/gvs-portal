@@ -5,7 +5,6 @@ import * as v from 'valibot';
 import { fail, ok, readJson, sameOrigin, API_MSG, type ApiResult } from './api';
 import { adminPost, requireAdmin } from './admin-auth';
 import { getSettings } from './settings';
-import { likeEscape } from './admin-orders';
 import { parseContent, qHash, PARSER_LIMITS, type ParsedMcq, type ParsedNote } from './parser';
 import { existingHashes, type ContentEnv } from './content-import';
 
@@ -89,8 +88,9 @@ export async function listMcqs(request: Request, env: ContentEnv): Promise<ApiRe
   const binds: unknown[] = [];
   const q = (u.searchParams.get('q') ?? '').trim().slice(0, 100);
   if (q) {
-    where.push(`m.question LIKE ? ESCAPE '\\'`);
-    binds.push(`%${likeEscape(q)}%`);
+    // 17c: instr (LIKE nahin) — D1 mein LIKE pattern ki hadd 50 bytes; instr ki koi hadd nahin aur % _ aam harf
+    where.push('instr(lower(m.question), lower(?)) > 0');
+    binds.push(q);
   }
   const subject = (u.searchParams.get('subject') ?? '').trim();
   if (subject) {

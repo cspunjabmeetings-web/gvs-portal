@@ -42,6 +42,8 @@ export class TurnstileWidget {
   private id: string | null = null;
   private token: string | null = null;
   private failed = false;
+  /** 17b: aakhri ghalti ka code (fallback paigham mein "Wajah" ke liye; koi zaati maloomat nahin) */
+  private lastCode: string | null = null;
   private waiters: ((t: string | null) => void)[] = [];
 
   private el: HTMLElement | null = null;
@@ -51,7 +53,10 @@ export class TurnstileWidget {
     if (this.el === el) return;
     this.el = el;
     const api = await load();
-    if (!api) return this.settle(null, true);
+    if (!api) {
+      this.lastCode = 'load';
+      return this.settle(null, true);
+    }
     if (this.el !== el) return;
     if (this.id) {
       try {
@@ -68,13 +73,29 @@ export class TurnstileWidget {
         sitekey: PUBLIC_TURNSTILE_SITE_KEY,
         appearance: 'interaction-only',
         size: 'flexible',
-        callback: (t: string) => this.settle(t),
-        'error-callback': () => this.settle(null, true),
+        // 17b: Turnstile khud dobara koshish karta hai (retry auto) — har ghalti par haar na maano, 3 s baad dobara
+        'retry-interval': 3000,
+        callback: (t: string) => {
+          this.lastCode = null;
+          this.settle(t);
+        },
+        'error-callback': (code?: string) => {
+          this.lastCode = String(code ?? 'error');
+          // 110xxx = site key/domain ki ghalti (config): dobara koshish bekar → foran F05. Baqi: intezar jari (getToken ki had tak).
+          if (/^110\d{3}$/.test(this.lastCode)) this.settle(null, true);
+          return true;
+        },
         'expired-callback': () => (this.token = null),
       });
     } catch {
+      this.lastCode = 'render';
       this.settle(null, true);
     }
+  }
+
+  /** Token na mila to kyun: Turnstile ka code, 'load', 'render' ya 'timeout' */
+  failureCode(): string {
+    return this.lastCode ?? 'timeout';
   }
 
   private settle(t: string | null, failed = false) {
@@ -83,8 +104,17 @@ export class TurnstileWidget {
     this.waiters.splice(0).forEach((w) => w(t));
   }
 
-  /** Token ka intezar (zyada se zyada `ms`); na mile to null */
-  getToken(ms = 8000): Promise<string | null> {
+  /** Abhi token tayyar hai? (button par "hifazati jaanch" ka paigham dikhane ke liye) */
+  hasToken(): boolean {
+    return !!this.token;
+  }
+
+  /**
+   * Token ka intezar (zyada se zyada `ms`); na mile to null.
+   * Qadam 17b: 8 s → 25 s. Phone ke network par Turnstile 8 s se zyada leta tha aur dheema hone par hi F05 rasta khul
+   * jata tha (F04-AC11: F05 sirf kharabi par). Asal kharabi (`error-callback`, load fail) par ab bhi foran null.
+   */
+  getToken(ms = 25_000): Promise<string | null> {
     if (this.token) return Promise.resolve(this.token);
     if (this.failed) return Promise.resolve(null);
     return new Promise((resolve) => {
@@ -100,6 +130,7 @@ export class TurnstileWidget {
   reset() {
     this.token = null;
     this.failed = false;
+    this.lastCode = null;
     if (this.id && window.turnstile) window.turnstile.reset(this.id);
   }
 }

@@ -1,5 +1,5 @@
 // spec: 3.3 (validators.ts shared, chhote functions, client par library nahin), F04-AC1, F02-AC2, 9.4
-import { normalizeLocal } from './phone';
+import { normalizeLocal, phoneProblem } from './phone';
 
 export type Check<T = string> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -14,7 +14,8 @@ export function validateName(input: string): Check {
 /** WhatsApp number: 03XXXXXXXXX; dashes, spaces, +92 bardasht (F04-AC1) */
 export function validatePhone(input: string): Check {
   const n = normalizeLocal(input);
-  if (!n) return { ok: false, error: 'Number 11 hindson ka hona chahiye, maslan 03001234567.' };
+  // 17b: aam paigham ki jagah asal wajah (harf / kitne hindse / mobile nahin)
+  if (!n) return { ok: false, error: phoneProblem(input) ?? 'Number 11 hindson ka hona chahiye, maslan 03001234567.' };
   return { ok: true, value: n };
 }
 

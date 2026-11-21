@@ -262,7 +262,15 @@ describe('CHANGE REQUEST 17a: preview (*.workers.dev) noindex', () => {
   });
   it('public/_headers static pages ke liye workers.dev par X-Robots-Tag; production domain par nahin', () => {
     const h = readFileSync(join(process.cwd(), 'public/_headers'), 'utf8');
-    expect(h).toMatch(/^https:\/\/:sub\.workers\.dev\/\*\n {2}X-Robots-Tag: noindex, nofollow$/m);
-    expect(h.split('\n').filter((l) => /^\S/.test(l) && !l.startsWith('#'))).toEqual(['https://:sub.workers.dev/*']);
+    // 17b: asal host <worker>.<account>.workers.dev (do hisse) — placeholder ek hi hissa pakadta hai
+    expect(h).toMatch(/^https:\/\/:worker\.:account\.workers\.dev\/\*\n {2}X-Robots-Tag: noindex, nofollow$/m);
+    expect(h.split('\n').filter((l) => /^\S/.test(l) && !l.startsWith('#'))).toEqual(['https://:worker.:account.workers.dev/*']);
+  });
+});
+
+describe('Qadam 17b: static pages bina redirect', () => {
+  it('wrangler.toml assets: html_handling = drop-trailing-slash (warna /about → 307 /about/)', () => {
+    const w = readFileSync(join(process.cwd(), 'wrangler.toml'), 'utf8');
+    expect(w).toMatch(/\[assets\][^[]*\nhtml_handling = "drop-trailing-slash"/);
   });
 });

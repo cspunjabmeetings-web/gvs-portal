@@ -76,9 +76,14 @@ describe('validators (F04-AC1)', () => {
   it('number 03XXXXXXXXX, +92 aur dashes bardasht', () => {
     expect(validatePhone('0300-1234567')).toEqual({ ok: true, value: '03001234567' });
     expect(validatePhone('+92 300 1234567')).toEqual({ ok: true, value: '03001234567' });
-    const bad = validatePhone('12345');
-    expect(bad.ok).toBe(false);
-    if (!bad.ok) expect(bad.error).toBe('Number 11 hindson ka hona chahiye, maslan 03001234567.');
+    // 17b: aam paigham ki jagah asal wajah
+    const err = (v: string) => { const r = validatePhone(v); return r.ok ? null : r.error; };
+    expect(err('12345')).toBe('Sirf mobile number chalega jo 03 se shuru ho (maslan 03001234567).');
+    expect(err('0300123456')).toBe('Number mein 10 hindse hain; 11 hone chahiye (maslan 03001234567).');
+    expect(err('030012345678')).toBe('Number mein 12 hindse hain; 11 hone chahiye (maslan 03001234567).');
+    expect(err('0300abc4567')).toBe('Number mein sirf hindse likhein, harf nahin (maslan 03001234567).');
+    expect(err('   ')).toBe('WhatsApp number likhein (maslan 03001234567).');
+    expect(err('04212345678')).toBe('Sirf mobile number chalega jo 03 se shuru ho (maslan 03001234567).');
   });
 
   it('khana 100 harf tak', () => {

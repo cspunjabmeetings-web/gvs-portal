@@ -1,3 +1,4 @@
 # spec: CHANGE REQUEST Qadam 17a (owner "3 haan"): preview link *.workers.dev Google mein index na ho (static pages; on-demand ke liye middleware)
-https://:sub.workers.dev/*
+# Qadam 17b: preview host do hisson ka hai (<worker>.<account>.workers.dev); placeholder sirf ek hissa pakadta hai.
+https://:worker.:account.workers.dev/*
   X-Robots-Tag: noindex, nofollow

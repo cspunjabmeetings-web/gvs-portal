@@ -61,7 +61,8 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
 
     <section class="my-6" aria-labelledby="compare-heading">
       <h2 id="compare-heading" class="mb-3">2. Pack chunein: muqabla</h2>
-      <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+      <!-- 17b Lighthouse: 360px par yeh dabba scroll hota hai → keyboard se pohanch (scrollable-region-focusable) -->
+      <div class="overflow-x-auto rounded-xl border border-border bg-surface" role="region" aria-label="Muqable ki table (side mein scroll karein)" tabindex="0">
         <table class="w-full min-w-[520px] text-sm">
           <caption class="sr-only-focusable">VU packs ka muqabla</caption>
           <thead>
@@ -82,9 +83,15 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
                 {packs.map((p) => (
                   <td class="p-3 text-center">
                     {p.includes.includes(feat) ? (
-                      <span class="text-correct font-bold" aria-label="Shamil">✓</span>
+                      <>
+                        <span class="text-correct font-bold" aria-hidden="true">✓</span>
+                        <span class="sr-only">Shamil</span>
+                      </>
                     ) : (
-                      <span class="text-muted" aria-label="Shamil nahin">—</span>
+                      <>
+                        <span class="text-muted" aria-hidden="true">—</span>
+                        <span class="sr-only">Shamil nahin</span>
+                      </>
                     )}
                   </td>
                 ))}

@@ -1528,4 +1528,8 @@ Usool: course code bare harfon mein, alfaz ke beech `-`, khali jagah nahin.
 | 0.4 | 16 Nov 2026 | Admin data capture, text format content, jobs, visitor UI aur history, Tailwind, WaSender aur Claude agent (Version 2) |
 | 1.0 | 16 Nov 2026 | Final compile: nayi tarteeb (hisse A se F); KPIs, scope, mafrooze, refund policy ki tajweez, API ki kharabi mein rasta, non-functional zaroorat, analytics events, mahol aur backup, launch ka mansooba, rozana operations, payment ki tasdeeq, khatre, kirdar, istilahat, khule faislay ki list |
 
+## 33. spotlight/onboarding
+| 1.1 | 21 Nov 2026 | Order button par spotlight manzoor (pehli dafa cheez order list mein daalne par "Order karein" button par roshni + chhota tip; spec v0.3.7 F03-AC8). Onboarding/tips abhi nahin; soft launch ke baad sirf jahan log atkein (spec FU-10) |
+
+
 Aainda har tabdeeli yahan nayi line ke sath, aur upar ka version number barhe.

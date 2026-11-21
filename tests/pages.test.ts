@@ -1,7 +1,7 @@
 // spec: F21-AC1 (ek H1, seo.json ka title), F21-AC8 (300+ alfaz, 3+ andaruni links), F22-AC3 / intent 13, 15.3 (ad kahan nahin)
 // Build ke baad chalta hai (npm run verify: build → test). dist na ho to skip.
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import seo from '../src/data/seo.json';
 
@@ -62,6 +62,32 @@ describe.skipIf(built.length === 0)('bane hue pages (dist)', () => {
     const h = html('/vu');
     expect((h.match(/name="courseCode"/g) ?? []).length).toBe(1);
     expect((h.match(/data-add-to-cart="vu-/g) ?? []).length).toBe(4);
+  });
+
+  // 17b Lighthouse (A 96): scroll wala table keyboard se pohanch mein; saade span par aria-label nahin
+  it('har built page: saade <span> par aria-label nahin (aria-prohibited-attr)', () => {
+    for (const r of built) expect(html(r), r).not.toMatch(/<span(?![^>]*\brole=)[^>]*\baria-label=/);
+  });
+  it.runIf(built.includes('/vu'))('/vu: muqable ki table ka scroll dabba focus ho sakta hai', () => {
+    expect(html('/vu')).toMatch(/<div class="overflow-x-auto[^"]*"[^>]*role="region"[^>]*aria-label="[^"]+"[^>]*tabindex="0"/);
+  });
+  // 17b Lighthouse (link-in-text-block): matn ke beech saade links par lakeer (built CSS mein qaida)
+  it.runIf(existsSync(join(process.cwd(), 'dist/client/_astro')))('built CSS: :where(p,li,dd,td) a:not([class]) par underline', () => {
+    const dir = join(process.cwd(), 'dist/client/_astro');
+    const css = readdirSync(dir).filter((f) => f.endsWith('.css')).map((f) => readFileSync(join(dir, f), 'utf8')).join('\n');
+    expect(css).toMatch(/:where\(p,\s*li,\s*dd,\s*td\)\s*a:not\(\[class\]\)\s*\{[^}]*text-decoration:\s*underline/);
+  });
+  // 17b Lighthouse (A 97, landmark-unique): ek hi naam ke do region nahin (section aria-labelledby bhi region hai)
+  it('har built page: region/landmark ke naam dohraye nahin', () => {
+    for (const r of built) {
+      const h = html(r);
+      const names = [
+        ...[...h.matchAll(/<section[^>]*aria-labelledby="([^"]+)"/g)].map((m) => 'ref:' + m[1]),
+        ...[...h.matchAll(/role="region"[^>]*aria-labelledby="([^"]+)"/g)].map((m) => 'ref:' + m[1]),
+        ...[...h.matchAll(/role="region"[^>]*aria-label="([^"]+)"/g)].map((m) => 'label:' + m[1]),
+      ];
+      expect(names.filter((n, i) => names.indexOf(n) !== i), r).toEqual([]);
+    }
   });
 
   it('board class pages ek jaise nahin (intent 14.4): alfaz ka mel 70% se kam', () => {
@@ -125,6 +151,20 @@ describe.skipIf(built.length === 0)('AnnouncementBar (F10-AC3)', () => {
     const bar = h.search(/component-url="[^"]*AnnouncementBar/);
     expect(bar).toBeGreaterThan(-1);
     expect(bar).toBeLessThan(h.indexOf('<header'));
+  });
+
+  // 17b Lighthouse (CLS): patti ka dhancha HTML mein (chhupa) + paint se pehle cache se bharne wala inline script
+  const settingsKey = readFileSync(join(process.cwd(), 'src/lib/site-settings.ts'), 'utf8').match(/const KEY = '([^']+)'/)?.[1];
+  it.each(built)('%s: patti ka dhancha + inline script Header se pehle (CLS)', (r) => {
+    const h = html(r);
+    const div = h.search(/<div role="note" aria-label="Elaan"[^>]*data-announcement[^>]*hidden/);
+    const script = h.indexOf(`sessionStorage.getItem('${settingsKey}')`);
+    expect(settingsKey).toBeTruthy();
+    expect(div).toBeGreaterThan(-1);
+    expect(script).toBeGreaterThan(div);
+    expect(script).toBeLessThan(h.indexOf('<header'));
+    // sirf textContent — HTML ke taur par kabhi nahin
+    expect(h).not.toMatch(/innerHTML\s*=\s*gvsAnn/);
   });
 });
 

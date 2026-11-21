@@ -106,6 +106,12 @@
   @media (prefers-color-scheme: dark) {
     a { color: var(--correct); }
   }
+  /* 17b Lighthouse (link-in-text-block): matn ke beech saade links sirf rang se nahin, lakeer se bhi pehchane jayen.
+     Class wale links (buttons, cards, menu, breadcrumbs) par asar nahin. */
+  :where(p, li, dd, td) a:not([class]) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
 
   /* Do-rang focus ring (design.md 2.1) */
   :focus-visible {

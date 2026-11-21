@@ -61,7 +61,28 @@ const ogImage = new URL(og.src, base).href;
   <body>
     <a href="#main" class="sr-only-focusable bg-accent text-on-accent px-4 py-2">Seedha mazmoon par jayen</a>
     {/* spec 6.1: elaan sab se upar, admin par nahin */}
-    {chrome && <AnnouncementBar client:idle />}
+    {
+      chrome && (
+        <>
+          {/* 17b CLS: dhancha HTML mein pehle se (chhupa); neeche ka script cache se paint se pehle bharta hai */}
+          <div role="note" aria-label="Elaan" class="bg-accent text-on-accent" data-announcement hidden>
+            <p class="container-page py-2 text-center text-sm font-semibold" />
+          </div>
+          <script is:inline>
+            try {
+              var gvsAnn = JSON.parse(sessionStorage.getItem('gvs.settings.v2') || 'null');
+              var gvsAnnText = gvsAnn && gvsAnn.s && gvsAnn.s.announcement_text;
+              if (typeof gvsAnnText === 'string' && gvsAnnText) {
+                var gvsAnnBar = document.querySelector('[data-announcement]');
+                gvsAnnBar.firstElementChild.textContent = gvsAnnText;
+                gvsAnnBar.hidden = false;
+              }
+            } catch (e) {}
+          </script>
+          <AnnouncementBar client:idle />
+        </>
+      )
+    }
     {chrome && <Header />}
     <main id="main">
       <slot />

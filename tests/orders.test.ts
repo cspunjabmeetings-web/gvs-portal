@@ -149,6 +149,33 @@ describe('POST /api/orders (E02)', () => {
     expect(await d1.db.prepare('SELECT COUNT(*) AS c FROM orders').first('c')).toBe(0);
   });
 
+  it('17b: D1 ke reads Turnstile ke jawab ka intezar nahin karte; ghalat token par (D1 kharab ho tab bhi) 400 aur kuch save nahin', async () => {
+    // Reads parallel: verify ke chalte hue hi pehli D1 query shuru ho chuki ho
+    let dbStartedDuringVerify = false;
+    let verifying = false;
+    const real = d1.db;
+    const spy = new Proxy(real, {
+      get(t, p) {
+        if (p === 'prepare') return (sql: string) => { if (verifying) dbStartedDuringVerify = true; return t.prepare(sql); };
+        const v = Reflect.get(t, p);
+        return typeof v === 'function' ? v.bind(t) : v;
+      },
+    }) as D1Database;
+    env = { DB: spy, TURNSTILE_SECRET: 'test-secret', SESSION_SECRET: 'test-session-secret' };
+    const slow = async () => { verifying = true; await new Promise((r) => setTimeout(r, 50)); verifying = false; return true; };
+    const ok = await order(ORDER, { verify: slow });
+    expect(ok.status).toBe(200);
+    expect(dbStartedDuringVerify).toBe(true);
+
+    // Ghalat token + D1 kharab: Turnstile ka faisla pehle → 400 (503 nahin)
+    const broken = new Proxy(real, { get: (t, p) => (p === 'prepare' || p === 'batch' ? () => { throw new Error('d1 down'); } : Reflect.get(t, p)) }) as D1Database;
+    env = { DB: broken, TURNSTILE_SECRET: 'test-secret', SESSION_SECRET: 'test-session-secret' };
+    expect((await order(ORDER, { verify: async () => false })).status).toBe(400);
+    // Sahih token + D1 kharab → 503 (F05-AC4)
+    expect((await order(ORDER)).status).toBe(503);
+    expect(await real.prepare('SELECT COUNT(*) AS c FROM orders').first('c')).toBe(1);
+  });
+
   it('Origin ghalat ya ghair-maujood: 403 (8.1)', async () => {
     expect((await order(ORDER, { origin: 'https://evil.test' })).status).toBe(403);
     expect((await order(ORDER, { origin: null })).status).toBe(403);

@@ -104,35 +104,50 @@ export async function createOrder(request: Request, env: OrderEnv, deps: OrderDe
   const ip = clientIp(request);
   const now = (deps.now ?? (() => new Date()))();
 
-  // F04-AC11: Turnstile pehle (spam D1 tak na pohanche)
   if (!input.turnstileToken) return fail(400, 'turnstile', ORDER_MSG.turnstile);
+
+  // Qadam 17b (preview par 5-7 s der): Turnstile ki tasdeeq aur D1 ke saare *reads* ek sath (parallel), pehle
+  // 1 + 4 round-trip ek ke baad ek the. Writes (order batch) sirf tasdeeq ke baad — ghalat token par kuch save nahin.
+  const db = env.DB;
+  const jobIds = [...new Set(input.items.map((i) => i.jobId).filter((x): x is string => !!x))];
+  const secret = env.SESSION_SECRET;
+  const readsP = Promise.all([
+    getSettings(db),
+    // Jobs sirf jin ka id aaya
+    jobIds.length
+      ? db
+          .prepare(`SELECT id, org, post, last_date, visible, apply_service, deleted_at, our_fee, govt_fee, documents_json FROM jobs WHERE id IN (${jobIds.map(() => '?').join(',')})`)
+          .bind(...jobIds.map(Number))
+          .all<JobRow>()
+          .then((r) => r.results)
+      : Promise.resolve([] as JobRow[]),
+    // SA5 / 9.3: phone 5 aur IP 20, har ghante
+    checkLimit(db, secret, { scope: 'order:phone', value: phone.value, max: 5, windowMs: HOUR }, now),
+    checkLimit(db, secret, { scope: 'order:ip', value: ip, max: 20, windowMs: HOUR }, now),
+  ]).then(
+    (v) => ({ ok: true as const, v }),
+    () => ({ ok: false as const }),
+  );
+
+  // F04-AC11: Turnstile ka faisla pehle (D1 kharab ho tab bhi ghalat token = 400)
   const verdict = await (deps.verify ?? verifyTurnstile)(env.TURNSTILE_SECRET, input.turnstileToken, ip);
   if (verdict === null) return fail(503, 'unavailable', API_MSG.unavailable);
   if (!verdict) return fail(400, 'turnstile', ORDER_MSG.turnstile);
 
   try {
-    const db = env.DB;
-    const settings = await getSettings(db);
+    const reads = await readsP;
+    // F05-AC4: D1 ki had/kharabi → 503
+    if (!reads.ok) return fail(503, 'unavailable', API_MSG.unavailable);
+    const [settings, jobRows, byPhone, byIp] = reads.v;
     if (!settings.orders_open) return fail(400, 'orders_closed', ORDER_MSG.closed);
 
-    // Jobs sirf jin ka id aaya (Qadam 13 tak table khali)
-    const jobIds = [...new Set(input.items.map((i) => i.jobId).filter((x): x is string => !!x))];
     const jobs = new Map<string, JobRow>();
-    if (jobIds.length) {
-      const { results } = await db
-        .prepare(`SELECT id, org, post, last_date, visible, apply_service, deleted_at, our_fee, govt_fee, documents_json FROM jobs WHERE id IN (${jobIds.map(() => '?').join(',')})`)
-        .bind(...jobIds.map(Number))
-        .all<JobRow>();
-      for (const j of results) jobs.set(String(j.id), j);
-    }
+    for (const j of jobRows) jobs.set(String(j.id), j);
 
     const priced = priceOrder(input.items, { defaultJobFee: settings.default_job_fee, today: karachiDate(now), jobs });
     if (!priced.ok) return fail(400, priced.code, priced.message);
 
-    // SA5 / 9.3: phone 5 aur IP 20, har ghante
-    const byPhone = await checkLimit(db, env.SESSION_SECRET, { scope: 'order:phone', value: phone.value, max: 5, windowMs: HOUR }, now);
     if (!byPhone.allowed) return fail(429, 'rate_limited', ORDER_MSG.phone_limit);
-    const byIp = await checkLimit(db, env.SESSION_SECRET, { scope: 'order:ip', value: ip, max: 20, windowMs: HOUR }, now);
     if (!byIp.allowed) return fail(429, 'rate_limited', ORDER_MSG.ip_limit);
 
     // SA1: ek atomic batch (D1 batch = transaction). Order id counter se.

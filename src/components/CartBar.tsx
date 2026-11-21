@@ -14,9 +14,11 @@ const rs = (n: number) => `Rs. ${n.toLocaleString('en-PK')}`;
 
 type Phase =
   | { k: 'form' }
-  | { k: 'sending' }
+  /** check = Turnstile token ka intezar (17b: button par "Hifazati jaanch ho rahi hai…") */
+  | { k: 'sending'; check?: boolean }
   | { k: 'done'; id: string; last4: string; message: string; waUrl: string; number: string }
-  | { k: 'fallback'; message: string; number: string };
+  /** reason: 17b — user ko asal wajah ka naam (koi zaati maloomat nahin) */
+  | { k: 'fallback'; message: string; number: string; reason: string };
 
 type Copied = 'id' | 'number' | 'message' | null;
 
@@ -73,9 +75,9 @@ export default function CartBar() {
   };
   const closeSheet = () => dialog.current?.close();
 
-  function fallback(n: string) {
+  function fallback(n: string, reason: string) {
     // F05-AC2: bina order number aur track link; F05-AC3: cart khali nahin
-    setPhase({ k: 'fallback', message: buildOrderMessage({ items, name: n }), number: whatsappNumber() });
+    setPhase({ k: 'fallback', message: buildOrderMessage({ items, name: n }), number: whatsappNumber(), reason });
   }
 
   async function submit(e: Event) {
@@ -87,9 +89,11 @@ export default function CartBar() {
     setServerError(null);
     if (!n.ok || !p.ok || items.length === 0) return;
 
-    setPhase({ k: 'sending' });
+    setPhase({ k: 'sending', check: !turnstile.current?.hasToken() });
     const token = await turnstile.current?.getToken();
-    if (!token) return fallback(n.value); // Turnstile load/verify na ho: order band nahin (F04-AC11)
+    // Turnstile load/verify na ho: order band nahin (F04-AC11)
+    if (!token) return fallback(n.value, `Hifazati jaanch mukammal nahin hui (${turnstile.current?.failureCode() ?? 'load'})`);
+    setPhase({ k: 'sending' });
 
     let res: Response;
     let data: { ok?: boolean; id?: string; last4?: string; message?: string; whatsappUrl?: string; whatsappNumber?: string; error?: { code?: string; message?: string } };
@@ -101,9 +105,10 @@ export default function CartBar() {
         signal: AbortSignal.timeout(10_000), // F05-AC1
       });
       data = await res.json();
-    } catch {
+    } catch (err) {
       turnstile.current?.reset();
-      return fallback(n.value);
+      const timeout = err instanceof DOMException && (err.name === 'TimeoutError' || err.name === 'AbortError');
+      return fallback(n.value, timeout ? 'Server ne 10 second mein jawab nahin diya' : 'Internet ka masla (server tak rabta nahin hua)');
     }
     turnstile.current?.reset(); // token ek dafa chalta hai
 
@@ -115,7 +120,7 @@ export default function CartBar() {
       setPhase({ k: 'done', id: data.id, last4: data.last4 ?? p.value.slice(-4), message: data.message, waUrl: data.whatsappUrl, number: data.whatsappNumber ?? whatsappNumber() });
       return;
     }
-    if (res.status >= 500 || !data.error) return fallback(n.value); // F05-AC1, AC4
+    if (res.status >= 500 || !data.error) return fallback(n.value, `Server ki kharabi (${res.status})`); // F05-AC1, AC4
     if (data.error.code === 'orders_closed') setOpen(false);
     setServerError(data.error.message ?? 'Kuch ghalat ho gaya. Dobara koshish karein.');
     setPhase({ k: 'form' });
@@ -227,7 +232,10 @@ export default function CartBar() {
         ) : phase.k === 'fallback' ? (
           <div class="mt-4 flex flex-col gap-3">
             <p class="rounded-xl bg-wrong-bg p-3 font-medium text-wrong" role="alert">
-              Server se rabta nahin ho saka. Fikr na karein, aap ka order seedha WhatsApp par bhej dein. Aap ki list yahan mehfooz hai.
+              Order abhi system mein nahin ban saka. Fikr na karein, aap ka order seedha WhatsApp par bhej dein. Aap ki list yahan mehfooz hai.
+              <span class="mt-1 block text-sm font-normal" data-fallback-reason>
+                Wajah: {phase.reason}
+              </span>
             </p>
             <a href={waLink(phase.number, phase.message)} target="_blank" rel="noopener" onClick={() => track('whatsapp_opened', { fallback: true })} class={btnPrimary}>
               WhatsApp par seedha order bhejein
@@ -280,7 +288,7 @@ export default function CartBar() {
               disabled={phase.k === 'sending'}
               class="min-h-[48px] rounded-lg bg-primary px-4 font-semibold text-on-primary hover:bg-primary-hover disabled:opacity-70"
             >
-              {phase.k === 'sending' ? 'Order bhej rahe hain…' : 'WhatsApp par order karein'}
+              {phase.k === 'sending' ? (phase.check ? 'Hifazati jaanch ho rahi hai…' : 'Order bhej rahe hain…') : 'WhatsApp par order karein'}
             </button>
             <p class="text-xs text-muted">Sign up nahin. Payment WhatsApp par JazzCash ya Easypaisa se.</p>
           </form>

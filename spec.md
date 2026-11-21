@@ -209,6 +209,7 @@ Sirf job posts ki tasveerein. Free allowance is ke liye kaafi (150 KB × chand s
 - F03-AC5: Har line hatane ke qabil. Khali cart ka saaf message.
 - F03-AC6: `orders_open = false` ho to "Order list mein daalein" aur "WhatsApp par order karein" ki jagah elaan; cart ki maujooda cheezein mehfooz rahein.
 - F03-AC7: `localStorage` band ho to cart us page tak chale (memory mein), crash nahin.
+- F03-AC8 (v0.3.7, owner ka CHANGE REQUEST, Qadam 17b ke baad alag qadam): pehli dafa koi cheez order list mein jaye to `CartBar` ke "Order karein" button par **spotlight**: halki roshni ka ghera (CSS pulse) + chhota tip "Yahan dabayen → WhatsApp par order", 4 second ya tap par khatam; har browser mein sirf pehli 2 dafa (ginti `localStorage`, band ho to memory). Poore page par andhera (overlay) **nahin**; layout nahin hilta (CLS); `prefers-reduced-motion` par pulse band (sirf tip). Nayi file/route/table/dependency nahin.
 
 ### F04. Order dena (server par save, phir WhatsApp) `[i:9.2, 9.3, 12.6]`
 
@@ -1121,6 +1122,7 @@ Yahan sirf wo cheezein hain jo **khatarnak, mehngi ya gair zaroori** lagi. Har f
 | FU-07 | `/jobs/ppsc`, `/jobs/fpsc`, `/jobs/nts` ke pages | Intent mein hain, lekin **sirf asal content** (300+ alfaz) ke sath; filler se SEO ko nuqsan |
 | FU-08 | Daily pins ki alag admin screen (A09) | P-03 manzoor hone se shamil (A09) |
 | FU-09 | Ek se ziyada elaan (maslan 5 tak) aur patti mein chalta hua "news ticker" (owner ki tajweez, Qadam 8, 18 Nov 2026) | **Version 1 mein nahin; aage ke version mein.** V1 mein F10-AC3 ke mutabiq ek elaan (160 harf). Aage banate waqt: nayi table/dependency nahin (`announcements` list setting + CSS); ⏸ rokne ka button (WCAG 2.2.2), `prefers-reduced-motion` par ruka hua; Claude ki sifarish: ghoomta elaan (har 5 s agla) asal ticker se behtar, kyun ke phone par poora jumla parha jata hai |
+| FU-10 | "Onboarding" (pehli dafa aane walon ke liye rehnumai/tips) jahan zaroorat ho (owner ki tajweez, Qadam 17b, 21 Nov 2026) | **Abhi nahin (owner ki manzoori).** Soft launch (intent 21.2) mein dekhein ke log kahan atakte hain, phir sirf unhi jagahon par chhota onboarding; har page par tips nahin. Order button ka spotlight F03-AC8 mein alag se |
 
 ---
 
@@ -1405,6 +1407,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.4 | 18 Nov 2026 | Qadam 8: owner ki tajweez (kai elaan + news ticker) FU-09 mein aage ke version ke liye darj; V1 mein koi tabdeeli nahin |
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
+| 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

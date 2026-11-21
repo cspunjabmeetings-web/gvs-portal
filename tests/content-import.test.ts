@@ -137,6 +137,28 @@ describe('E17: NOTE (F12-AC4 slug)', () => {
     expect(await count("SELECT visible n FROM notes WHERE slug = 'aqwam-e-muttahida-2'")).toBe(1); // checkbox notes par lagu nahin
   });
 
+  it('17c: table mein note ho tab bhi lamba unwan (slug > 50 harf) save; dohra → -2 (D1 LIKE ki hadd ka bug)', async () => {
+    await imp(note('Pehla note'));
+    const long = 'Computer ki Bunyadi Maloomat: hardware, software aur memory';
+    const r1 = await imp(note(long));
+    expect(r1.status).toBe(200);
+    expect(r1.body.slugs).toEqual(['computer-ki-bunyadi-maloomat-hardware-software-aur-memory']);
+    expect((await imp(note(long))).body.slugs).toEqual(['computer-ki-bunyadi-maloomat-hardware-software-aur-memory-2']);
+    // Range sirf `base-…` pakadti hai: base se lamba alag slug (…-memory-x) phir bhi -2 nahin banata, aur base ke
+    // aage wale slug (…-memoryz) "liye hue" nahin gine jate — pehle wale LIKE jaisa hi
+    expect((await imp(note(long + ' x'))).body.slugs).toEqual(['computer-ki-bunyadi-maloomat-hardware-software-aur-memory-x']);
+    expect((await imp(note(long + 'z'))).body.slugs).toEqual(['computer-ki-bunyadi-maloomat-hardware-software-aur-memoryz']);
+    expect((await imp(note(long))).body.slugs).toEqual(['computer-ki-bunyadi-maloomat-hardware-software-aur-memory-3']);
+  });
+
+  it('17c: lamba mock naam (slug > 50) dobara → -2', async () => {
+    const name = 'PPSC Educator General Knowledge aur Pakistan Studies Mock Test Number 1';
+    expect((await imp(mock(1, name))).status).toBe(200);
+    const r = await imp(mock(1, name));
+    expect(r.status).toBe(200);
+    expect(r.body.slugs?.[0]).toMatch(/-2$/);
+  });
+
   it('6 notes rad (tukra 5)', async () => {
     expect((await imp(Array.from({ length: 6 }, (_, i) => note(`Note ${i}`)).join('\n'))).status).toBe(400);
   });

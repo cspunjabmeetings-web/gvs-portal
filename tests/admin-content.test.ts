@@ -75,6 +75,10 @@ describe('F12-AC1: sawal ki list', () => {
     expect((await mcqs({ q: 'english sawal 1' })).body.items.map((x) => x.question)).toEqual(['English sawal 1?']);
     expect((await mcqs({ q: '%' })).body.items.map((x) => x.question)).toEqual(['100% sahih_jawab?']);
     expect((await mcqs({ q: '_' })).body.items).toHaveLength(1);
+    // 17c: D1 LIKE ki 50 byte hadd — lambi search par 503 nahin
+    const longQ = await mcqs({ q: 'x'.repeat(60) });
+    expect(longQ.status).toBe(200);
+    expect(longQ.body.items).toEqual([]);
     expect((await mcqs({ subject: 'Urdu' })).body.items).toHaveLength(2);
     expect((await mcqs({ verified: '0' })).body.items.every((x) => !x.verified && x.subject === 'Urdu')).toBe(true);
     expect((await mcqs({ verified: '1' })).body.items).toHaveLength(4);

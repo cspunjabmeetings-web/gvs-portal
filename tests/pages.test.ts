@@ -229,6 +229,17 @@ describe.skipIf(built.length === 0)('Qadam 14: static pages (F25, F02-AC1)', () 
     expect(ld.step?.map((s) => s.name)).toEqual(['Cheez chunein', 'Naam aur number dein', 'WhatsApp par bhejein', 'Payment aur delivery']);
   });
 
+  // 17c owner ka faisla (a): namoone launch ke baad; tab tak "WhatsApp par maang lein" (usool 7: wada wohi jo pura ho)
+  it('17c: catalog mein namoona na ho to kisi page par "namoona dekhein" ka wada nahin', async () => {
+    const { default: catalog } = await import('../src/data/catalog.json');
+    const anySample = (catalog as { products: { sample: string | null }[] }).products.some((p) => p.sample);
+    if (anySample) return; // namoone lag gaye: ProductCard ka "Namoona dekhein" button sahih hai
+    for (const r of built) {
+      const t = decode(html(r).replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' '));
+      expect(t, r).not.toMatch(/namoona (pehle |zaroor )?dekh/i);
+    }
+  });
+
   it('/404: darwazon ke links, noindex', () => {
     const h = html('/404');
     for (const href of ['/job-prep', '/vu', '/board', '/career']) expect(h).toContain(`href="${href}"`);

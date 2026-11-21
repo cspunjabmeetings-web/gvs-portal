@@ -61,8 +61,12 @@ function insertMcqs(db: D1Database, rows: McqRow[], verified: boolean, at: strin
 export async function takenSlugs(db: D1Database, table: 'mocks' | 'notes' | 'jobs', bases: string[]): Promise<Set<string>> {
   const taken = new Set<string>();
   for (const base of new Set(bases)) {
-    // slug mein sirf a-z 0-9 - hain, is liye LIKE mein escape ki zaroorat nahin
-    const { results } = await db.prepare(`SELECT slug FROM ${table} WHERE slug = ?1 OR slug LIKE ?2`).bind(base, `${base}-%`).all<{ slug: string }>();
+    // 17c: LIKE nahin — D1 mein LIKE pattern ki hadd 50 bytes hai (lambe slug par "pattern too complex" → 503, table
+    // mein row hon tab). `base-` se shuru hone wale slug = range ['base-', 'base.') kyun ke ASCII mein '.' = '-' + 1.
+    const { results } = await db
+      .prepare(`SELECT slug FROM ${table} WHERE slug = ?1 OR (slug >= ?2 AND slug < ?3)`)
+      .bind(base, `${base}-`, `${base}.`)
+      .all<{ slug: string }>();
     for (const r of results) taken.add(r.slug);
   }
   return taken;

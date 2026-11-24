@@ -146,6 +146,11 @@ export default function VuCourses(p: { courses: AdminCourse[]; onChange: () => P
                     </div>
                   ))}
                 </dl>
+                {c.qMidAll + c.qFinalAll > 0 && (
+                  <p class="text-sm text-muted">
+                    Important Questions: Midterm {c.qMidOk}/{c.qMidAll} · Final {c.qFinalOk}/{c.qFinalAll}
+                  </p>
+                )}
                 <div class="flex flex-wrap gap-2">
                   <button type="button" onClick={() => p.onShow(c.code)} class={`${btn} border border-border`}>
                     Sawal
@@ -168,7 +173,7 @@ export default function VuCourses(p: { courses: AdminCourse[]; onChange: () => P
                   >
                     {c.visible ? 'Chhupayen' : 'Dikhayen'}
                   </button>
-                  {c.midAll + c.finalAll === 0 && (
+                  {c.midAll + c.finalAll + c.qMidAll + c.qFinalAll === 0 && (
                     <button
                       type="button"
                       disabled={busy}

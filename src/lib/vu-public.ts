@@ -1,6 +1,7 @@
 // spec: F30-AC2..AC4, AC6 (student pages), E29 GET /api/vu/test, S31 /vu-mock, S32 /vu-mock/<code>
 // Sirf jaanche sawal aur sirf dikhne wale courses. Ginti vu_courses ki row se (vu_mcqs poori kabhi nahin parhi jati).
 import { fail, ok, API_MSG, type ApiResult } from './api';
+import { activeProducts } from './catalog';
 import type { QuizMcq } from './daily';
 import { splitTests } from './vu-tests';
 import { normalizeCode, VU_LIMITS, VU_TERMS, type VuTerm } from './vu';
@@ -10,21 +11,33 @@ export interface VuCourse {
   name: string;
   mid: number;
   final: number;
+  /** F32: jaanche Important Questions */
+  qMid: number;
+  qFinal: number;
 }
-type Row = { code: string; name: string; mid_ok: number; final_ok: number };
-const toCourse = (r: Row): VuCourse => ({ code: r.code, name: r.name, mid: r.mid_ok, final: r.final_ok });
+type Row = { code: string; name: string; mid_ok: number; final_ok: number; q_mid_ok: number; q_final_ok: number };
+const toCourse = (r: Row): VuCourse => ({ code: r.code, name: r.name, mid: r.mid_ok, final: r.final_ok, qMid: r.q_mid_ok, qFinal: r.q_final_ok });
+
+/** Course mein koi cheez hai (MCQs ya Important Questions) */
+export const hasContent = (c: VuCourse) => c.mid + c.final + c.qMid + c.qFinal > 0;
+
+/** Catalog ke qeemat wale VU packs (usool 7) */
+export const vuPackList = () =>
+  activeProducts()
+    .filter((x) => x.door === 'vu' && x.price !== null)
+    .map((x) => ({ id: x.id, name: x.name, price: x.price as number, includes: x.includes }));
 
 /** S31: dikhne wale courses; sawal wale pehle, phir code ki tarteeb */
 export async function vuCourses(db: D1Database): Promise<VuCourse[]> {
   const { results } = await db
-    .prepare(`SELECT code, name, mid_ok, final_ok FROM vu_courses WHERE visible = 1 ORDER BY (mid_ok + final_ok = 0), code LIMIT ${VU_LIMITS.courses}`)
+    .prepare(`SELECT code, name, mid_ok, final_ok, q_mid_ok, q_final_ok FROM vu_courses WHERE visible = 1 ORDER BY (mid_ok + final_ok + q_mid_ok + q_final_ok = 0), code LIMIT ${VU_LIMITS.courses}`)
     .all<Row>();
   return results.map(toCourse);
 }
 
 /** S32: na mile / chhupa = null (404) */
 export async function vuCourse(db: D1Database, code: string): Promise<VuCourse | null> {
-  const r = await db.prepare('SELECT code, name, mid_ok, final_ok FROM vu_courses WHERE code = ?1 AND visible = 1').bind(code).first<Row>();
+  const r = await db.prepare('SELECT code, name, mid_ok, final_ok, q_mid_ok, q_final_ok FROM vu_courses WHERE code = ?1 AND visible = 1').bind(code).first<Row>();
   return r ? toCourse(r) : null;
 }
 

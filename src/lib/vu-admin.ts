@@ -48,15 +48,19 @@ export interface AdminCourse {
   midAll: number;
   finalOk: number;
   finalAll: number;
+  qMidOk: number;
+  qMidAll: number;
+  qFinalOk: number;
+  qFinalAll: number;
 }
-type CourseRow = { code: string; name: string; visible: number; mid_ok: number; mid_all: number; final_ok: number; final_all: number };
+type CourseRow = { code: string; name: string; visible: number; mid_ok: number; mid_all: number; final_ok: number; final_all: number; q_mid_ok: number; q_mid_all: number; q_final_ok: number; q_final_all: number };
 
 export async function listCourses(request: Request, env: ContentEnv): Promise<ApiResult> {
   const denied = await requireAdmin(request, env);
   if (denied) return denied;
   try {
-    const { results } = await env.DB.prepare(`SELECT code, name, visible, mid_ok, mid_all, final_ok, final_all FROM vu_courses ORDER BY code LIMIT ${VU_LIMITS.courses}`).all<CourseRow>();
-    const items: AdminCourse[] = results.map((r) => ({ code: r.code, name: r.name, visible: r.visible === 1, midOk: r.mid_ok, midAll: r.mid_all, finalOk: r.final_ok, finalAll: r.final_all }));
+    const { results } = await env.DB.prepare(`SELECT code, name, visible, mid_ok, mid_all, final_ok, final_all, q_mid_ok, q_mid_all, q_final_ok, q_final_all FROM vu_courses ORDER BY code LIMIT ${VU_LIMITS.courses}`).all<CourseRow>();
+    const items: AdminCourse[] = results.map((r) => ({ code: r.code, name: r.name, visible: r.visible === 1, midOk: r.mid_ok, midAll: r.mid_all, finalOk: r.final_ok, finalAll: r.final_all, qMidOk: r.q_mid_ok, qMidAll: r.q_mid_all, qFinalOk: r.q_final_ok, qFinalAll: r.q_final_all }));
     return ok({ items });
   } catch {
     return unavailable();
@@ -122,7 +126,7 @@ export async function deleteCourse(request: Request, env: ContentEnv, raw: strin
   const code = normalizeCode(raw ?? '');
   if (!code) return fail(404, 'not_found', VU_ADMIN_MSG.not_found);
   try {
-    const res = await env.DB.prepare('DELETE FROM vu_courses WHERE code = ?1 AND NOT EXISTS (SELECT 1 FROM vu_mcqs WHERE course_code = ?1)').bind(code).run();
+    const res = await env.DB.prepare('DELETE FROM vu_courses WHERE code = ?1 AND NOT EXISTS (SELECT 1 FROM vu_mcqs WHERE course_code = ?1) AND NOT EXISTS (SELECT 1 FROM vu_questions WHERE course_code = ?1)').bind(code).run();
     if (res.meta.changes === 1) return ok({ code });
     const there = await env.DB.prepare('SELECT 1 AS x FROM vu_courses WHERE code = ?1').bind(code).first();
     return there ? fail(409, 'has_mcqs', VU_ADMIN_MSG.has_mcqs) : fail(404, 'not_found', VU_ADMIN_MSG.not_found);

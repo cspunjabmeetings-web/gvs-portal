@@ -1,0 +1,72 @@
+---
+// spec: S33 /vu-mock/<code>/questions (on-demand, D1), F32-AC2 (sirf jaanche; jawab kahin nahin), F32-AC4 (Complete pack, share); ad nahin
+import { env } from 'cloudflare:workers';
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import NotFound from '../../../components/NotFound.astro';
+import VuPacks from '../../../components/quiz/VuPacks.tsx';
+import { vuCourse, vuPackList } from '../../../lib/vu-public';
+import { publicQuestions } from '../../../lib/vu-questions';
+import { normalizeCode, TERM_LABEL } from '../../../lib/vu';
+
+export const prerender = false;
+
+const raw = Astro.params.code ?? '';
+const code = normalizeCode(raw);
+if (code && raw !== code.toLowerCase()) return Astro.redirect(`/vu-mock/${code.toLowerCase()}/questions${Astro.url.search}`, 301);
+const c = code ? await vuCourse(env.DB, code) : null;
+const asked = Astro.url.searchParams.get('term');
+const term = asked === 'mid' || asked === 'final' ? asked : c && c.qMid === 0 && c.qFinal > 0 ? 'final' : 'mid';
+const list = c ? await publicQuestions(env.DB, c.code, term) : [];
+if (!c) Astro.response.status = 404;
+Astro.response.headers.set('Cache-Control', c ? 'public, max-age=0, s-maxage=300' : 'public, max-age=0, s-maxage=60');
+const page = c ? `/vu-mock/${c.code.toLowerCase()}` : '';
+const share = c ? `https://wa.me/?text=${encodeURIComponent(`${c.code} ${TERM_LABEL[term]} ke important questions muft dekhein: ${new URL(`${page}/questions?term=${term}&src=share`, Astro.site ?? Astro.url).href}`)}` : '';
+const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
+---
+{!c ? (
+  <NotFound kind="missing" what="Yeh VU course" back={{ label: 'Saare VU courses', href: '/vu-mock' }} />
+) : (
+  <Base
+    title={`${c.code} Important Questions: Midterm, Final | GVS`}
+    description={`${c.code} ${c.name} ke ahem subjective sawal, Midterm aur Final Term, marks ke sath. Muft, bina sign up.`.slice(0, 155)}
+    noindex={c.qMid + c.qFinal === 0}
+  >
+    <div class="container-page py-6">
+      <Breadcrumbs items={[{ label: 'VU Mock Test', href: '/vu-mock' }, { label: c.code, href: page }, { label: 'Important Questions' }]} />
+      <header class="mt-3 rounded-2xl bg-primary p-5 text-on-primary">
+        <h1>{c.code} Important Questions</h1>
+        <p class="mt-1 break-words">{c.name}</p>
+      </header>
+      <div class="mt-5 flex max-w-xl flex-col gap-4">
+        <nav class="grid grid-cols-2 gap-2 rounded-xl bg-surface-2 p-1" aria-label="Term chunein">
+          {(['mid', 'final'] as const).map((t) => (
+            <a href={`${page}/questions?term=${t}`} aria-current={t === term ? 'page' : undefined} class={`${btn} ${t === term ? 'bg-primary text-on-primary' : 'text-text'}`} data-term={t}>{TERM_LABEL[t]}</a>
+          ))}
+        </nav>
+        {list.length === 0 ? (
+          <p class="rounded-2xl border border-border bg-surface p-5 text-center font-semibold" data-vuq-empty>{c.code} {TERM_LABEL[term]} ke important questions jald aa rahe hain.</p>
+        ) : (
+          <>
+            <p class="text-sm text-muted"><span class="tabular font-semibold text-text">{list.length}</span> ahem sawal. Yeh andaza hain; paper inhi tak mehdood nahin.</p>
+            <ol class="flex flex-col gap-3" data-vuq-list>
+              {list.map((q, i) => (
+                <li class="flex gap-3 rounded-2xl border border-border bg-surface p-4">
+                  <span class="tabular flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft font-bold" aria-hidden="true">{i + 1}</span>
+                  <span class="min-w-0 flex-1 break-words">
+                    {q.question}
+                    {q.marks && <span class="mt-2 block w-fit rounded-full bg-accent px-3 py-0.5 text-sm font-semibold text-on-accent">{q.marks} marks</span>}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p class="rounded-2xl bg-primary-soft p-4 font-semibold" data-vuq-pitch>Subjective sawal aur un ke jawab VU Complete pack mein milte hain.</p>
+            <VuPacks client:load packs={vuPackList()} code={c.code} term={TERM_LABEL[term]} percent={null} mainId="vu-complete" free={['Important questions', 'Muft practice MCQs']} />
+            <a href={share} target="_blank" rel="noopener" class={`${btn} bg-primary text-on-primary`} data-share>WhatsApp par share karein</a>
+          </>
+        )}
+        <a href={`${page}?term=${term}`} class={`${btn} border border-border`}>{c.code} ka muft mock test</a>
+      </div>
+    </div>
+  </Base>
+)}

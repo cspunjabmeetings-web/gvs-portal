@@ -18,12 +18,12 @@ const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-US')}`;
 const FREE = ['Muft practice MCQs', 'Har sawal ka jawab'];
 
-export default function VuPacks(p: { packs: VuPack[]; code: string; term: string; /** null = abhi koi test nahin */ percent: number | null }) {
+export default function VuPacks(p: { packs: VuPack[]; code: string; term: string; /** null = abhi koi test nahin */ percent: number | null; /** F32-AC4: yehi pack aage (score ki jagah) */ mainId?: string; free?: string[] }) {
   const [msg, setMsg] = useState<{ id: string; ok: boolean; text: string } | null>(null);
   const [wa, setWa] = useState('/contact');
   useEffect(() => setWa(waLink(whatsappNumber(), `Assalam o Alaikum GVS Academy, mujhe ${p.code} (${p.term}) ke pack ke bare mein poochna hai.`)), [p.code, p.term]);
 
-  const main = p.percent === null ? null : (p.packs.find((x) => x.id === packFor(p.percent!)) ?? null);
+  const main = p.mainId || p.percent !== null ? (p.packs.find((x) => x.id === (p.mainId ?? packFor(p.percent!))) ?? null) : null;
   const others = p.packs.filter((x) => x !== main);
   if (!p.packs.length) return null;
 
@@ -49,7 +49,7 @@ export default function VuPacks(p: { packs: VuPack[]; code: string; term: string
           <div class="rounded-xl bg-surface-2 p-3">
             <p class="font-semibold">Muft yahan</p>
             <ul class="mt-1 flex flex-col gap-1">
-              {FREE.map((f) => (
+              {(p.free ?? FREE).map((f) => (
                 <li key={f}>✓ {f}</li>
               ))}
             </ul>

@@ -95,7 +95,7 @@ describe('F30-AC2 / AC6: list aur sitemap', () => {
   it('sawal wale pehle, phir code; chhupa nahin; sitemap mein sirf sawal wale', async () => {
     await imp(5);
     expect((await vuCourses(d1.db)).map((c) => c.code)).toEqual(['CS101', 'AB101', 'MTH101']);
-    expect(await vuCourse(d1.db, 'CS101')).toEqual({ code: 'CS101', name: 'Introduction to Computing', mid: 5, final: 0 });
+    expect(await vuCourse(d1.db, 'CS101')).toEqual({ code: 'CS101', name: 'Introduction to Computing', mid: 5, final: 0, qMid: 0, qFinal: 0 });
     const locs = async () => (await sitemapUrls(d1.db, `${SITE}/`)).map((u) => u.loc.replace(SITE, '')).filter((l) => l.startsWith('/vu-mock'));
     expect(await locs()).toEqual(['/vu-mock', '/vu-mock/cs101']);
     await courses({ action: 'visible', code: 'CS101', visible: false });

@@ -69,7 +69,9 @@ describe.skipIf(built.length === 0)('bane hue pages (dist)', () => {
     for (const r of built) expect(html(r), r).not.toMatch(/<span(?![^>]*\brole=)[^>]*\baria-label=/);
   });
   it.runIf(built.includes('/vu'))('/vu: muqable ki table ka scroll dabba focus ho sakta hai', () => {
-    expect(html('/vu')).toMatch(/<div class="overflow-x-auto[^"]*"[^>]*role="region"[^>]*aria-label="[^"]+"[^>]*tabindex="0"/);
+    expect(html('/vu')).toMatch(/<div class="[^"]*\boverflow-x-auto\b[^"]*"[^>]*role="region"[^>]*aria-label="[^"]+"[^>]*tabindex="0"/);
+    // 18b: andar ke sr-only (absolute) alfaz dabbe mein rahen — warna page 509px chaura (phone par side scroll)
+    expect(html('/vu')).toMatch(/<div class="relative [^"]*\boverflow-x-auto\b[^"]*"[^>]*role="region"/);
   });
   // 17b Lighthouse (link-in-text-block): matn ke beech saade links par lakeer (built CSS mein qaida)
   it.runIf(existsSync(join(process.cwd(), 'dist/client/_astro')))('built CSS: :where(p,li,dd,td) a:not([class]) par underline', () => {

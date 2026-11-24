@@ -52,7 +52,7 @@ npx wrangler d1 time-travel info gvs
 Code ki har tabdeeli ke baad (Claude batayega kab), **naye terminal** mein:
 
 ```
-$env:SITE_URL="https://<domain>"; $env:PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAAAGLeKz2o6KZEhAeG"; $env:PUBLIC_IMG_BASE="https://img.<domain>"; npm run build
+$env:SITE_URL="https://gvsacademy.online"; $env:PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAAAGLeKz2o6KZEhAeG"; $env:PUBLIC_IMG_BASE="https://img.gvsacademy.online"; npm run build
 ```
 ```
 npx wrangler deploy
@@ -61,7 +61,7 @@ npx wrangler deploy
 exit
 ```
 
-- `<domain>` ki jagah asal domain (Qadam 18 ke baad Claude yahan likh dega).
+- Asal site: https://gvsacademy.online · tasveerein: https://img.gvsacademy.online
 - `npm run verify` ke foran baad deploy **na** karein: verify build ko localhost ke address se banata hai. Hamesha upar wali build line pehle.
 - Deploy ke baad terminal band (`exit`), warna isi terminal mein local `npm run dev` par asal Turnstile key lag jati hai.
 

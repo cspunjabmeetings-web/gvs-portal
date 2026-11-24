@@ -61,8 +61,10 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
 
     <section class="my-6" aria-labelledby="compare-heading">
       <h2 id="compare-heading" class="mb-3">2. Pack chunein: muqabla</h2>
-      <!-- 17b Lighthouse: 360px par yeh dabba scroll hota hai → keyboard se pohanch (scrollable-region-focusable) -->
-      <div class="overflow-x-auto rounded-xl border border-border bg-surface" role="region" aria-label="Muqable ki table (side mein scroll karein)" tabindex="0">
+      <!-- 17b Lighthouse: 360px par yeh dabba scroll hota hai → keyboard se pohanch (scrollable-region-focusable).
+           18b: `relative` zaroori — warna andar ke sr-only (position:absolute) alfaz dabbe se bahar nikal kar page ko
+           509px chaura kar dete the (phone par side scroll, CartBar ka button kat-ta tha). -->
+      <div class="relative overflow-x-auto rounded-xl border border-border bg-surface" role="region" aria-label="Muqable ki table (side mein scroll karein)" tabindex="0">
         <table class="w-full min-w-[520px] text-sm">
           <caption class="sr-only-focusable">VU packs ka muqabla</caption>
           <thead>

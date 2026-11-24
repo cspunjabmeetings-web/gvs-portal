@@ -269,6 +269,15 @@ describe('CHANGE REQUEST 17a: preview (*.workers.dev) noindex', () => {
   });
 });
 
+describe('Qadam 18b: production domain, workers.dev band (Access bypass na ho)', () => {
+  it('wrangler.toml: gvsacademy.online custom domain, workers_dev = false, preview_urls = false', () => {
+    const w = readFileSync(join(process.cwd(), 'wrangler.toml'), 'utf8');
+    expect(w).toMatch(/^routes = \[\{ pattern = "gvsacademy\.online", custom_domain = true \}\]$/m);
+    expect(w).toMatch(/^workers_dev = false$/m);
+    expect(w).toMatch(/^preview_urls = false$/m);
+  });
+});
+
 describe('Qadam 17b: static pages bina redirect', () => {
   it('wrangler.toml assets: html_handling = drop-trailing-slash (warna /about → 307 /about/)', () => {
     const w = readFileSync(join(process.cwd(), 'wrangler.toml'), 'utf8');

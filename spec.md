@@ -534,6 +534,15 @@ VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. C
 - F32-AC4: Neeche Complete pack (catalog se, ek tap, code + term), doosre packs, share.
 - F32-AC5: Sirf Important Questions wala course bhi list aur sitemap mein.
 
+### F33. Achievement patti + remarks (VU-5, v0.4.4)
+
+**AC**
+- F33-AC1: Admin VU → "Achievements": qism, matn (5–160), naam (≤ 40), course, semester, rating (sirf remark), jagah (VU / Job / dono), chhupana, badalna, mitana, tarteeb. Phone number par save nahin. Kul ≤ 200.
+- F33-AC2: Tasdeeq ("sach hai, saboot, student ki ijazat") ke baghair server bhi save na kare; `confirmed_at` mehfooz; har tabdeeli par nayi tasdeeq. Midterm + CGPA par khabardari. Sirf asal data (intent usool 4).
+- F33-AC3: Patti VU test, Job mock, rozana test ke dauran aur `/vu-mock` + course page par; har 6 s agli; "Rokein/Chalayen"; reduced-motion par ruki ("Agla"); test ke dauran koi request nahin.
+- F33-AC4: Remarks (3 tak, isi course ke pehle) VU nateeje par, pack ke bilkul upar.
+- F33-AC5: Khali ho to kuch nahin; CLS 0; data na mile to page/test chalta rahe.
+
 ---
 
 ## 6. Screens ki list
@@ -829,6 +838,8 @@ Jobs/notes/mocks/mcqs ke pages SSR hain (alag API nahin).
 |---|---|---|
 | E34 | `GET/POST /api/admin/vu/questions`, `DELETE /api/admin/vu/questions/:id` | VU Important Questions: list, badalna, jaancha, mitana (F32-AC1; admin) |
 | E35 | `POST /api/admin/vu/questions/import` | Important Questions ka tukra (≤ 50) save (admin) |
+| E36 | `GET /api/achievements?place=vu\|job` | Dikhne wali achievements/remarks (F33-AC3; public, `s-maxage=300`) |
+| E37 | `GET/POST /api/admin/achievements`, `DELETE /api/admin/achievements/:id` | Achievements ka intizam (F33-AC1; admin) |
 | E30 | `GET /api/agent/orders?status=paid` | Paid, na-mukammal orders: id, cheezein, tafseel, `fileHint`, naam, number |
 | E31 | `GET /api/agent/notifications?since=` | Naye notifications |
 | E32 | `POST /api/agent/orders/:id/complete` | Complete (`completed_by=agent`), note ke sath |
@@ -901,6 +912,7 @@ API GET /api/daily-test
 API GET /api/mcqs
 API GET /api/jobs/latest
 API GET /api/vu/test
+API GET /api/achievements
 API POST /api/admin/login
 API POST /api/admin/logout
 API GET /api/admin/orders
@@ -943,6 +955,9 @@ API GET /api/admin/vu/questions
 API POST /api/admin/vu/questions
 API DELETE /api/admin/vu/questions/[id]
 API POST /api/admin/vu/questions/import
+API GET /api/admin/achievements
+API POST /api/admin/achievements
+API DELETE /api/admin/achievements/[id]
 API GET /api/agent/orders
 API GET /api/agent/notifications
 API POST /api/agent/orders/[id]/complete
@@ -1305,6 +1320,7 @@ rate_limits
 vu_courses
 vu_mcqs
 vu_questions
+achievements
 ```
 <!-- TABLES:END -->
 
@@ -1480,6 +1496,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.4 | 24 Nov 2026 | VU-5 (owner "haan, 1b 2a"): F33-AC1..AC5, `achievements` (`0005_achievements.sql`), E36, E37 |
 | 0.4.3 | 24 Nov 2026 | VU-4 (owner "haan, 1a 2a"): F32-AC1..AC5, `vu_questions` + vu_courses mein `q_*` ginti (`0004_vu_questions.sql`), S33, E34, E35 |
 | 0.4.2 | 24 Nov 2026 | Owner ki manzoori: F12-AC7 (dohre sawal), VU-3 F31-AC1..AC6, catalog VU packs mein ikhtiyari `term` |
 | 0.4.1 | 24 Nov 2026 | VU-2 (owner ki manzoori): F30-AC1..AC6, pages `/vu-mock` (S31), `/vu-mock/<code>` (S32), E29 |

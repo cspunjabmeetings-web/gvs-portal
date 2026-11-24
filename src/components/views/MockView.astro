@@ -7,13 +7,15 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import MockTest from '../../components/quiz/MockTest.tsx';
+import type { Achievement } from '../../lib/achievements-rules';
 import { mockBySlug } from '../../lib/mocks';
 import { getProduct, formatPrice, productPage } from '../../lib/catalog';
 
 interface Props {
   mock: Exclude<Awaited<ReturnType<typeof mockBySlug>>, null | 'gone'>;
+  strip: Achievement[];
 }
-const { mock } = Astro.props;
+const { mock, strip } = Astro.props;
 const p = getProduct('mcq-pack');
 const pack = p && p.price !== null ? { name: p.name, line: p.includes[0] ?? '', price: formatPrice(p.price), href: productPage(p.id) } : null;
 const title = `${mock.name}: muft online mock test | GVS Academy`;
@@ -25,7 +27,7 @@ const description = (mock.summary ?? `${mock.name}: ${mock.questions} sawal, ${m
     <h1 class="mt-3">{mock.name}</h1>
     {mock.summary && <p class="mt-2 max-w-[68ch] text-muted">{mock.summary}</p>}
     <div class="mt-5 max-w-xl">
-      <MockTest client:load mock={{ slug: mock.slug, name: mock.name, minutes: mock.minutes, summary: mock.summary }} items={mock.items} pack={pack} />
+      <MockTest client:load mock={{ slug: mock.slug, name: mock.name, minutes: mock.minutes, summary: mock.summary }} items={mock.items} pack={pack} strip={strip} />
       <noscript>
         <p class="mt-4 rounded-xl bg-surface-2 p-4">Test dene ke liye browser mein JavaScript chalu karein.</p>
         <ol class="mt-4 flex list-decimal flex-col gap-2 pl-5">

@@ -532,3 +532,11 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Jaanch:** verify ✅; vu-questions.test; e2e 360px 28/28. Screenshots `Desktop\gvs-content\vu4-screens\`. **Migration 0004 remote par deploy se PEHLE.**
 - **Natija:** owner ne **VU-4 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-4` → PR #38 → merge → remote migration 0004 → deploy → VU-5 (achievements, patti, remarks) ke plan ki "haan".
 - Owner ne "push, migration, deploy ho gaya. VU-5 haan, 1b 2a" kaha lekin git/wrangler se: commit/push/PR nahin, migration 0004 pending, backup file nahin, aakhri deploy VU-3 wala → commands dobara di. VU-5 plan manzoor (1b: patti course page + /vu-mock par bhi; 2a: 6 second). Code VU-4 merge ke baad.
+- **VU-4 merge:** PR #38 merged (`7cb8a09`), remote migration 0004 ✅, deploy ✅ (git/curl se tasdeeq), backup 601 KB. **VU-4 mukammal.**
+
+### 24 Nov 2026 — VU-5: achievement patti + remarks (branch `vu-5`, REPORT diya, approval baqi)
+
+- **Kya bana (F33-AC1..AC5, spec v0.4.4, E36, E37):** `migrations/0005_achievements.sql`, `src/lib/achievements-rules.ts` (qaide, phone rok, midterm+CGPA khabardari, `remarksFor`), `src/lib/achievements.ts`, 3 endpoints, `VuAchievements.tsx` (admin VU → Achievements), `AchievementStrip.tsx` (6 s, Rokein, reduced-motion "Agla", grid se CLS 0), `RemarkCards.tsx`; MockTest `strip`, DailyTest (patti test shuru par jam jati hai), VuCourse, `/vu-mock`, MockView. Table na ho to `publicAchievements` khali (page nahin toot-ta).
+- **Jaanch:** verify ✅; achievements.test; e2e 360px 27/27. Screenshots `Desktop\gvs-content\vu5-screens\` (TEST data sirf alag local DB mein). **Migration 0005 remote par deploy se PEHLE.**
+- **Natija:** owner ne **VU-5 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-5` → PR #39 → merge → remote migration 0005 → deploy → VU-6 (funnel) ke plan ki "haan".
+- Owner ne dobara "push, migration, deploy ho gaya. VU-6 haan, 1a" kaha lekin VU-5 commit/push/PR nahin, migration 0005 pending, backup nahin, /api/achievements 404 → commands dobara. VU-6 plan manzoor (1a: sirf VU); code VU-5 merge ke baad.

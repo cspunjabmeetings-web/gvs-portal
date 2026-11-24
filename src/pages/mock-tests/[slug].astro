@@ -4,18 +4,20 @@
 import { env } from 'cloudflare:workers';
 import NotFound from '../../components/NotFound.astro';
 import MockView from '../../components/views/MockView.astro';
+import { publicAchievements } from '../../lib/achievements';
 import { mockBySlug } from '../../lib/mocks';
 
 export const prerender = false;
 
 const mock = await mockBySlug(env.DB, Astro.params.slug ?? '');
 const status = mock === 'gone' ? 410 : !mock ? 404 : 200;
+const strip = status === 200 ? await publicAchievements(env.DB, 'job') : [];
 if (status !== 200) Astro.response.status = status;
 Astro.response.headers.set('Cache-Control', status === 200 ? 'public, max-age=0, s-maxage=300' : 'public, max-age=0, s-maxage=60');
 ---
 {
   mock && mock !== 'gone' ? (
-    <MockView mock={mock} />
+    <MockView mock={mock} strip={strip} />
   ) : (
     <NotFound kind={status === 410 ? 'gone' : 'missing'} what="Yeh mock test" back={{ label: 'Doosre muft mock tests', href: '/mock-tests' }} />
   )

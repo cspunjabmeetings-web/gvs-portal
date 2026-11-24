@@ -525,6 +525,15 @@ VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. C
 - F31-AC5: Share `?term=&src=share`; channel button link (`CHANNEL_URL`) aane tak chhupa.
 - F31-AC6: `/my-history` mein "VU ki tayyari"; "Sab history mitayen" ise bhi. VU ka kuch Home "Aap ke liye", mocks ya weakSubjects mein nahin.
 
+### F32. VU Important Questions (VU-4, v0.4.3)
+
+**AC**
+- F32-AC1: Admin VU → "Important Questions": `# SAWAL` (Course, Sawal, Marks ikhtiyari) paste/.txt ≤ 300, preview, ghaltiyan line ke sath, term lazmi, checkbox ke baghair chhupe, dohra (course + term) chhoot jaye; list, search, badalna, dikhana/chhupana, mitana. **Jawab database mein nahin** (owner 1a).
+- F32-AC2: `/vu-mock/<code>/questions?term=mid|final`: sirf jaanche (saare muft, owner 2a); chhupa course 404; khali noindex; ad nahin.
+- F32-AC3: Course page aur nateeje par "Important Questions (N)"; 0 par ghaib.
+- F32-AC4: Neeche Complete pack (catalog se, ek tap, code + term), doosre packs, share.
+- F32-AC5: Sirf Important Questions wala course bhi list aur sitemap mein.
+
 ---
 
 ## 6. Screens ki list
@@ -629,6 +638,7 @@ PAGE /mock-tests
 PAGE /mock-tests/[slug]
 PAGE /vu-mock
 PAGE /vu-mock/[code]
+PAGE /vu-mock/[code]/questions
 PAGE /notes
 PAGE /notes/[slug]
 PAGE /jobs
@@ -817,6 +827,8 @@ Jobs/notes/mocks/mcqs ke pages SSR hain (alag API nahin).
 
 | ID | Method, path | Kaam |
 |---|---|---|
+| E34 | `GET/POST /api/admin/vu/questions`, `DELETE /api/admin/vu/questions/:id` | VU Important Questions: list, badalna, jaancha, mitana (F32-AC1; admin) |
+| E35 | `POST /api/admin/vu/questions/import` | Important Questions ka tukra (≤ 50) save (admin) |
 | E30 | `GET /api/agent/orders?status=paid` | Paid, na-mukammal orders: id, cheezein, tafseel, `fileHint`, naam, number |
 | E31 | `GET /api/agent/notifications?since=` | Naye notifications |
 | E32 | `POST /api/agent/orders/:id/complete` | Complete (`completed_by=agent`), note ke sath |
@@ -927,6 +939,10 @@ API GET /api/admin/vu/mcqs
 API POST /api/admin/vu/mcqs
 API DELETE /api/admin/vu/mcqs/[id]
 API POST /api/admin/vu/import
+API GET /api/admin/vu/questions
+API POST /api/admin/vu/questions
+API DELETE /api/admin/vu/questions/[id]
+API POST /api/admin/vu/questions/import
 API GET /api/agent/orders
 API GET /api/agent/notifications
 API POST /api/agent/orders/[id]/complete
@@ -1288,6 +1304,7 @@ agent_log
 rate_limits
 vu_courses
 vu_mcqs
+vu_questions
 ```
 <!-- TABLES:END -->
 
@@ -1463,6 +1480,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.3 | 24 Nov 2026 | VU-4 (owner "haan, 1a 2a"): F32-AC1..AC5, `vu_questions` + vu_courses mein `q_*` ginti (`0004_vu_questions.sql`), S33, E34, E35 |
 | 0.4.2 | 24 Nov 2026 | Owner ki manzoori: F12-AC7 (dohre sawal), VU-3 F31-AC1..AC6, catalog VU packs mein ikhtiyari `term` |
 | 0.4.1 | 24 Nov 2026 | VU-2 (owner ki manzoori): F30-AC1..AC6, pages `/vu-mock` (S31), `/vu-mock/<code>` (S32), E29 |
 | 0.4 | 24 Nov 2026 | VU-1 (intent 1.2, owner ki manzoori): F29-AC1..AC4, E26-E28, tables `vu_courses` + `vu_mcqs` (`0003_vu.sql`), admin "VU" tab |

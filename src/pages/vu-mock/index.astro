@@ -4,7 +4,7 @@ import { env } from 'cloudflare:workers';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import seo from '../../data/seo.json';
-import { vuCourses, type VuCourse } from '../../lib/vu-public';
+import { hasContent, vuCourses, type VuCourse } from '../../lib/vu-public';
 import { searchKey, splitTests } from '../../lib/vu-tests';
 
 export const prerender = false;
@@ -17,7 +17,7 @@ try {
 } catch {
   failed = true;
 }
-const ready = courses.filter((c) => c.mid + c.final > 0).length;
+const ready = courses.filter(hasContent).length;
 const tests = (c: VuCourse) => splitTests(c.mid).length + splitTests(c.final).length;
 Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-age=0, s-maxage=300');
 ---
@@ -48,7 +48,7 @@ Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-a
       ) : (
         <>
           <p class="mt-4 text-sm text-muted" role="status" data-vu-count>
-            <span class="tabular">{courses.length}</span> courses · <span class="tabular">{ready}</span> mein tests tayyar
+            <span class="tabular">{courses.length}</span> courses · <span class="tabular">{ready}</span> mein muft tayyari maujood
           </p>
           <div class="mt-3 rounded-xl bg-surface-2 p-4" data-vu-none hidden>
             <p class="font-semibold">Yeh course nahin mila.</p>
@@ -64,6 +64,8 @@ Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-a
                   </span>
                   {c.mid + c.final > 0 ? (
                     <span class="shrink-0 rounded-full bg-accent px-3 py-1 text-sm font-semibold text-on-accent">{tests(c)} {tests(c) === 1 ? 'test' : 'tests'}</span>
+                  ) : hasContent(c) ? (
+                    <span class="shrink-0 rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-text">{c.qMid + c.qFinal} sawal</span>
                   ) : (
                     <span class="shrink-0 text-right text-xs text-muted">Jald aa<br />raha hai</span>
                   )}

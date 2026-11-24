@@ -15,7 +15,7 @@ type Term = 'mid' | 'final';
 const LABEL: Record<Term, string> = { mid: 'Midterm', final: 'Final Term' };
 const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
 
-export default function VuCourse(p: { code: string; ids: Record<Term, number[]>; start: Term; packs: VuPack[] }) {
+export default function VuCourse(p: { code: string; ids: Record<Term, number[]>; /** F32-AC3: jaanche Important Questions ki ginti */ qs: Record<Term, number>; start: Term; packs: VuPack[] }) {
   const [term, setTerm] = useState<Term>(p.start);
   const [open, setOpen] = useState<{ n: number; items: QuizMcq[] } | null>(null);
   const [loading, setLoading] = useState(0);
@@ -78,6 +78,12 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
     requestAnimationFrame(() => document.querySelector('[data-vu-course]')?.scrollIntoView({ block: 'start' }));
   }
 
+  const questions = p.qs[term] > 0 && (
+    <a href={`/vu-mock/${p.code.toLowerCase()}/questions?term=${term}`} class={`${btn} min-h-[52px] border-2 border-primary text-text`} data-vu-questions>
+      Important Questions ({p.qs[term]})
+    </a>
+  );
+
   if (open) {
     const t = tests[open.n - 1];
     const name = `${p.code} ${LABEL[term]}: Test ${open.n}`;
@@ -107,6 +113,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
                     {error}
                   </p>
                 )}
+                {questions}
                 <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} percent={s.percent} />
                 {CHANNEL_URL && (
                   <a href={CHANNEL_URL} target="_blank" rel="noopener" class={`${btn} border border-border`} data-vu-channel>
@@ -134,9 +141,10 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
       {tests.length === 0 ? (
         <div class="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5 text-center" data-vu-soon>
           <p class="text-lg font-bold">
-            {p.code} {LABEL[term]} jald aa raha hai
+            {p.code} {LABEL[term]} {questions ? 'ke MCQs jald aa rahe hain' : 'jald aa raha hai'}
           </p>
           <p class="text-sm text-muted">Chahiye to humein bata dein, is course par pehle kaam karein ge.</p>
+          {questions}
           <a href={wa} target="_blank" rel="noopener" class={`${btn} bg-primary text-on-primary`} data-vu-request>
             WhatsApp par maangein
           </a>
@@ -183,6 +191,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
               );
             })}
           </ol>
+          {questions}
           <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} percent={ready.testsDone ? ready.percent : null} />
         </>
       )}

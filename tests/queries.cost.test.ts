@@ -14,6 +14,7 @@ import { trackOrder } from '../src/lib/track';
 import { publicNotes, notePage } from '../src/lib/notes';
 import { publicMocks, mockBySlug } from '../src/lib/mocks';
 import { listDuplicates } from '../src/lib/admin-dups';
+import { publicQuestions } from '../src/lib/vu-questions';
 import { vuCourses, vuIds, vuTestApi } from '../src/lib/vu-public';
 import { listCourses, listVuMcqs } from '../src/lib/vu-admin';
 import { runMaintenance } from '../src/lib/maintenance';
@@ -118,6 +119,7 @@ beforeAll(async () => {
     db.prepare(`UPDATE mcqs SET mock_id = 1 WHERE id <= 50`),
     // F29: 20 courses x 250 sawal
     db.prepare(`${cte(20)} INSERT INTO vu_courses (code, name, created_at) SELECT 'CS' || (100 + i), 'Course ' || i, '2026-01-01T00:00:00Z' FROM c`),
+    db.prepare(`${cte(2000)} INSERT INTO vu_questions (course_code, term, question, verified, verified_at, created_at, q_hash) SELECT 'CS' || (101 + i % 20), CASE WHEN i % 40 < 20 THEN 'mid' ELSE 'final' END, 'S ' || i, 1, 't', 't', 'h' || i FROM c`),
     db.prepare('UPDATE vu_courses SET mid_ok = 125, final_ok = 125'),
     db.prepare(
       `${cte(5000)} INSERT INTO vu_mcqs (course_code, term, question, options_json, answer_index, verified, verified_at, created_at, q_hash)
@@ -145,6 +147,7 @@ const cases: [string, number, (db: D1Database) => Promise<unknown>][] = [
   ['VU courses list (E26): ginti course ki row mein, vu_mcqs nahin parhta', 100, async (db) => listCourses(await adminReq('/api/admin/vu/courses'), { DB: db, SESSION_SECRET: SECRET })],
   ['VU courses (/vu-mock): vu_mcqs nahin parhta', 100, (db) => vuCourses(db)],
   ['VU course page: ids (S32; 250 + tarteeb)', 600, (db) => vuIds(db, 'CS101')],
+  ['VU Important Questions (S33)', 100, (db) => publicQuestions(db, 'CS101', 'mid')],
   ['VU ka ek test (E29)', 150, (db) => vuTestApi(new Request(`${SITE}/api/vu/test?course=cs101&term=mid&n=2`), db)],
   ['VU sawal: ek course (E27)', 700, async (db) => listVuMcqs(await adminReq('/api/admin/vu/mcqs?course=CS101'), { DB: db, SESSION_SECRET: SECRET })],
   ['mock page', 200, (db) => mockBySlug(db, 'mock-1')],

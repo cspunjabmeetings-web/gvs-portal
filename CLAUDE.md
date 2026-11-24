@@ -523,3 +523,12 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Jaanch:** verify ✅; vu-progress.test, admin-dups.test; e2e 360px 38/40 (2 script ki: order patti ka Turnstile pack daalne par khud load hota hai — purana tareeqa; `/vu` matn ke purane chhote links). Screenshots `Desktop\gvs-content\vu3-screens\`. Migration nahin.
 - **Agla:** owner approve → ek commit/PR #37 → deploy → VU-4 (Important Questions) ka plan.
 - **Natija:** owner ne **VU-2, VU-3, Dohre sawal approve** kiye, ek tabdeeli ke sath: har dohre par alag "Hatayen" + upar ek "sab hatayen" button. Bana (F12-AC8): upload preview (Content + VU) mein "Is file ke sab dohre hatayen (N)" + har ek par Hatayen (mock ke andar wale nahin); Dohre sawal list mein "Sab dohre hatayen" (saare groups, 100-100) + "Sirf yeh hatayen". verify ✅, e2e 12/13 (1 = script ki ginti 89 ki jagah 90 sahih). Commit commands is ke baad di gayin.
+- **VU-2 + VU-3 merge:** PR #37 merged (`81e9a09`; git se tasdeeq) aur deploy ✅ (`/vu-mock` 200, 68 courses, sitemap mein VU courses, `/vu` term khana, anjaan course 404, `/admin` Access 302). Owner ne phone par jaancha: "fine working". **VU-2, VU-3 mukammal.** VU-4 (Important Questions) ka plan diya, branch `vu-4`.
+- Owner ne VU-4 plan "haan, 1a 2a" kaha (jawab database mein nahin; saare sawal muft).
+
+### 24 Nov 2026 — VU-4: Important Questions (branch `vu-4`, REPORT diya, approval baqi)
+
+- **Kya bana (F32-AC1..AC5, spec v0.4.3, S33, E34, E35):** `migrations/0004_vu_questions.sql` (`vu_questions` — jawab ka column nahin; `vu_courses` mein `q_*` ginti), `src/lib/vu-sawal.ts` (# SAWAL parser), `src/lib/vu-questions.ts`, 3 endpoints, `VuQuestions.tsx` (admin VU → Important Questions), `/vu-mock/<code>/questions`, VuCourse par button, VuPacks `mainId`/`free`, `vuPackList`/`hasContent`, sitemap. E2e ne pakda: sirf Final ke questions wala course Midterm par khulta tha → theek.
+- **Jaanch:** verify ✅; vu-questions.test; e2e 360px 28/28. Screenshots `Desktop\gvs-content\vu4-screens\`. **Migration 0004 remote par deploy se PEHLE.**
+- **Natija:** owner ne **VU-4 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-4` → PR #38 → merge → remote migration 0004 → deploy → VU-5 (achievements, patti, remarks) ke plan ki "haan".
+- Owner ne "push, migration, deploy ho gaya. VU-5 haan, 1b 2a" kaha lekin git/wrangler se: commit/push/PR nahin, migration 0004 pending, backup file nahin, aakhri deploy VU-3 wala → commands dobara di. VU-5 plan manzoor (1b: patti course page + /vu-mock par bhi; 2a: 6 second). Code VU-4 merge ke baad.

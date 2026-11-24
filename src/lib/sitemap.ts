@@ -3,7 +3,7 @@
 import seo from '../data/seo.json';
 import { subjectCards } from './practice';
 import { publicMocks } from './mocks';
-import { vuCourses } from './vu-public';
+import { hasContent, vuCourses } from './vu-public';
 import { pkDate } from './pkdate';
 
 /** Sitemap mein kabhi nahin (noindex / zaati / ghalti ka page) */
@@ -35,7 +35,10 @@ export async function sitemapUrls(db: D1Database, base: string, now = new Date()
     vuCourses(db),
   ]);
   // F30-AC6: sirf jin courses mein jaanche sawal hain
-  for (const c of vu) if (c.mid + c.final > 0) out.push({ loc: abs(`/vu-mock/${c.code.toLowerCase()}`) });
+  for (const c of vu) {
+    if (hasContent(c)) out.push({ loc: abs(`/vu-mock/${c.code.toLowerCase()}`) });
+    if (c.qMid + c.qFinal > 0) out.push({ loc: abs(`/vu-mock/${c.code.toLowerCase()}/questions`) });
+  }
   for (const s of subjects) if (s.count > 0) out.push({ loc: abs(`/mcqs/${s.slug}`) });
   for (const m of mocks) out.push({ loc: abs(`/mock-tests/${m.slug}`) });
   for (const n of notes.results) out.push({ loc: abs(`/notes/${n.slug}`), lastmod: day(n.updated_at) });

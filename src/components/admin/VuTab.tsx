@@ -4,13 +4,15 @@ import { adminJson } from '../../lib/admin-fetch';
 import type { AdminCourse } from '../../lib/vu-admin';
 import VuCourses from './VuCourses';
 import VuImport from './VuImport';
+import VuQuestions from './VuQuestions';
 import VuMcqList from './VuMcqList';
 
-type Sub = 'courses' | 'import' | 'mcqs';
+type Sub = 'courses' | 'import' | 'mcqs' | 'questions';
 const SUBS: { id: Sub; label: string }[] = [
   { id: 'courses', label: 'Courses' },
   { id: 'import', label: 'MCQs daalein' },
   { id: 'mcqs', label: 'Sawal' },
+  { id: 'questions', label: 'Important Questions' },
 ];
 
 export default function VuTab() {
@@ -69,6 +71,8 @@ export default function VuTab() {
             setSub('mcqs');
           }}
         />
+      ) : sub === 'questions' ? (
+        <VuQuestions courses={courses} course={course} onCourse={setCourse} onChange={load} />
       ) : sub === 'import' ? (
         <VuImport courses={courses} onBusy={setBusy} />
       ) : (

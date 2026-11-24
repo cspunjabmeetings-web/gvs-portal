@@ -3,8 +3,7 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import VuCourse from '../quiz/VuCourse.tsx';
-import { activeProducts } from '../../lib/catalog';
-import type { VuCourse as Course } from '../../lib/vu-public';
+import { hasContent, vuPackList, type VuCourse as Course } from '../../lib/vu-public';
 
 interface Props {
   course: Course;
@@ -12,13 +11,10 @@ interface Props {
   term: string | null;
 }
 const { course: c, term, ids } = Astro.props;
-// Catalog se (usool 7); qeemat wale VU packs
-const packs = activeProducts()
-  .filter((x) => x.door === 'vu' && x.price !== null)
-  .map((x) => ({ id: x.id, name: x.name, price: x.price as number, includes: x.includes }));
-const ready = c.mid + c.final > 0;
+const packs = vuPackList();
+const ready = hasContent(c);
 // Link mein term ho to wohi; warna jis mein sawal hon (pehle Midterm)
-const start = term === 'mid' || term === 'final' ? term : c.mid > 0 || c.final === 0 ? 'mid' : 'final';
+const start = term === 'mid' || term === 'final' ? term : c.mid > 0 || (c.final === 0 && (c.qMid > 0 || c.qFinal === 0)) ? 'mid' : 'final';
 const title = `${c.code} Midterm aur Final MCQs: muft test | GVS`;
 const description = `${c.code} ${c.name}: muft online mock test, Midterm aur Final ke MCQs, timer aur har sawal ka jawab. Bina sign up.`.slice(0, 155);
 ---
@@ -31,7 +27,7 @@ const description = `${c.code} ${c.name}: muft online mock test, Midterm aur Fin
       <p class="mt-2 text-sm">Virtual University ke students ke liye muft practice. GVS niji academy hai.</p>
     </header>
     <div class="mt-5 max-w-xl">
-      <VuCourse client:load code={c.code} ids={ids} start={start} packs={packs} />
+      <VuCourse client:load code={c.code} ids={ids} qs={{ mid: c.qMid, final: c.qFinal }} start={start} packs={packs} />
       <noscript><p class="mt-4 rounded-xl bg-surface-2 p-4">Test dene ke liye browser mein JavaScript chalu karein.</p></noscript>
     </div>
     <p class="mt-6"><a href="/vu-mock" class="inline-flex min-h-[44px] items-center">Doosre VU courses</a></p>

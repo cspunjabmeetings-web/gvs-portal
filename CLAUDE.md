@@ -540,3 +540,12 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Jaanch:** verify ✅; achievements.test; e2e 360px 27/27. Screenshots `Desktop\gvs-content\vu5-screens\` (TEST data sirf alag local DB mein). **Migration 0005 remote par deploy se PEHLE.**
 - **Natija:** owner ne **VU-5 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-5` → PR #39 → merge → remote migration 0005 → deploy → VU-6 (funnel) ke plan ki "haan".
 - Owner ne dobara "push, migration, deploy ho gaya. VU-6 haan, 1a" kaha lekin VU-5 commit/push/PR nahin, migration 0005 pending, backup nahin, /api/achievements 404 → commands dobara. VU-6 plan manzoor (1a: sirf VU); code VU-5 merge ke baad.
+- **VU-5 merge:** PR #39 merged (`011779d`), remote migration 0005 ✅, deploy ✅ (tasdeeq). **VU-5 mukammal.**
+
+### 24 Nov 2026 — VU-6: funnel report + order ka nishan (branch `vu-6`, REPORT diya, approval baqi)
+
+- **Kya bana (F34-AC1..AC6, spec v0.4.5, E38, E39):** `migrations/0006_vu_stats.sql` (`vu_stats`, `orders.source`), `src/lib/vu-source.ts` (source, nishan, `funnel`), `vu-track.ts` (browser: qatar, sendBeacon, ek tab mein ek dafa; chalte test mein request nahin), `vu-stats.ts` (E38, E39, `tagOrder`, `cleanVuStats`), `VuReport.tsx`; cart `vuSource` → CartBar `source` → createOrder (order ban jane ke baad UPDATE, fail ho to order par asar nahin); OrderCard + CSV "Kahan se"; cron 180 din; Privacy paragraph.
+- **Jaanch:** verify ✅ (788 pass); vu-stats.test; e2e 360px 19/19. CartBar se asal order ka source browser mein nahin (Turnstile), server tests mein haan → owner phone se jaanche. Screenshots `Desktop\gvs-content\vu6-screens\`.
+- **Migration 0006 remote par deploy se PEHLE** (warna admin Orders aur CSV 503; student ke orders phir bhi bante).
+- **Flaky sabaq:** 100 sequential requests wala test bhari machine par 5 s timeout → rate_limits count seedha set.
+- **Natija:** owner ne **VU-6 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-6` → PR #40 → merge → remote migration 0006 → deploy → phone par asal order se nishan ki jaanch → VU Mock mukammal.

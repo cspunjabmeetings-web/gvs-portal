@@ -5,6 +5,8 @@ import { addToCart, CART_MSG } from '../../lib/cart';
 import { track } from '../../lib/analytics';
 import { waLink } from '../../lib/phone';
 import { whatsappNumber } from '../../lib/site-settings';
+import { orderSource } from '../../lib/vu-source';
+import { currentSource, vuEvent } from '../../lib/vu-track';
 import { packFor } from '../../lib/vu-progress';
 
 export interface VuPack {
@@ -18,18 +20,25 @@ const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-US')}`;
 const FREE = ['Muft practice MCQs', 'Har sawal ka jawab'];
 
-export default function VuPacks(p: { packs: VuPack[]; code: string; term: string; /** null = abhi koi test nahin */ percent: number | null; /** F32-AC4: yehi pack aage (score ki jagah) */ mainId?: string; free?: string[] }) {
+export default function VuPacks(p: { packs: VuPack[]; code: string; term: string; termKey: 'mid' | 'final'; /** F34: Important Questions page ki ginti */ countQuestions?: boolean; /** null = abhi koi test nahin */ percent: number | null; /** F32-AC4: yehi pack aage (score ki jagah) */ mainId?: string; free?: string[] }) {
   const [msg, setMsg] = useState<{ id: string; ok: boolean; text: string } | null>(null);
   const [wa, setWa] = useState('/contact');
   useEffect(() => setWa(waLink(whatsappNumber(), `Assalam o Alaikum GVS Academy, mujhe ${p.code} (${p.term}) ke pack ke bare mein poochna hai.`)), [p.code, p.term]);
+
+  useEffect(() => {
+    if (p.countQuestions) vuEvent(p.code, p.termKey, 'questions');
+  }, []);
 
   const main = p.mainId || p.percent !== null ? (p.packs.find((x) => x.id === (p.mainId ?? packFor(p.percent!))) ?? null) : null;
   const others = p.packs.filter((x) => x !== main);
   if (!p.packs.length) return null;
 
   function add(x: VuPack) {
-    const r = addToCart({ id: x.id, name: x.name, price: x.price, fields: { courseCode: p.code, term: p.term } });
-    if (r.ok) track('add_to_cart', { product: x.id, source: 'vu' });
+    const r = addToCart({ id: x.id, name: x.name, price: x.price, fields: { courseCode: p.code, term: p.term }, vuSource: orderSource({ code: p.code, term: p.termKey, source: currentSource() }) });
+    if (r.ok) {
+      track('add_to_cart', { product: x.id, source: 'vu' });
+      vuEvent(p.code, p.termKey, 'pack');
+    }
     setMsg(r.ok ? { id: x.id, ok: true, text: `✓ ${CART_MSG.added} Neeche "WhatsApp par order karein" dabayen.` } : { id: x.id, ok: false, text: `✕ ${CART_MSG[r.reason]}` });
   }
 

@@ -125,7 +125,7 @@ export default function CartBar() {
       res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: n.value, phone: p.value, items: items.map(({ id, fields, jobId }) => ({ id, fields, jobId })), turnstileToken: token }),
+        body: JSON.stringify({ name: n.value, phone: p.value, items: items.map(({ id, fields, jobId }) => ({ id, fields, jobId })), source: items.find((x) => x.vuSource)?.vuSource, turnstileToken: token }),
         signal: AbortSignal.timeout(10_000), // F05-AC1
       });
       data = await res.json();

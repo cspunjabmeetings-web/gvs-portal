@@ -88,6 +88,10 @@ Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-a
   import { searchKey } from '../../lib/vu-tests';
   import { waLink } from '../../lib/phone';
   import { whatsappNumber } from '../../lib/site-settings';
+  import { currentSource } from '../../lib/vu-track';
+
+  // F34-AC2: /vu-mock?src=channel se aaye to agle course page par yaad rahe
+  currentSource();
 
   const form = document.querySelector<HTMLFormElement>('[data-vu-search]');
   const input = document.querySelector<HTMLInputElement>('#vu-find');

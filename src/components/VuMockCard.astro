@@ -1,0 +1,15 @@
+---
+// spec: F30-AC7 (Home: rozana test ke neeche; /vu: course code se pehle). Bina JS chalta hai.
+interface Props {
+  title?: string;
+  line?: string;
+}
+const { title = 'VU Mock Test', line = 'Course code likhein, Midterm ya Final ka muft test dein.' } = Astro.props;
+---
+<a href="/vu-mock" class="flex items-center justify-between gap-4 rounded-xl bg-primary p-4 text-on-primary no-underline shadow-[0_1px_2px_rgb(0_0_0/0.06)]" data-vu-mock-card>
+  <span class="flex min-w-0 flex-col">
+    <span class="text-lg font-bold">{title}</span>
+    <span class="text-sm">{line}</span>
+  </span>
+  <span class="inline-flex min-h-[44px] items-center whitespace-nowrap rounded-lg bg-accent px-4 font-semibold text-on-accent">Test dein</span>
+</a>

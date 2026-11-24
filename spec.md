@@ -514,6 +514,7 @@ VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. C
 - F30-AC4: Test: 20 sawal = 25 minute (usi hisab se), MockTest wala engine (palette, jari rakhna); test ke dauran koi request, ad ya order patti nahin. VU ka nateeja mocks/weakSubjects/bookmarks mein nahin.
 - F30-AC5: Jama par score + har sawal ka jawab; share link `/vu-mock/<code>?term=`. (Tayyari meter, pack = VU-3.)
 - F30-AC6: Sitemap mein sirf jaanche sawal wale course; canonical bina `?term`; khali course noindex.
+- F30-AC7 (v0.4.6): Home par rozana test ke neeche VU Mock card, VU Corner darwaze mein "VU packs" + "Muft VU Mock Test", Header menu mein "VU Mock Test" (Jobs ke baad), `/vu` par course code se pehle link. Bina JS.
 
 ### F31. VU Mock: nateeja, tayyari, pack (VU-3, v0.4.2)
 
@@ -1511,6 +1512,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.6 | 24 Nov 2026 | VU-7 (owner "haan, 1a 2a"): F30-AC7 VU Mock ke links (Home, menu, `/vu`) |
 | 0.4.5 | 24 Nov 2026 | VU-6 (owner "haan, 1a"): F34-AC1..AC6, `vu_stats` + `orders.source` (`0006_vu_stats.sql`), E38, E39 |
 | 0.4.4 | 24 Nov 2026 | VU-5 (owner "haan, 1b 2a"): F33-AC1..AC5, `achievements` (`0005_achievements.sql`), E36, E37 |
 | 0.4.3 | 24 Nov 2026 | VU-4 (owner "haan, 1a 2a"): F32-AC1..AC5, `vu_questions` + vu_courses mein `q_*` ginti (`0004_vu_questions.sql`), S33, E34, E35 |

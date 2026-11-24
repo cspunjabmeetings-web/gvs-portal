@@ -64,6 +64,20 @@ describe.skipIf(built.length === 0)('bane hue pages (dist)', () => {
     expect((h.match(/data-add-to-cart="vu-/g) ?? []).length).toBe(4);
   });
 
+  it.runIf(built.includes('/'))('F30-AC7: Home card rozana test ke neeche, darwaze mein dono button, har page ke menu mein (dono menu), /vu par course code se pehle', () => {
+    const h = html('/');
+    expect(h.indexOf('data-vu-mock-card')).toBeGreaterThan(h.indexOf('href="/daily-test"'));
+    expect(h).toMatch(/href="\/vu-mock"[^>]*>\s*Muft VU Mock Test/);
+    expect(h).toMatch(/href="\/vu"[^>]*>\s*VU packs/);
+    for (const r of built.filter((x) => x !== '/admin')) {
+      const head = html(r).match(/<header class="bg-surface[\s\S]*?<\/header>/)?.[0] ?? '';
+      expect((head.match(/href="\/vu-mock"/g) ?? []).length, r).toBe(2);
+    }
+    const v = html('/vu');
+    expect(v.indexOf('data-vu-mock-card')).toBeGreaterThan(0);
+    expect(v.indexOf('data-vu-mock-card')).toBeLessThan(v.indexOf('name="courseCode"'));
+  });
+
   // 17b Lighthouse (A 96): scroll wala table keyboard se pohanch mein; saade span par aria-label nahin
   it('har built page: saade <span> par aria-label nahin (aria-prohibited-attr)', () => {
     for (const r of built) expect(html(r), r).not.toMatch(/<span(?![^>]*\brole=)[^>]*\baria-label=/);

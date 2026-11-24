@@ -549,3 +549,10 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Migration 0006 remote par deploy se PEHLE** (warna admin Orders aur CSV 503; student ke orders phir bhi bante).
 - **Flaky sabaq:** 100 sequential requests wala test bhari machine par 5 s timeout → rate_limits count seedha set.
 - **Natija:** owner ne **VU-6 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-6` → PR #40 → merge → remote migration 0006 → deploy → phone par asal order se nishan ki jaanch → VU Mock mukammal.
+- **VU-6 merge:** PR #40 merged (`12fedfd`), remote migration 0006 ✅, deploy ✅ (tasdeeq). Phone ki jaanch (order nishan, Report) owner se baqi. Owner ne pakda: Home/Menu//vu par VU Mock ka link nahin → VU-7 plan "haan, 1a 2a".
+
+### 24 Nov 2026 — VU-7: VU Mock ke links (branch `vu-7`, REPORT diya, approval baqi)
+
+- **Kya bana (F30-AC7, spec v0.4.6):** `VuMockCard.astro` (Home: rozana test ke neeche; `/vu`: course code se pehle), Home ke VU Corner darwaze mein do button (DoorCard links `relative z-10`), Header menu mein "VU Mock Test" (Jobs ke baad). Migration/API nahin.
+- **Jaanch:** verify ✅ (789); e2e 12/12 (360/412/768/1280, CLS 0). Screenshots `Desktop\gvs-content\vu7-screens\`.
+- **Natija:** owner ne **VU-7 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-7` → PR #41 → merge → deploy (migration nahin). VU-6 ki phone jaanch ka nateeja baqi.

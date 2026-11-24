@@ -3,6 +3,13 @@ name = "gvs-portal"
 # Adapter ka `handle` (fetch) + `scheduled` (maintenance) — src/worker.ts
 main = "src/worker.ts"
 compatibility_date = "2026-11-01"
+# spec: Qadam 18b, Q-03 (domain Cloudflare DNS par). Asal domain Worker ka custom domain; Cloudflare DNS record aur
+# SSL khud banata hai. www → gvsacademy.online ka redirect Cloudflare Redirect Rule se (dashboard).
+routes = [{ pattern = "gvsacademy.online", custom_domain = true }]
+# Qadam 18 (owner faisla 3): *.workers.dev aur preview URLs band — Cloudflare Access sirf domain par hai, warna
+# gvs-portal.<account>.workers.dev/admin us ke baghair khula rehta. Aazmaish ab local (`npm run dev`) par.
+workers_dev = false
+preview_urls = false
 compatibility_flags = ["nodejs_compat"]
 
 [assets]

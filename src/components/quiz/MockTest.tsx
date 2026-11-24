@@ -29,6 +29,8 @@ export interface MockInfo {
 /** F30: VU test. Nateeja history mocks/weakSubjects mein nahin (woh /mock-tests aur /mcqs ke links bante hain); bookmark nahin */
 export interface VuMode {
   onBack: () => void;
+  /** F34-AC1 */
+  onBegin: () => void;
   /** F31-AC1: jama par (history mein likhne ke liye) */
   onResult: (p: MockProgress) => void;
   shareText: (s: { score: number; total: number; percent: number }) => string;
@@ -105,6 +107,7 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
     live.current = true;
     persist(from);
     setPhase({ k: 'test' });
+    p.vu?.onBegin();
     track('mock_start', { mock: mock.slug, questions: items.length, resumed: from === resume });
     requestAnimationFrame(() => document.querySelector('[data-mock]')?.scrollIntoView({ block: 'start' }));
   }

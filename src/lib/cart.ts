@@ -16,6 +16,8 @@ export interface CartItem {
   jobTitle?: string;
   govtFee?: number;
   documents?: string[];
+  /** F34-AC4: "CS101:mid:channel" (sirf admin ka nishan; server dobara jaanchta hai) */
+  vuSource?: string;
 }
 
 export const MAX_ITEMS = 10; // intent 7.4

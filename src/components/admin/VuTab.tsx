@@ -6,15 +6,17 @@ import VuAchievements from './VuAchievements';
 import VuCourses from './VuCourses';
 import VuImport from './VuImport';
 import VuQuestions from './VuQuestions';
+import VuReport from './VuReport';
 import VuMcqList from './VuMcqList';
 
-type Sub = 'courses' | 'import' | 'mcqs' | 'questions' | 'ach';
+type Sub = 'courses' | 'import' | 'mcqs' | 'questions' | 'ach' | 'report';
 const SUBS: { id: Sub; label: string }[] = [
   { id: 'courses', label: 'Courses' },
   { id: 'import', label: 'MCQs daalein' },
   { id: 'mcqs', label: 'Sawal' },
   { id: 'questions', label: 'Important Questions' },
   { id: 'ach', label: 'Achievements' },
+  { id: 'report', label: 'Report' },
 ];
 
 export default function VuTab() {
@@ -73,6 +75,8 @@ export default function VuTab() {
             setSub('mcqs');
           }}
         />
+      ) : sub === 'report' ? (
+        <VuReport />
       ) : sub === 'ach' ? (
         <VuAchievements />
       ) : sub === 'questions' ? (

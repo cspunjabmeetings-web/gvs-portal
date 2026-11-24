@@ -5,6 +5,7 @@ import type { OrderStatus } from '../../lib/track';
 import { ALLOWED, STATUS_LABEL, isBack, ago, dueLabel, toKarachiInput, fromKarachiInput, contactMessage, type ContactInput } from '../../lib/admin-ui';
 import { addWorkingMinutes, formatRemaining } from '../../lib/timer';
 import { itemDetail } from '../../lib/cart';
+import { sourceLabel } from '../../lib/vu-source';
 import { toDisplay, waLink } from '../../lib/phone';
 
 const rs = (n: number) => `Rs. ${n.toLocaleString('en-PK')}`;
@@ -170,6 +171,11 @@ export default function OrderCard({ order: o, work, payment, onUpdate, onAuthLos
       </ul>
 
       <div class="flex flex-wrap gap-2 text-sm">
+        {sourceLabel(o.source) && (
+          <span class="rounded-full bg-primary-soft px-2 py-0.5 font-medium" data-source>
+            {sourceLabel(o.source)}
+          </span>
+        )}
         <span class={`rounded-full px-2 py-0.5 ${o.whatsappOpenedAt ? 'bg-correct-bg text-correct' : 'bg-wrong-bg text-wrong'}`} data-wa>
           WhatsApp khola: {o.whatsappOpenedAt ? 'haan' : 'nahin'}
         </span>

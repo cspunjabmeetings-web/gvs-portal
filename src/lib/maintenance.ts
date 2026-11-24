@@ -4,6 +4,7 @@
 // Log/notification mein naam/phone kabhi nahin (qaida 11) — sirf ginti aur order number.
 import { getSettings } from './settings';
 import { notifyLowMcqBank } from './notify';
+import { cleanVuStats } from './vu-stats';
 import { pkDate, addDays } from './pkdate';
 import { NO_REPEAT_DAYS, DAILY_COUNT } from './daily';
 
@@ -171,6 +172,7 @@ export async function runMaintenance(env: MaintenanceEnv, now: Date = new Date()
       out.lowMcqNotified = await checkLowMcqBank(db, now);
     });
   }
+  if (daily) await step('vuStats', async () => void (await cleanVuStats(db, now))); // F34-AC6
   await step('rateLimits', async () => {
     out.rateLimitsDeleted = await cleanRateLimits(db, now);
   });

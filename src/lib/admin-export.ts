@@ -5,6 +5,7 @@ import { requireAdmin, type AdminEnv } from './admin-auth';
 import { fail, toResponse, API_MSG } from './api';
 import { STATUS_LABEL } from './admin-ui';
 import { itemDetail } from './cart';
+import { sourceLabel } from './vu-source';
 import type { OrderStatus } from './track';
 
 /** UTF-8 BOM (Write tool `\u` escape ko asal harf bana deta hai — is liye code se) */
@@ -76,6 +77,7 @@ export const EXPORT_HEADER = [
   'Andaruni note',
   'Customer ke liye note',
   'Cancel ki wajah',
+  'Kahan se',
 ] as const;
 
 interface Row {
@@ -94,6 +96,7 @@ interface Row {
   created_at: string;
   paid_at: string | null;
   completed_at: string | null;
+  source: string | null;
 }
 
 export function ordersCsv(rows: Row[]): string {
@@ -116,6 +119,7 @@ export function ordersCsv(rows: Row[]): string {
         r.admin_note,
         r.public_note,
         r.cancel_reason,
+        sourceLabel(r.source),
       ]),
     );
   }
@@ -130,7 +134,7 @@ export async function exportOrders(request: Request, env: ExportEnv, deps: { now
   try {
     const { results } = await env.DB.prepare(
       `SELECT id, name, phone, items_json, total, status, due_at, whatsapp_opened_at, contacted, public_note, admin_note,
-              cancel_reason, created_at, paid_at, completed_at
+              cancel_reason, created_at, paid_at, completed_at, source
        FROM orders ORDER BY created_at DESC`,
     ).all<Row>();
     const day = karachiTime((deps.now ?? (() => new Date()))().toISOString()).slice(0, 10);

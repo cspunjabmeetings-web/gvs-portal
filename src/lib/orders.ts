@@ -11,6 +11,8 @@ import { buildOrderMessage } from './order-message';
 import { checkLimit } from './ratelimit';
 import { verifyTurnstile, type TurnstileVerdict } from './turnstile';
 import { MAX_ITEMS } from './cart';
+import { parseOrderSource } from './vu-source';
+import { tagOrder } from './vu-stats';
 
 export interface OrderEnv {
   DB: D1Database;
@@ -68,6 +70,8 @@ const OrderBody = v.object({
     v.maxLength(MAX_ITEMS),
   ),
   turnstileToken: Str(4096),
+  /** F34-AC4; ghalat ho to sirf nazarandaz (order kabhi nahin rukta) */
+  source: v.optional(v.unknown()),
 });
 
 const OpenedBody = v.object({ last4: v.pipe(v.string(), v.regex(/^[0-9]{4}$/)) });
@@ -173,6 +177,16 @@ export async function createOrder(request: Request, env: OrderEnv, deps: OrderDe
     ]);
     const id = results[1].results[0]?.id;
     if (!id) return fail(503, 'unavailable', API_MSG.unavailable);
+
+    // F34-AC4: order ban chuka; nishan sirf tab jab us course ka VU pack asal mein is order mein ho. Fail ho to order par asar nahin.
+    const src = parseOrderSource(input.source);
+    if (src && priced.items.some((i) => i.id.startsWith('vu-') && i.fields.courseCode?.toUpperCase() === src.code)) {
+      try {
+        await tagOrder(db, id, src, now);
+      } catch {
+        /* ginti na ho to na sahi */
+      }
+    }
 
     const origin = new URL(request.url).origin;
     const trackUrl = `${origin}/track?id=${id}`;

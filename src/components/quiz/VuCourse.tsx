@@ -7,6 +7,7 @@ import { waLink } from '../../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../../lib/site-settings';
 import { splitTests } from '../../lib/vu-tests';
 import { CHANNEL_URL, nextTest, readiness, recordVu, vuKey, vuShareText } from '../../lib/vu-progress';
+import { flushVu, vuEvent } from '../../lib/vu-track';
 import MockTest from './MockTest';
 import type { Achievement } from '../../lib/achievements-rules';
 import AchievementStrip from './AchievementStrip';
@@ -44,6 +45,9 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
     return () => removeEventListener(HISTORY_EVENT, read);
   }, []);
 
+  // F34-AC1: page/term khola
+  useEffect(() => vuEvent(p.code, term, 'view'), [term]);
+
   function readPending() {
     const s = (loadHistory().mockProgress as { slug?: unknown } | null)?.slug;
     setPending(typeof s === 'string' ? s : '');
@@ -77,6 +81,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
 
   function back() {
     setOpen(null);
+    flushVu();
     readPending();
     requestAnimationFrame(() => document.querySelector('[data-vu-course]')?.scrollIntoView({ block: 'start' }));
   }
@@ -102,7 +107,11 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
           strip={p.strip}
           vu={{
             onBack: back,
-            onResult: (prog) => updateHistory((h) => recordVu(h, vuKey(p.code, term), { n: open.n, items: open.items, answers: prog.answers, validIds: ids, at: new Date().toISOString() })),
+            onBegin: () => vuEvent(p.code, term, 'start', true),
+            onResult: (prog) => {
+              vuEvent(p.code, term, 'done');
+              updateHistory((h) => recordVu(h, vuKey(p.code, term), { n: open.n, items: open.items, answers: prog.answers, validIds: ids, at: new Date().toISOString() }));
+            },
             shareText: (s) => vuShareText(name, s, `${location.origin}/vu-mock/${p.code.toLowerCase()}?term=${term}&src=share`),
             extra: (s) => (
               <>
@@ -119,7 +128,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
                 )}
                 {questions}
                 <RemarkCards items={p.strip} code={p.code} />
-                <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} percent={s.percent} />
+                <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} termKey={term} percent={s.percent} />
                 {CHANNEL_URL && (
                   <a href={CHANNEL_URL} target="_blank" rel="noopener" class={`${btn} border border-border`} data-vu-channel>
                     WhatsApp channel follow karein
@@ -198,7 +207,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
             })}
           </ol>
           {questions}
-          <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} percent={ready.testsDone ? ready.percent : null} />
+          <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} termKey={term} percent={ready.testsDone ? ready.percent : null} />
         </>
       )}
     </div>

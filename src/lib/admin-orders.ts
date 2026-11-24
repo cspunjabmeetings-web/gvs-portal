@@ -54,6 +54,8 @@ export interface AdminOrder {
   publicNote: string | null;
   adminNote: string | null;
   cancelReason: string | null;
+  /** F34-AC4: "CS101:mid:channel" */
+  source: string | null;
   /** SA4: wade ke minute (sab se lamba) — Paid dialog isi se "Wada: ..." banata hai */
   minutes: number;
 }
@@ -74,9 +76,10 @@ interface Row {
   public_note: string | null;
   admin_note: string | null;
   cancel_reason: string | null;
+  source: string | null;
 }
 
-const COLS = 'id, name, phone, items_json, total, status, created_at, paid_at, due_at, completed_at, whatsapp_opened_at, contacted, public_note, admin_note, cancel_reason';
+const COLS = 'id, name, phone, items_json, total, status, created_at, paid_at, due_at, completed_at, whatsapp_opened_at, contacted, public_note, admin_note, cancel_reason, source';
 
 function parseItems(json: string): PricedItem[] {
   try {
@@ -114,6 +117,7 @@ function toOrder(r: Row, s: Settings): AdminOrder {
     publicNote: r.public_note,
     adminNote: r.admin_note,
     cancelReason: r.cancel_reason,
+    source: r.source,
     minutes: minutesFor(items, s),
   };
 }

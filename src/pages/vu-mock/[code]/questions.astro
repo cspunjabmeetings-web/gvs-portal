@@ -61,7 +61,7 @@ const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-
               ))}
             </ol>
             <p class="rounded-2xl bg-primary-soft p-4 font-semibold" data-vuq-pitch>Subjective sawal aur un ke jawab VU Complete pack mein milte hain.</p>
-            <VuPacks client:load packs={vuPackList()} code={c.code} term={TERM_LABEL[term]} percent={null} mainId="vu-complete" free={['Important questions', 'Muft practice MCQs']} />
+            <VuPacks client:load packs={vuPackList()} code={c.code} term={TERM_LABEL[term]} termKey={term} countQuestions percent={null} mainId="vu-complete" free={['Important questions', 'Muft practice MCQs']} />
             <a href={share} target="_blank" rel="noopener" class={`${btn} bg-primary text-on-primary`} data-share>WhatsApp par share karein</a>
           </>
         )}

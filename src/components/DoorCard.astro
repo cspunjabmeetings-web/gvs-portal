@@ -24,7 +24,7 @@ const paths: Record<Props['icon'], string> = {
   </h2>
   <p class="text-sm text-muted">{line}</p>
   {links && (
-    <ul class="mt-1 flex flex-col gap-2">
+    <ul class="relative z-10 mt-1 flex flex-col gap-2">
       {links.map((l) => (
         <li>
           <a href={l.href} class="flex items-center justify-between min-h-[44px] rounded-lg bg-surface-2 px-3 font-semibold no-underline text-text hover:bg-primary-soft">

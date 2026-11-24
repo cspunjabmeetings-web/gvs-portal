@@ -2,6 +2,7 @@
 // spec: S03 (course code ka khana, 4 packs ka muqabla, namoone, FAQ, top+bottom ad), F02-AC1, F02-AC2, F21-AC8
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import VuMockCard from '../components/VuMockCard.astro';
 import FieldInput from '../components/FieldInput.astro';
 import ProductCard from '../components/ProductCard.astro';
 import TrustStrip from '../components/TrustStrip.astro';
@@ -52,6 +53,8 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
     <p class="mt-2 text-muted max-w-[68ch]">Apna course code likhein aur chaar packs mein se chunein. Har pack mein kya hai, saaf likha hai.</p>
 
     <AdSlot slot="top" />
+
+    <div class="my-4 max-w-xl"><VuMockCard title="Pehle muft test dein" line="Apne course ka Midterm ya Final mock test, phir pack chunein." /></div>
 
     {courseField && (
       <section class="my-6 max-w-md rounded-xl border border-primary bg-surface p-4" aria-labelledby="code-heading" data-shared-field-host="courseCode">

@@ -100,6 +100,14 @@
           "required": true,
           "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
           "example": "CS101"
+        },
+        {
+          "key": "term",
+          "label": "Term",
+          "type": "select",
+          "required": false,
+          "options": ["Midterm", "Final Term"],
+          "example": "Midterm"
         }
       ],
       "includes": ["Ahem topics ka mukhtasar khulasa", "Ahem MCQs"],
@@ -123,6 +131,14 @@
           "required": true,
           "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
           "example": "CS101"
+        },
+        {
+          "key": "term",
+          "label": "Term",
+          "type": "select",
+          "required": false,
+          "options": ["Midterm", "Final Term"],
+          "example": "Midterm"
         }
       ],
       "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal"],
@@ -146,6 +162,14 @@
           "required": true,
           "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
           "example": "CS101"
+        },
+        {
+          "key": "term",
+          "label": "Term",
+          "type": "select",
+          "required": false,
+          "options": ["Midterm", "Final Term"],
+          "example": "Midterm"
         }
       ],
       "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal", "Subjective sawal aur un ke jawab"],
@@ -169,6 +193,14 @@
           "required": true,
           "pattern": "^[A-Za-z]{2,4}[0-9]{3}[A-Za-z]?$",
           "example": "CS101"
+        },
+        {
+          "key": "term",
+          "label": "Term",
+          "type": "select",
+          "required": false,
+          "options": ["Midterm", "Final Term"],
+          "example": "Midterm"
         }
       ],
       "includes": ["Har lecture ka khulasa", "Ahem MCQs", "Past papers ke sawal", "Subjective sawal aur un ke jawab", "Midterm aur final ki guess list"],

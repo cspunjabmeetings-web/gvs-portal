@@ -27,6 +27,15 @@ export interface SavedOrder {
   last4: string;
   at: string;
 }
+/** F31-AC1: ek VU course + term (key "CS101:mid") */
+export interface VuEntry {
+  right: number[];
+  wrong: number[];
+  tests: Record<string, { score: number; total: number }>;
+  /** Us waqt ke kul jaanche sawal (/my-history ke liye) */
+  total: number;
+  at: string;
+}
 export interface History {
   v: 1;
   streak: { count: number; lastDate: string } | null;
@@ -36,9 +45,10 @@ export interface History {
   bookmarks: number[];
   weakSubjects: Record<string, number>;
   orders: SavedOrder[];
+  vu: Record<string, VuEntry>;
 }
 
-export const emptyHistory = (): History => ({ v: 1, streak: null, daily: {}, mocks: {}, mockProgress: null, bookmarks: [], weakSubjects: {}, orders: [] });
+export const emptyHistory = (): History => ({ v: 1, streak: null, daily: {}, mocks: {}, mockProgress: null, bookmarks: [], weakSubjects: {}, orders: [], vu: {} });
 
 const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
 const isNum = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
@@ -61,6 +71,13 @@ export function normalize(raw: unknown): History {
   if (isObj(raw.weakSubjects)) for (const [k, n] of Object.entries(raw.weakSubjects)) if (isNum(n)) h.weakSubjects[k] = n;
   if (Array.isArray(raw.orders))
     h.orders = raw.orders.filter((o): o is SavedOrder => isObj(o) && typeof o.id === 'string' && typeof o.last4 === 'string' && typeof o.at === 'string').slice(0, LIMITS.orders);
+  if (isObj(raw.vu))
+    for (const [k, e] of Object.entries(raw.vu)) {
+      if (!/^[A-Z]{2,4}\d{3}P?:(mid|final)$/.test(k) || !isObj(e) || !Array.isArray(e.right) || !Array.isArray(e.wrong) || typeof e.at !== 'string') continue;
+      const tests: VuEntry['tests'] = {};
+      if (isObj(e.tests)) for (const [n, t] of Object.entries(e.tests)) if (isObj(t) && isNum(t.score) && isNum(t.total)) tests[n] = { score: t.score, total: t.total };
+      h.vu[k] = { right: e.right.filter(isNum), wrong: e.wrong.filter(isNum), tests, total: isNum(e.total) ? e.total : 0, at: e.at };
+    }
   return h;
 }
 
@@ -153,9 +170,11 @@ export function prune(h: History, maxBytes: number = LIMITS.bytes): History {
   const next = structuredClone(h);
   const days = Object.keys(next.daily).sort();
   const mocks = Object.entries(next.mocks).sort((a, b) => a[1].at.localeCompare(b[1].at)).map(([k]) => k);
+  const vu = Object.entries(next.vu).sort((a, b) => a[1].at.localeCompare(b[1].at)).map(([k]) => k);
   while (size(next) > maxBytes) {
     if (days.length > 7) delete next.daily[days.shift()!];
     else if (mocks.length) delete next.mocks[mocks.shift()!];
+    else if (vu.length > 1) delete next.vu[vu.shift()!];
     else if (next.bookmarks.length > 50) next.bookmarks = next.bookmarks.slice(0, Math.floor(next.bookmarks.length / 2));
     else if (days.length) delete next.daily[days.shift()!];
     else break;

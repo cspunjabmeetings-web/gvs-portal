@@ -106,7 +106,7 @@ function ItemCard(p: { item: ParsedItem; dup: DupInfo }) {
 }
 
 /** `children` = save ka dabba: ginti/ghaltiyon ke foran baad, cards se pehle (phone par lambi list ke neeche na chhupe) */
-export default function ContentPreview(p: { result: ParseResult; dup: DupInfo; children?: ComponentChildren }) {
+export default function ContentPreview(p: { result: ParseResult; dup: DupInfo; /** F12-AC8: dohre sawal file se nikalna (save shuru ho chuka ho to null) */ onDrop?: ((list: ParsedMcq[]) => void) | null; children?: ComponentChildren }) {
   const { result } = p;
   const [shown, setShown] = useState(PAGE);
   const mockMcqs = result.items.reduce((n, it) => n + (it.kind === 'MOCK' ? it.mcqs.length : 0), 0);
@@ -117,6 +117,9 @@ export default function ContentPreview(p: { result: ParseResult; dup: DupInfo; c
     JOB: result.items.filter((x) => x.kind === 'JOB').length,
   };
   const dupCount = p.dup.existing.size + [...p.dup.repeats.keys()].filter((q) => !p.dup.existing.has(q)).length;
+
+  // Mock ke andar wale nahin: mock ke sawal kam na hon
+  const drops = result.items.filter((x): x is ParsedMcq => x.kind === 'MCQ' && (p.dup.existing.has(x) || p.dup.repeats.has(x)));
 
   return (
     <section class="flex flex-col gap-3" aria-label="Preview" data-preview-root>
@@ -139,6 +142,29 @@ export default function ContentPreview(p: { result: ParseResult; dup: DupInfo; c
             ))}
           </ul>
         </div>
+      )}
+
+      {p.onDrop && drops.length > 0 && (
+        <section class="flex flex-col gap-2 rounded-xl border border-warn bg-surface p-3" aria-label="Is file ke dohre sawal" data-file-dups>
+          <p class="font-semibold">Is file mein {drops.length} dohre sawal hain</p>
+          <button type="button" onClick={() => p.onDrop!(drops)} class="min-h-[44px] rounded-lg bg-primary px-4 font-semibold text-on-primary" data-drop-all>
+            Is file ke sab dohre hatayen ({drops.length})
+          </button>
+          <p class="text-xs text-muted">Sirf is upload se hatte hain. Jo pehle se save hai woh wahi rehta hai.</p>
+          <ul class="flex max-h-80 flex-col gap-2 overflow-y-auto">
+            {drops.map((q) => (
+              <li key={q.line} class="flex items-center justify-between gap-2 rounded-lg bg-surface-2 p-2 text-sm">
+                <span class="min-w-0 break-words">
+                  <span class="text-muted">Sawal {q.number} · {p.dup.existing.has(q) ? 'pehle se save' : `sawal ${p.dup.repeats.get(q)} jaisa`}</span>
+                  <span class="block">{q.question}</span>
+                </span>
+                <button type="button" onClick={() => p.onDrop!([q])} class="min-h-[44px] shrink-0 rounded-lg border border-border px-3 font-semibold text-wrong" data-drop-one>
+                  Hatayen
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {p.children}

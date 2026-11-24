@@ -17,6 +17,7 @@ const packs = ['vu-quick', 'vu-smart', 'vu-complete', 'vu-topper']
   .map((id) => getProduct(id))
   .filter((p): p is Product => Boolean(p));
 const courseField = packs[0]?.fields.find((f) => f.key === 'courseCode');
+const termField = packs[0]?.fields.find((f) => f.key === 'term');
 // Muqable ki table: saare packs ki "includes" ki ikatthi list, tarteeb ke sath
 const features = [...new Set(packs.flatMap((p) => p.includes))];
 const short = (name: string) => name.replace(/^VU /, '').replace(/ pack$/, '');
@@ -56,6 +57,11 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
       <section class="my-6 max-w-md rounded-xl border border-primary bg-surface p-4" aria-labelledby="code-heading" data-shared-field-host="courseCode">
         <h2 id="code-heading" class="text-lg mb-2">1. Course code likhein</h2>
         <FieldInput field={courseField} id="vu-courseCode" />
+        {termField && (
+          <div class="mt-3" data-shared-field-host="term">
+            <FieldInput field={termField} id="vu-term" />
+          </div>
+        )}
       </section>
     )}
 
@@ -107,7 +113,7 @@ const ld = [productSchema({ name: 'VU exam tayyari packs', description: meta.des
     <section class="my-6" aria-labelledby="packs-heading">
       <h2 id="packs-heading" class="mb-3">3. Order list mein daalein</h2>
       <div class="grid gap-4 md:grid-cols-2">
-        {packs.map((p) => <ProductCard product={p} sharedFields={['courseCode']} />)}
+        {packs.map((p) => <ProductCard product={p} sharedFields={['courseCode', 'term']} />)}
       </div>
     </section>
 

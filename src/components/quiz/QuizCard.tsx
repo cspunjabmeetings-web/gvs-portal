@@ -10,7 +10,8 @@ export default function QuizCard(p: {
   picked: number | null;
   onPick: (i: number) => void;
   bookmarked: boolean;
-  onBookmark: () => void;
+  /** null = bookmark nahin (VU: F30, ids alag table ki) */
+  onBookmark: (() => void) | null;
   reportHref: string;
   mode?: 'instant' | 'select';
 }) {
@@ -23,7 +24,7 @@ export default function QuizCard(p: {
     <article class="flex flex-col gap-3" data-quiz-card data-qid={q.id}>
       <div class="flex items-start justify-between gap-2">
         <p class="text-xs text-muted">{q.subject}</p>
-        <button
+        {p.onBookmark && <button
           type="button"
           onClick={p.onBookmark}
           aria-pressed={p.bookmarked}
@@ -32,7 +33,7 @@ export default function QuizCard(p: {
           data-bookmark
         >
           {p.bookmarked ? '★' : '☆'}
-        </button>
+        </button>}
       </div>
       <h2 class="text-lg font-semibold leading-snug">{q.question}</h2>
 

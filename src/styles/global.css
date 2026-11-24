@@ -156,6 +156,8 @@
   .note-body > :first-child { margin-top: 0; }
   .note-body a { overflow-wrap: anywhere; }
   /* F13-AC3/AC4, design QuizCard: tashreeh narmi se khule, sahih par chhota "shabash" asar (reduced-motion par upar wala qaida band karta hai) */
+  /* F30-AC4: chalte VU test mein order patti nahin */
+  [data-vu-test] [data-cart-bar] { display: none; }
   .anim-reveal { animation: gvs-reveal 220ms ease-out both; }
   .anim-pop { animation: gvs-pop 260ms ease-out; }
   @keyframes gvs-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }

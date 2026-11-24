@@ -507,3 +507,19 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Mahol ka sabaq:** bohat lamba Bash script (kai heredoc) rad ho jata hai → files Write tool se. **Migration 0003 remote par deploy se PEHLE** (owner).
 - **Khula (purana, is hisse se bahar):** Content tab ka chuna hua chhota tab dark mode mein madham (`bg-primary-soft text-primary`).
 - **Natija:** owner ne **VU-1 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-1` → PR #36 → merge → remote migration 0003 → deploy → VU-2 plan ki "haan".
+- **VU-1 merge:** PR #36 merged (`130f931`; git se tasdeeq), remote migration 0003 ✅ ("No migrations to apply"), deploy ✅ (24 Nov 09:25 UTC).
+
+### 24 Nov 2026 — VU-2: student ke pages (branch `vu-2`, REPORT diya, approval baqi)
+
+- **Kya bana (F30-AC1..AC6, spec v0.4.1, E29, S31, S32):** `src/lib/vu-tests.ts` (`splitTests` 43 = 20+23, `minutesFor`, `searchKey`), `src/lib/vu-public.ts` (`vuCourses`, `vuCourse`, `vuTestApi`), `api/vu/test.ts`, `pages/vu-mock/index.astro` (browser search, Enter = pehla course, WhatsApp par maangein), `pages/vu-mock/[code].astro` (301/404) + `views/VuCourseView.astro` + `quiz/VuCourse.tsx`; `MockTest`/`MockResult` ka `vu` prop (history mocks/weakSubjects/bookmark nahin, progress slug `vu:CS101:mid:1`, order patti `[data-cart-bar]` test mein chhupi); `/mock-tests` par 2 DoorCard; sitemap + seo.json.
+- **Jaanch:** verify ✅; vu-public.test, queries.cost +2; browser e2e 360px 47/48 (1 = script ki ghalti: DoorCard ka link overlay aur matn ke links 44px mein gine). Screenshots `Desktop\gvs-content\vu2-screens\`. Naye migration/table nahin.
+- **Owner ka sawal (duplicate kaise hatayen):** VU mein khud chhoot jata hai; Content mein sirf khabardari, ek ek Mitayen; "Dohre sawal" button CHANGE REQUEST diya, jawab baqi.
+- **Natija:** owner ne **VU-2 approve** kiya aur "Dohre sawal" button (CHANGE REQUEST) ko **haan** kaha (yeh line commit commands se pehle). Agla: push `vu-2` → PR #37 → merge → deploy (migration nahin) → D-1 (dohre sawal) aur VU-3 ke plan ki "haan".
+
+### 24 Nov 2026 — VU-3 + "Dohre sawal" (branch `vu-2`, VU-2 ke SATH ek hi PR; REPORT diya, approval baqi)
+
+- **Owner ke faislay:** "dono ek sath"; VU-2 push nahin hua tha → **sab ek hi PR** (VU-2 + F12-AC7 + VU-3); catalog ke 4 VU packs mein ikhtiyari khana `term` (mera pehla plan "CS101 (Midterm)" code ke khane mein — server pattern rad karta tha; owner ne catalog wala raasta chuna; catalog.json ki tabdeeli isi manzoori se).
+- **Kya bana:** F12-AC7 `src/lib/admin-dups.ts`, `api/admin/mcqs/duplicates.ts`, `DupMcqs.tsx` (Content → Sawal); F31 `src/lib/vu-progress.ts` (`recordVu`, `readiness`, `packFor`, `nextTest`, `CHANNEL_URL` khali), `history.ts` mein `vu` (normalize, prune), `VuMeter.tsx`, `VuPacks.tsx`, `VuCourse` (meter, ✓ score, agla test), MockTest/MockResult `vu` prop (`onResult`, `shareText`, `extra`), `vuIds`, `/my-history` "VU ki tayyari", `/vu` par sanjha `term` khana. spec v0.4.2.
+- **Jaanch:** verify ✅; vu-progress.test, admin-dups.test; e2e 360px 38/40 (2 script ki: order patti ka Turnstile pack daalne par khud load hota hai — purana tareeqa; `/vu` matn ke purane chhote links). Screenshots `Desktop\gvs-content\vu3-screens\`. Migration nahin.
+- **Agla:** owner approve → ek commit/PR #37 → deploy → VU-4 (Important Questions) ka plan.
+- **Natija:** owner ne **VU-2, VU-3, Dohre sawal approve** kiye, ek tabdeeli ke sath: har dohre par alag "Hatayen" + upar ek "sab hatayen" button. Bana (F12-AC8): upload preview (Content + VU) mein "Is file ke sab dohre hatayen (N)" + har ek par Hatayen (mock ke andar wale nahin); Dohre sawal list mein "Sab dohre hatayen" (saare groups, 100-100) + "Sirf yeh hatayen". verify ✅, e2e 12/13 (1 = script ki ginti 89 ki jagah 90 sahih). Commit commands is ke baad di gayin.

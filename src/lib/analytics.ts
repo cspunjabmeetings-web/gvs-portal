@@ -9,7 +9,7 @@ type Value = string | number | boolean;
 /** intent 18 ki table — har event ke params (TS ghalat key rokta hai) */
 export interface EventParams {
   view_product: { products: string };
-  add_to_cart: { product: string; source: 'card' | 'job' | 'reorder' };
+  add_to_cart: { product: string; source: 'card' | 'job' | 'reorder' | 'vu' };
   open_order_form: { items: number };
   order_created: { items: number };
   whatsapp_opened: { fallback: boolean };

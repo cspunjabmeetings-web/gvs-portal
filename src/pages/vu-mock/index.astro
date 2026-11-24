@@ -1,0 +1,121 @@
+---
+// spec: S31 /vu-mock (on-demand, D1), F30-AC2: search (code/naam, browser mein hi) + poori list; khali course "Jald aa raha hai"; ad nahin
+import { env } from 'cloudflare:workers';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import seo from '../../data/seo.json';
+import { vuCourses, type VuCourse } from '../../lib/vu-public';
+import { searchKey, splitTests } from '../../lib/vu-tests';
+
+export const prerender = false;
+
+const meta = seo.pages['/vu-mock'];
+let courses: VuCourse[] = [];
+let failed = false;
+try {
+  courses = await vuCourses(env.DB);
+} catch {
+  failed = true;
+}
+const ready = courses.filter((c) => c.mid + c.final > 0).length;
+const tests = (c: VuCourse) => splitTests(c.mid).length + splitTests(c.final).length;
+Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-age=0, s-maxage=300');
+---
+<Base title={meta.title} description={meta.description}>
+  <div class="container-page py-6">
+    <Breadcrumbs items={[{ label: 'Mock tests', href: '/mock-tests' }, { label: 'VU Mock Test' }]} />
+    <section class="mt-3 rounded-2xl bg-primary p-5 text-on-primary">
+      <h1>VU Mock Test</h1>
+      <p class="mt-2 max-w-[60ch]">Apna course code likhein, Midterm ya Final chunein aur muft test dein. Sign up ki zaroorat nahin.</p>
+      <form class="mt-4" role="search" data-vu-search hidden>
+        <label for="vu-find" class="font-semibold">Course code ya naam</label>
+        <input
+          id="vu-find"
+          type="search"
+          placeholder="Maslan CS101"
+          autocomplete="off"
+          autocapitalize="characters"
+          class="mt-1 min-h-[52px] w-full rounded-xl border-2 border-accent bg-surface px-4 text-lg text-text"
+        />
+      </form>
+    </section>
+
+    {
+      failed ? (
+        <p class="mt-5 rounded-xl bg-surface-2 p-4" role="alert">Courses abhi load nahin hue. Thori der baad page dobara kholen.</p>
+      ) : courses.length === 0 ? (
+        <p class="mt-5 rounded-xl bg-surface-2 p-4">VU ke muft tests jald aayenge.</p>
+      ) : (
+        <>
+          <p class="mt-4 text-sm text-muted" role="status" data-vu-count>
+            <span class="tabular">{courses.length}</span> courses · <span class="tabular">{ready}</span> mein tests tayyar
+          </p>
+          <div class="mt-3 rounded-xl bg-surface-2 p-4" data-vu-none hidden>
+            <p class="font-semibold">Yeh course nahin mila.</p>
+            <a class="mt-2 inline-flex min-h-[44px] items-center font-semibold" target="_blank" rel="noopener" href="/contact" data-vu-ask>WhatsApp par maangein</a>
+          </div>
+          <ul class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" data-vu-courses>
+            {courses.map((c) => (
+              <li data-k={searchKey(c.code + c.name)}>
+                <a href={`/vu-mock/${c.code.toLowerCase()}`} class="flex min-h-[64px] items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-2 no-underline hover:border-primary">
+                  <span class="min-w-0">
+                    <span class="block font-bold text-text">{c.code}</span>
+                    <span class="block break-words text-sm text-muted">{c.name}</span>
+                  </span>
+                  {c.mid + c.final > 0 ? (
+                    <span class="shrink-0 rounded-full bg-accent px-3 py-1 text-sm font-semibold text-on-accent">{tests(c)} {tests(c) === 1 ? 'test' : 'tests'}</span>
+                  ) : (
+                    <span class="shrink-0 text-right text-xs text-muted">Jald aa<br />raha hai</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </div>
+</Base>
+
+<script>
+  import { searchKey } from '../../lib/vu-tests';
+  import { waLink } from '../../lib/phone';
+  import { whatsappNumber } from '../../lib/site-settings';
+
+  const form = document.querySelector<HTMLFormElement>('[data-vu-search]');
+  const input = document.querySelector<HTMLInputElement>('#vu-find');
+  const rows = [...document.querySelectorAll<HTMLLIElement>('[data-vu-courses] > li')];
+  const none = document.querySelector<HTMLElement>('[data-vu-none]');
+  const ask = document.querySelector<HTMLAnchorElement>('[data-vu-ask]');
+  const count = document.querySelector<HTMLElement>('[data-vu-count]');
+  if (form && input && none && ask && count && rows.length) {
+    const start = count.innerHTML;
+    form.hidden = false;
+    const run = () => {
+      const k = searchKey(input.value);
+      let n = 0;
+      for (const li of rows) {
+        const key = li.dataset.k ?? '';
+        const hit = !k || key.includes(k);
+        li.hidden = !hit;
+        // Code se milne wale pehle ("cs" par CS101, phir naam mein "cs" wale)
+        li.style.order = !k || key.startsWith(k) ? '' : '1';
+        if (hit) n++;
+      }
+      none.hidden = n > 0;
+      if (!n) ask.href = waLink(whatsappNumber(), `Assalam o Alaikum GVS Academy, mujhe VU course "${input.value.trim().slice(0, 60)}" ka mock test chahiye.`);
+      if (k) count.textContent = `${n} course mile`;
+      else count.innerHTML = start;
+    };
+    input.addEventListener('input', run);
+    // Enter: pehla mila hua course
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const open = rows.filter((r) => !r.hidden);
+      const first = open.find((r) => !r.style.order) ?? open[0];
+      if (searchKey(input.value) && first) first.querySelector('a')?.click();
+    });
+    // Wapas aane par browser purana matn bhar de to list bhi waisi hi ho
+    addEventListener('pageshow', () => input.value && run());
+  }
+</script>

@@ -13,6 +13,8 @@ import { sitemapUrls } from '../src/lib/sitemap';
 import { trackOrder } from '../src/lib/track';
 import { publicNotes, notePage } from '../src/lib/notes';
 import { publicMocks, mockBySlug } from '../src/lib/mocks';
+import { listDuplicates } from '../src/lib/admin-dups';
+import { vuCourses, vuIds, vuTestApi } from '../src/lib/vu-public';
 import { listCourses, listVuMcqs } from '../src/lib/vu-admin';
 import { runMaintenance } from '../src/lib/maintenance';
 
@@ -116,6 +118,7 @@ beforeAll(async () => {
     db.prepare(`UPDATE mcqs SET mock_id = 1 WHERE id <= 50`),
     // F29: 20 courses x 250 sawal
     db.prepare(`${cte(20)} INSERT INTO vu_courses (code, name, created_at) SELECT 'CS' || (100 + i), 'Course ' || i, '2026-01-01T00:00:00Z' FROM c`),
+    db.prepare('UPDATE vu_courses SET mid_ok = 125, final_ok = 125'),
     db.prepare(
       `${cte(5000)} INSERT INTO vu_mcqs (course_code, term, question, options_json, answer_index, verified, verified_at, created_at, q_hash)
        SELECT 'CS' || (101 + i % 20), CASE WHEN i % 40 < 20 THEN 'mid' ELSE 'final' END, 'VU ' || i, '["a","b"]', 0, 1, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 'h' || i FROM c`,
@@ -140,6 +143,9 @@ const cases: [string, number, (db: D1Database) => Promise<unknown>][] = [
   ['job page', 100, (db) => jobBySlug(db, 'job-600', NOW)],
   ['practice set (E06)', 1200, (db) => practiceSet(db, 'English', 0)],
   ['VU courses list (E26): ginti course ki row mein, vu_mcqs nahin parhta', 100, async (db) => listCourses(await adminReq('/api/admin/vu/courses'), { DB: db, SESSION_SECRET: SECRET })],
+  ['VU courses (/vu-mock): vu_mcqs nahin parhta', 100, (db) => vuCourses(db)],
+  ['VU course page: ids (S32; 250 + tarteeb)', 600, (db) => vuIds(db, 'CS101')],
+  ['VU ka ek test (E29)', 150, (db) => vuTestApi(new Request(`${SITE}/api/vu/test?course=cs101&term=mid&n=2`), db)],
   ['VU sawal: ek course (E27)', 700, async (db) => listVuMcqs(await adminReq('/api/admin/vu/mcqs?course=CS101'), { DB: db, SESSION_SECRET: SECRET })],
   ['mock page', 200, (db) => mockBySlug(db, 'mock-1')],
   ['maintenance: har 15 min wali dafa (auto-cancel, rate_limits)', 100, (db) => runMaintenance({ DB: db }, NOW)],
@@ -149,6 +155,7 @@ const cases: [string, number, (db: D1Database) => Promise<unknown>][] = [
 const wide: [string, number, (db: D1Database) => Promise<unknown>][] = [
   ['subject cards (/mcqs): GROUP BY mazmoon', N.mcqs + 50, (db) => subjectCards(db)],
   ['daily test pool (din mein ek dafa, phir daily_pins)', N.mcqs + 50, (db) => dailyQuestions(db, NOW)],
+  ['dohre sawal (F12-AC7, sirf admin ke tap par)', N.mcqs * 2 + 200, async (db) => listDuplicates(await adminReq('/api/admin/mcqs/duplicates'), { DB: db, SESSION_SECRET: SECRET })],
   ['notes list (/notes, s-maxage=300)', N.notes + 50, (db) => publicNotes(db)],
   ['mocks list (/mock-tests)', N.mcqs + 50, (db) => publicMocks(db)],
   ['note page: 5 sawal ke liye mazmoon ke jaanche sawal (s-maxage=300)', N.mcqs / 3 + 50, (db) => notePage(db, 'note-5')],

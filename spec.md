@@ -333,6 +333,8 @@ Sirf job posts ki tasveerein. Free allowance is ke liye kaafi (150 KB × chand s
 - F12-AC4: Note ka slug title se banta hai, unique; edit karne par slug nahin badalta.
 - F12-AC5: Mitaya gaya note/mock/job ka URL `410 Gone` (P-06 manzoor: `deleted_at`).
 - F12-AC6: Galat sawal live ho jaye to ek tap par chhupane ka rasta (intent 22.4).
+- F12-AC7 (v0.4.2, owner ka CHANGE REQUEST): Content → Sawal → "Dohre sawal": ek jaise (`q_hash`) sawal groups mein, rahne wala chuna ja sake (default: mock/rozana test wala, phir jaancha, phir purana). Mock ya aaj/aage ke rozana test wala kabhi nahin hatta; har group mein kam az kam ek bachta hai (server jaanche); ≤ 100 ek request, tasdeeq ke sath; har dohre par "Sirf yeh hatayen" aur upar "Sab dohre hatayen" (saare groups).
+- F12-AC8 (v0.4.2): Upload ke preview mein (Content aur VU) "Is file ke sab dohre hatayen (N)" + har dohre par "Hatayen" — sirf upload se nikalta hai (save shuda nahin chhuta, mock ke andar wale nahin); save shuru hone ke baad nahin.
 
 ### F13. Rozana muft test `[i:10.7, 11.2]`
 
@@ -503,6 +505,26 @@ VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. C
 - F29-AC3: Sawal ki list course-war (term, jaancha, search), badalna, dikhana/chhupana, mitana.
 - F29-AC4: VU sawal rozana test, `/mcqs`, mock tests, notes quiz aur bank ki ginti mein kabhi nahin.
 
+### F30. VU Mock: student ke pages (VU-2, v0.4.1)
+
+**AC**
+- F30-AC1: `/mock-tests` par do darwaze: "Job / PPSC Mock Test" (neeche wali list) aur "VU Mock Test" (`/vu-mock`).
+- F30-AC2: `/vu-mock`: search (code ya naam, browser mein, bina request) + poori list; sawal wale pehle; khali course "Jald aa raha hai"; na mile to paigham + WhatsApp. JS band ho to poori list. Ad nahin.
+- F30-AC3: `/vu-mock/<code>?term=mid|final`: Midterm/Final, tests 20-20 jaanche sawal (jaanche jane ki tarteeb), do tests mein dohra nahin; aakhri test 5 se kam ho to pichhle mein (43 = 20 + 23). Chhupa/anjaan course 404; code ki doosri shakal 301.
+- F30-AC4: Test: 20 sawal = 25 minute (usi hisab se), MockTest wala engine (palette, jari rakhna); test ke dauran koi request, ad ya order patti nahin. VU ka nateeja mocks/weakSubjects/bookmarks mein nahin.
+- F30-AC5: Jama par score + har sawal ka jawab; share link `/vu-mock/<code>?term=`. (Tayyari meter, pack = VU-3.)
+- F30-AC6: Sitemap mein sirf jaanche sawal wale course; canonical bina `?term`; khali course noindex.
+
+### F31. VU Mock: nateeja, tayyari, pack (VU-3, v0.4.2)
+
+**AC**
+- F31-AC1: Progress sirf browser mein (`gvs.v1.vu["CS101:mid"]` = right, wrong, tests, total, at); dobara dene par naya jawab, chhora hua sawal purani halat mein; 200 KB had.
+- F31-AC2: Tayyari meter (nateeja + course page): sahih / kul jaanche sawal; mitaye/chhupe sawal nahin ginte; test list mein ✓ + pichhla score; "Agla test".
+- F31-AC3: Pack: < 50% Complete, 50–79 Smart, 80+ Quick; baqi "Doosre packs"; ek tap par order list (`courseCode` + `term`); naam/qeemat/includes sirf catalog se. Catalog ke 4 VU packs mein ikhtiyari khana `term` (Midterm / Final Term); `/vu` par ek sanjha khana.
+- F31-AC4: "Muft yahan / Pack mein" muqabla, refund line, "WhatsApp par pack poochein".
+- F31-AC5: Share `?term=&src=share`; channel button link (`CHANNEL_URL`) aane tak chhupa.
+- F31-AC6: `/my-history` mein "VU ki tayyari"; "Sab history mitayen" ise bhi. VU ka kuch Home "Aap ke liye", mocks ya weakSubjects mein nahin.
+
 ---
 
 ## 6. Screens ki list
@@ -605,6 +627,8 @@ PAGE /mcqs/[subject]
 PAGE /daily-test
 PAGE /mock-tests
 PAGE /mock-tests/[slug]
+PAGE /vu-mock
+PAGE /vu-mock/[code]
 PAGE /notes
 PAGE /notes/[slug]
 PAGE /jobs
@@ -758,6 +782,7 @@ Hadein: 200 KB se zyada ho to sab se purani entries chhant dein; `orders` ≤ 20
 | E04 | `GET /api/track?id=&last4=` | Order ka darja | Ghalat par ek hi "Order nahin mila"; phone nahin; `no-store`; rate limit |
 | E05 | `GET /api/daily-test` | Aaj ke 10 sawal (jawab ke sath) | `s-maxage=300`; sirf `verified` |
 | E06 | `GET /api/mcqs?subject=&offset=` | Practice ka agla set (10) | Sirf `verified`; `offset` ≤ 10,000 |
+| E29 | `GET /api/vu/test?course=&term=&n=` | VU ka ek test (jaanche sawal, jawab ke sath; F30-AC3) | `s-maxage=300` |
 | E07 | `GET /api/jobs/latest` | Home ke liye 3 taza khuli jobs | **P-05 (manzoor)**; `s-maxage=300` |
 | E08 | `GET /sitemap.xml` | Static + on-demand URLs | On-demand, `s-maxage=3600` |
 
@@ -776,6 +801,7 @@ Jobs/notes/mocks/mcqs ke pages SSR hain (alag API nahin).
 | E16 | `POST /api/admin/content/preview` | Text bhejo, parser ka nateeja + ghaltiyan (kuch save nahin). **P-02 manzoor: yeh endpoint ab nahin banega**; preview browser mein `parser.ts` se chalta hai |
 | E17 | `POST /api/admin/content/import` | Sahih hissa save (chhote tukron mein, 8.5) |
 | E18 | `GET/POST /api/admin/mcqs`, `DELETE /api/admin/mcqs/:id` | Dekhna, banana/badalna (`verified` samet), mitana |
+| E18 | `GET/POST /api/admin/mcqs/duplicates` | Dohre sawal: list, hatana (F12-AC7) |
 | E19 | `GET/POST /api/admin/mocks`, `DELETE /api/admin/mocks/:id` | Dekhna, chhupana, mitana |
 | E20 | `GET/POST /api/admin/notes`, `DELETE /api/admin/notes/:id` | Dekhna, badalna, chhupana, mitana |
 | E21 | `GET/POST /api/admin/jobs`, `DELETE /api/admin/jobs/:id`, `POST /api/admin/jobs/delete-old` | Jobs; "Sab purani mita dein" (tasdeeq ke sath) |
@@ -862,6 +888,7 @@ API GET /api/track
 API GET /api/daily-test
 API GET /api/mcqs
 API GET /api/jobs/latest
+API GET /api/vu/test
 API POST /api/admin/login
 API POST /api/admin/logout
 API GET /api/admin/orders
@@ -874,6 +901,8 @@ API POST /api/admin/content/import
 API GET /api/admin/mcqs
 API POST /api/admin/mcqs
 API DELETE /api/admin/mcqs/[id]
+API GET /api/admin/mcqs/duplicates
+API POST /api/admin/mcqs/duplicates
 API GET /api/admin/mocks
 API POST /api/admin/mocks
 API DELETE /api/admin/mocks/[id]
@@ -1434,6 +1463,8 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.2 | 24 Nov 2026 | Owner ki manzoori: F12-AC7 (dohre sawal), VU-3 F31-AC1..AC6, catalog VU packs mein ikhtiyari `term` |
+| 0.4.1 | 24 Nov 2026 | VU-2 (owner ki manzoori): F30-AC1..AC6, pages `/vu-mock` (S31), `/vu-mock/<code>` (S32), E29 |
 | 0.4 | 24 Nov 2026 | VU-1 (intent 1.2, owner ki manzoori): F29-AC1..AC4, E26-E28, tables `vu_courses` + `vu_mcqs` (`0003_vu.sql`), admin "VU" tab |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |

@@ -3,6 +3,7 @@
 import seo from '../data/seo.json';
 import { subjectCards } from './practice';
 import { publicMocks } from './mocks';
+import { vuCourses } from './vu-public';
 import { pkDate } from './pkdate';
 
 /** Sitemap mein kabhi nahin (noindex / zaati / ghalti ka page) */
@@ -22,7 +23,7 @@ export async function sitemapUrls(db: D1Database, base: string, now = new Date()
     .filter((r) => !SITEMAP_EXCLUDE.has(r))
     .map((r) => ({ loc: abs(r) }));
 
-  const [subjects, mocks, notes, jobs] = await Promise.all([
+  const [subjects, mocks, notes, jobs, vu] = await Promise.all([
     subjectCards(db),
     publicMocks(db),
     db.prepare('SELECT slug, updated_at FROM notes WHERE visible = 1 AND deleted_at IS NULL ORDER BY id DESC LIMIT 5000').all<{ slug: string; updated_at: string }>(),
@@ -31,7 +32,10 @@ export async function sitemapUrls(db: D1Database, base: string, now = new Date()
       .prepare('SELECT slug, updated_at FROM jobs WHERE visible = 1 AND deleted_at IS NULL AND last_date >= ?1 ORDER BY last_date ASC LIMIT 5000')
       .bind(pkDate(now))
       .all<{ slug: string; updated_at: string }>(),
+    vuCourses(db),
   ]);
+  // F30-AC6: sirf jin courses mein jaanche sawal hain
+  for (const c of vu) if (c.mid + c.final > 0) out.push({ loc: abs(`/vu-mock/${c.code.toLowerCase()}`) });
   for (const s of subjects) if (s.count > 0) out.push({ loc: abs(`/mcqs/${s.slug}`) });
   for (const m of mocks) out.push({ loc: abs(`/mock-tests/${m.slug}`) });
   for (const n of notes.results) out.push({ loc: abs(`/notes/${n.slug}`), lastmod: day(n.updated_at) });

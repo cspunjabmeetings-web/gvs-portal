@@ -167,6 +167,16 @@ export default function ContentTab() {
     setPhase({ k: 'done', total });
   }
 
+  /** F12-AC8: dohre sawal is upload se nikalo */
+  function dropMcqs(list: ParsedMcq[]) {
+    if (!result) return;
+    const gone = new Set<unknown>(list);
+    const items = result.items.filter((x) => !gone.has(x));
+    setResult({ ...result, items });
+    setChunks(buildChunks(items));
+    setDup((d) => ({ existing: new Set([...d.existing].filter((q) => !gone.has(q))), repeats: new Map([...d.repeats].filter(([q]) => !gone.has(q))) }));
+  }
+
   function reset() {
     setText('');
     setResult(null);
@@ -267,7 +277,7 @@ export default function ContentTab() {
 
       {result && (
         <>
-          <ContentPreview result={result} dup={dup}>
+          <ContentPreview result={result} dup={dup} onDrop={phase.k === 'edit' && !checking ? dropMcqs : null}>
           {dupNote && <p class="text-sm text-muted">{dupNote}</p>}
 
           <section class="flex flex-col gap-3 rounded-xl border-2 border-primary bg-surface p-4" data-save-box>

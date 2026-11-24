@@ -73,7 +73,7 @@ export function normalize(raw: unknown): History {
     h.orders = raw.orders.filter((o): o is SavedOrder => isObj(o) && typeof o.id === 'string' && typeof o.last4 === 'string' && typeof o.at === 'string').slice(0, LIMITS.orders);
   if (isObj(raw.vu))
     for (const [k, e] of Object.entries(raw.vu)) {
-      if (!/^[A-Z]{2,4}\d{3}P?:(mid|final)$/.test(k) || !isObj(e) || !Array.isArray(e.right) || !Array.isArray(e.wrong) || typeof e.at !== 'string') continue;
+      if (!/^[A-Z]{2,4}\d{3}[A-Z]?:(mid|final)$/.test(k) || !isObj(e) || !Array.isArray(e.right) || !Array.isArray(e.wrong) || typeof e.at !== 'string') continue;
       const tests: VuEntry['tests'] = {};
       if (isObj(e.tests)) for (const [n, t] of Object.entries(e.tests)) if (isObj(t) && isNum(t.score) && isNum(t.total)) tests[n] = { score: t.score, total: t.total };
       h.vu[k] = { right: e.right.filter(isNum), wrong: e.wrong.filter(isNum), tests, total: isNum(e.total) ? e.total : 0, at: e.at };

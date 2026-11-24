@@ -556,3 +556,9 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 - **Kya bana (F30-AC7, spec v0.4.6):** `VuMockCard.astro` (Home: rozana test ke neeche; `/vu`: course code se pehle), Home ke VU Corner darwaze mein do button (DoorCard links `relative z-10`), Header menu mein "VU Mock Test" (Jobs ke baad). Migration/API nahin.
 - **Jaanch:** verify ✅ (789); e2e 12/12 (360/412/768/1280, CLS 0). Screenshots `Desktop\gvs-content\vu7-screens\`.
 - **Natija:** owner ne **VU-7 approve** kiya (yeh line commit commands se pehle). Agla: push `vu-7` → PR #41 → merge → deploy (migration nahin). VU-6 ki phone jaanch ka nateeja baqi.
+- **VU-7 merge:** PR #41 merged (`69487d4`; git se tasdeeq). Deploy ki tasdeeq baqi.
+
+### 25 Nov 2026 — VU-8: code ke aakhir mein koi bhi harf (branch `vu-8`, REPORT diya, approval baqi)
+
+- **Owner ka masla:** BT505T (theory), CS101P (practical) — pehle sirf P chalta tha. Regex 6 jagah `[A-Z]?` (vu.ts 2, vu-source, vu-stats, history, achievements-rules). Catalog ka courseCode pattern pehle se harf leta hai. BT505, BT505T, BT505P teen alag courses. Migration nahin.
+- **Jaanch:** verify ✅; tests vu-admin, vu-stats, vu-progress, vu-questions, achievements mein izafa.

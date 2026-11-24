@@ -14,10 +14,10 @@ export const VU_MSG = {
   onlyMcq: 'VU mein sirf # MCQ sawal daalein (# MOCK, # NOTE ya # JOB nahin).',
 } as const;
 
-const CODE = /^([A-Za-z]{2,4})[\s-]*(\d{3})([Pp]?)$/;
+const CODE = /^([A-Za-z]{2,4})[\s-]*(\d{3})([A-Za-z]?)$/;
 const BOM = String.fromCharCode(0xfeff);
 
-/** "cs 101", "CS-101", "cs101" → "CS101"; "cs101p" → "CS101P"; warna null */
+/** "cs 101", "CS-101", "cs101" → "CS101"; "bt505t" → "BT505T" (aakhir mein ek harf: T theory, P practical); warna null */
 export function normalizeCode(raw: string): string | null {
   const m = CODE.exec(raw.trim());
   return m ? `${m[1]}${m[2]}${m[3]}`.toUpperCase() : null;
@@ -39,7 +39,7 @@ export function parseCourseList(text: string): { items: CourseLine[]; errors: { 
     const t = raw.replace(/\s+/g, ' ').trim();
     if (!t) return;
     const bad = (msg: string) => errors.push({ line: n, message: `Line ${n}: ${msg}` });
-    const m = /^([A-Za-z]{2,4}[\s-]?\d{3}[Pp]?)(?:\s*[-–:,]\s*|\s+)(.+)$/.exec(t);
+    const m = /^([A-Za-z]{2,4}[\s-]?\d{3}[A-Za-z]?)(?:\s*[-–:,]\s*|\s+)(.+)$/.exec(t);
     const code = normalizeCode(m ? m[1] : t);
     if (!code) return void bad(`"${t.slice(0, 40)}" mein course code nahin mila (maslan CS101 Introduction to Computing).`);
     const name = m ? m[2].trim() : '';

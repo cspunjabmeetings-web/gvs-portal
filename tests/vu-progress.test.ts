@@ -38,6 +38,7 @@ describe('F31-AC1/AC2: progress aur tayyari', () => {
   it('normalize: kharab data chhoot jata, sahih bachta; purana data (vu ke baghair) chalta', () => {
     const h = rec(emptyHistory(), 1, { 1: 1 });
     expect(normalize(JSON.parse(JSON.stringify(h)))).toEqual(h);
+    expect(Object.keys(normalize({ v: 1, vu: { 'BT505T:mid': h.vu[K], 'CS101P:final': h.vu[K] } }).vu)).toEqual(['BT505T:mid', 'CS101P:final']);
     expect(normalize({ v: 1 }).vu).toEqual({});
     expect(normalize({ v: 1, vu: { 'x:mid': h.vu[K], 'CS101:dono': h.vu[K], 'CS101:final': { right: 'a' }, [K]: { ...h.vu[K], right: [1, 'x', null] } } }).vu).toEqual({ [K]: { ...h.vu[K], right: [1] } });
   });

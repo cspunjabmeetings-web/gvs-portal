@@ -493,6 +493,16 @@ Sirf job posts ki tasveerein. Free allowance is ke liye kaafi (150 KB × chand s
 - F28-AC2: CSV mein jo cell `=`, `+`, `-`, `@` se shuru ho us ke aage `'` (spreadsheet formula injection se bachao).
 - F28-AC3: Hafta war export ka tareeqa `README`/spec ke "Rozana operations" mein likha; poore database ka export (`wrangler d1 export`) owner ke computer se.
 
+### F29. VU Mock (v0.4, intent 1.2; owner ka merged plan, 24 Nov 2026)
+
+VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. Chhe hisse: VU-1 admin (neeche), VU-2 student pages, VU-3 nateeja/pack, VU-4 Important Questions, VU-5 achievements, VU-6 funnel. Baqi hisson ke AC un ke apne plan ki manzoori par yahan jurein ge.
+
+**AC (VU-1)**
+- F29-AC1: Admin "VU" tab → Courses: ek ya poori list paste (≤ 500 lines, har line `CS101 Introduction to Computing`); ghalat line number ke sath (ek bhi ghalat to kuch save nahin); pehle se maujood code chhoot jata hai aur bataya jata hai; `cs 101` = `CS101`; code kabhi nahin badalta, naam badalta hai; chhupana; sawal wala course mitta nahin. Kul ≤ 2000.
+- F29-AC2: VU MCQs wahi `# MCQ` format (parser.ts), `Mazmoon` = course code; term (Midterm/Final) chune baghair save nahin; preview, 25-25 ke tukre, checkbox ke baghair na-jaanche; ek course + term mein ek sawal dohra nahin (pehle se ho to chhoot jata hai).
+- F29-AC3: Sawal ki list course-war (term, jaancha, search), badalna, dikhana/chhupana, mitana.
+- F29-AC4: VU sawal rozana test, `/mcqs`, mock tests, notes quiz aur bank ki ginti mein kabhi nahin.
+
 ---
 
 ## 6. Screens ki list
@@ -681,6 +691,10 @@ Tamam waqt `TEXT` ISO-8601 UTC. `id` jahan `INTEGER` hai wahan `PRIMARY KEY AUTO
 
 **rate_limits:** `key` TEXT PK (hash); `window_start` TEXT NOT NULL; `count` INTEGER NOT NULL. Key mein kabhi asal phone/IP nahin, sirf `SHA-256(secret + value)`.
 
+**vu_courses** (v0.4): `code` TEXT PK (`CS101`); `name` TEXT NOT NULL; `visible` INTEGER DEFAULT 1; `mid_ok`, `mid_all`, `final_ok`, `final_all` INTEGER (ginti; har tabdeeli ke batch mein dobara); `created_at` TEXT.
+
+**vu_mcqs** (v0.4): `id` INT PK; `course_code` → `vu_courses.code`; `term` CHECK in (`mid`,`final`); `question`, `options_json`, `answer_index`, `explanation`, `difficulty` (mcqs jaise); `verified`; `verified_at` TEXT NULL (tests ki tarteeb); `created_at`; `q_hash` NOT NULL. Index: UNIQUE (`course_code`,`term`,`q_hash`); (`course_code`,`term`,`verified`,`verified_at`). Migration `0003_vu.sql`.
+
 ### 7.3 Indexes
 
 Intent ke: `orders(status, created_at)`, `orders(phone)`, `mcqs(subject, verified)`, `jobs(last_date)`, `notifications(read_at, created_at)`.
@@ -769,6 +783,9 @@ Jobs/notes/mocks/mcqs ke pages SSR hain (alag API nahin).
 | E23 | `GET /api/admin/daily-pins`, `POST /api/admin/daily-pins`, `DELETE /api/admin/daily-pins/:date` | Kisi din ke sawal pin (P-03 manzoor); GET = aaj se 60 din aage tak ke pins (Qadam 10c, owner ki manzoori) |
 | E24 | `GET/POST /api/admin/settings` | Settings, har value ki jaanch ke sath |
 | E25 | `GET /api/admin/export` | Orders ka CSV |
+| E26 | `GET/POST /api/admin/vu/courses`, `DELETE /api/admin/vu/courses/:code` | VU courses: list, list paste, naam, chhupana, mitana (v0.4, F29-AC1) |
+| E27 | `GET/POST /api/admin/vu/mcqs`, `DELETE /api/admin/vu/mcqs/:id` | VU sawal: ek course ki list, badalna, jaancha, mitana (F29-AC3) |
+| E28 | `POST /api/admin/vu/import` | VU sawal ka tukra ({text, term, verified}) save (F29-AC2) |
 
 ### 8.4 Agent endpoints (Version 2; Version 1 mein `agent_enabled=false` par 404)
 
@@ -874,6 +891,13 @@ API DELETE /api/admin/daily-pins/[date]
 API GET /api/admin/settings
 API POST /api/admin/settings
 API GET /api/admin/export
+API GET /api/admin/vu/courses
+API POST /api/admin/vu/courses
+API DELETE /api/admin/vu/courses/[code]
+API GET /api/admin/vu/mcqs
+API POST /api/admin/vu/mcqs
+API DELETE /api/admin/vu/mcqs/[id]
+API POST /api/admin/vu/import
 API GET /api/agent/orders
 API GET /api/agent/notifications
 API POST /api/agent/orders/[id]/complete
@@ -1233,6 +1257,8 @@ jobs
 daily_pins
 agent_log
 rate_limits
+vu_courses
+vu_mcqs
 ```
 <!-- TABLES:END -->
 
@@ -1408,6 +1434,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4 | 24 Nov 2026 | VU-1 (intent 1.2, owner ki manzoori): F29-AC1..AC4, E26-E28, tables `vu_courses` + `vu_mcqs` (`0003_vu.sql`), admin "VU" tab |
 | 0.3.1 | 16 Nov 2026 | Qadam 1 (owner ki manzoori): DEPS mein `@rollup/wasm-node` (sirf `overrides`, Windows Smart App Control ki wajah se). Versions jo lage: Astro 6.4.8, `@astrojs/cloudflare` 13.7.0, TypeScript 6.0.3 (`@astrojs/check` TS 7 nahin leta) |
 | 0.2 | 16 Nov 2026 | Owner ke jawab: P-01 (Workers), P-11 (R2 custom domain), Q-01 (`/job-prep` page, F01-AC8, S02, routes), Q-02 (GA4), Q-03 (domain Cloudflare DNS par) |
 

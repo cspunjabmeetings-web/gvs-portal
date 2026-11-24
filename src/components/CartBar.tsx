@@ -330,8 +330,8 @@ export default function CartBar() {
       {items.length > 0 && (
         <>
           {/* Patti ke neeche footer chhup na jaye */}
-          <div aria-hidden="true" class="h-[72px]" />
-          <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+          <div aria-hidden="true" class="h-[72px]" data-cart-bar />
+          <div data-cart-bar class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
             <div class="container-page flex min-h-[64px] items-center justify-between gap-3">
               <button
                 type="button"

@@ -6,6 +6,7 @@ import type { QuizMcq } from '../../lib/daily';
 import { formatClock, reviewItems, scoreMock, shareText, weakestOf, type MockProgress, type ReviewStatus } from '../../lib/mock-engine';
 import { slugify } from '../../lib/slug';
 import type { Pack } from './ScoreCard';
+import type { VuMode } from './MockTest';
 
 const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
 const LETTERS = 'ABCDE';
@@ -24,6 +25,7 @@ export default function MockResult(p: {
   usedMs: number;
   auto: boolean;
   pack: Pack | null;
+  vu?: VuMode;
   onAgain: () => void;
 }) {
   const [filter, setFilter] = useState<Filter>('all');
@@ -33,7 +35,7 @@ export default function MockResult(p: {
   const counts = { all: review.length, wrong: review.filter((r) => r.status === 'wrong').length, skipped: review.filter((r) => r.status === 'skipped').length };
   const shown = filter === 'all' ? review : review.filter((r) => r.status === filter);
   const url = `${location.origin}/mock-tests/${p.slug}`;
-  const cheer = s.percent >= 70 ? 'Shabash! Bohat acha nateeja.' : s.percent >= 40 ? 'Acha hai. Kamzor mazmoon par thori aur mehnat karein.' : 'Koi baat nahin. Tashreeh parh kar dobara dein.';
+  const cheer = s.percent >= 70 ? 'Shabash! Bohat acha nateeja.' : s.percent >= 40 ? p.vu ? 'Acha hai. Ghalat sawalon ki tashreeh parh lein.' : 'Acha hai. Kamzor mazmoon par thori aur mehnat karein.' : 'Koi baat nahin. Tashreeh parh kar dobara dein.';
 
   const chip = (f: Filter, label: string) => (
     <button
@@ -70,7 +72,9 @@ export default function MockResult(p: {
         <p class="font-semibold">{cheer}</p>
       </div>
 
-      <section class="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4" aria-labelledby="subj-h">
+      {p.vu?.extra(s)}
+
+      {!p.vu && <section class="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4" aria-labelledby="subj-h">
         <h2 id="subj-h" class="text-lg">
           Mazmoon-war nateeja
         </h2>
@@ -101,7 +105,7 @@ export default function MockResult(p: {
             {weak} ki muft practice karein
           </a>
         )}
-      </section>
+      </section>}
 
       {p.pack && (
         <a href={p.pack.href} class="flex flex-col rounded-xl bg-accent p-4 text-on-accent no-underline" data-pack>
@@ -114,15 +118,21 @@ export default function MockResult(p: {
       )}
 
       <div class="flex flex-col gap-2">
-        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(p.name, s, url))}`} target="_blank" rel="noopener" class={`${btn} bg-primary text-on-primary`} data-share>
+        <a href={`https://wa.me/?text=${encodeURIComponent(p.vu ? p.vu.shareText(s) : shareText(p.name, s, url))}`} target="_blank" rel="noopener" class={`${btn} bg-primary text-on-primary`} data-share>
           WhatsApp par share karein
         </a>
         <button type="button" onClick={p.onAgain} class={`${btn} border border-border`} data-mock-again>
           Dobara dein
         </button>
-        <a href="/mock-tests" class={`${btn} border border-border`}>
-          Doosre mock tests
-        </a>
+        {p.vu ? (
+          <button type="button" onClick={p.vu.onBack} class={`${btn} border border-border`} data-vu-back>
+            Saare tests
+          </button>
+        ) : (
+          <a href="/mock-tests" class={`${btn} border border-border`}>
+            Doosre mock tests
+          </a>
+        )}
       </div>
 
       <section class="flex flex-col gap-3" aria-labelledby="review-h">

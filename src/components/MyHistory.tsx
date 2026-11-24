@@ -37,7 +37,8 @@ export default function MyHistory() {
   const days = Object.entries(h.daily).sort((a, b) => b[0].localeCompare(a[0]));
   const mocks = Object.entries(h.mocks).sort((a, b) => b[1].at.localeCompare(a[1].at));
   const weak = weakestSubject(h);
-  const empty = !days.length && !mocks.length && !h.bookmarks.length && !h.orders.length;
+  const vu = Object.entries(h.vu).sort((a, b) => b[1].at.localeCompare(a[1].at));
+  const empty = !days.length && !mocks.length && !vu.length && !h.bookmarks.length && !h.orders.length;
 
   function wipe() {
     if (!confirm('Is browser se saari history (scores, streak, bookmarks, orders ki list) mita dein? Yeh wapas nahin aaye gi.')) return;
@@ -131,6 +132,31 @@ export default function MyHistory() {
           </ul>
         )}
       </section>
+
+      {vu.length > 0 && (
+        <section aria-labelledby="vu-h" class="flex flex-col gap-2">
+          <h2 id="vu-h" class="text-xl">VU ki tayyari</h2>
+          <ul class="flex flex-col divide-y divide-border rounded-xl border border-border bg-surface" data-vu-history>
+            {vu.map(([key, e]) => {
+              const [code, term] = key.split(':');
+              return (
+                <li key={key} class="flex items-center justify-between gap-2 px-4 py-3">
+                  <span class="min-w-0 break-words">
+                    <a href={`/vu-mock/${code.toLowerCase()}?term=${term}`}>
+                      {code} {term === 'mid' ? 'Midterm' : 'Final Term'}
+                    </a>
+                    <span class="block text-xs text-muted">{fmtAt(e.at)}</span>
+                  </span>
+                  <span class="tabular whitespace-nowrap text-right font-semibold">
+                    {e.right.length} / {e.total}
+                    <span class="block text-xs font-normal text-muted">{e.total ? Math.round((e.right.length / e.total) * 100) : 0}% tayyari</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="bm-h" class="flex flex-col gap-2">
         <h2 id="bm-h" class="text-xl">Bookmarks</h2>

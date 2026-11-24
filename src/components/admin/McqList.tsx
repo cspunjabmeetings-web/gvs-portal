@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { adminJson } from '../../lib/admin-fetch';
 import type { AdminMcq } from '../../lib/admin-content';
+import DupMcqs from './DupMcqs';
 import McqForm from './McqForm';
 
 const btn = 'min-h-[44px] rounded-lg px-3 text-sm font-semibold';
@@ -25,6 +26,7 @@ export default function McqList(p: { subjects: string[]; mock: { id: number; nam
   const [editing, setEditing] = useState<number | 'new' | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [notice, setNotice] = useState('');
+  const [dups, setDups] = useState(false);
   const req = useRef(0);
 
   async function load(offset = 0) {
@@ -93,6 +95,18 @@ export default function McqList(p: { subjects: string[]; mock: { id: number; nam
           Kul <span class="tabular font-semibold text-text">{summary.total}</span> sawal · na jaanche (chhupe){' '}
           <span class="tabular font-semibold text-text">{summary.unverified}</span>
         </p>
+      )}
+      {dups ? (
+        <DupMcqs
+          onClose={() => {
+            setDups(false);
+            void load(0);
+          }}
+        />
+      ) : (
+        <button type="button" onClick={() => setDups(true)} class={`${btn} self-start border border-border`} data-dup-open>
+          Dohre sawal dhoondein
+        </button>
       )}
       {p.mock && (
         <p class="flex items-center justify-between gap-2 rounded-lg bg-primary-soft px-3 text-sm" data-mock-filter>

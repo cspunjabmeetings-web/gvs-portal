@@ -1,10 +1,12 @@
 ---
+// spec: F30-AC1 (do darwaze: Job/PPSC aur VU)
 // spec: S18 /mock-tests (on-demand, D1): muft mocks ki list (naam, sawal, waqt) + paid series ki peshkash (F15-AC1); intent page list: Ad "Haan" (top + bottom)
 import { env } from 'cloudflare:workers';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import DoorCard from '../../components/DoorCard.astro';
 import DailyTestCard from '../../components/DailyTestCard.astro';
 import seo from '../../data/seo.json';
 import { publicMocks, type MockCard } from '../../lib/mocks';
@@ -34,6 +36,12 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300');
       apna score dekhein. Sign up ki zaroorat nahin.
     </p>
 
+    <div class="mt-5 grid gap-3 sm:grid-cols-2" data-mock-doors>
+      <DoorCard title="Job / PPSC Mock Test" line="PPSC, FPSC aur NTS jaisi tayyari ke mock tests." href="#job-mocks" icon="brief" />
+      <DoorCard title="VU Mock Test" line="Course code likhein, Midterm ya Final ka muft test dein." href="/vu-mock" icon="cap" />
+    </div>
+
+    <h2 id="job-mocks" class="mt-8 scroll-mt-4">Job / PPSC mock tests</h2>
     {
       failed ? (
         <p class="mt-5 rounded-xl bg-surface-2 p-4" role="alert">Mock tests abhi load nahin hue. Thori der baad page dobara kholen.</p>

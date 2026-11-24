@@ -3,6 +3,7 @@
 //       band page par timer rukta hai; faisla 2: ek waqt mein ek adhoora mock), F15-AC8 (sab sawal page ke sath, koi network nahin),
 //       F15-AC9 (chalte test mein ad nahin; `result` sirf jama ke baad), design.md 6.7, F13-AC6 (bookmark + "Ghalti batayen")
 // Qadam 11b: jama ke baad MockResult (F15-AC6); nateeja history mocks[slug] mein + ghalat mazameen weakSubjects mein (owner ka faisla 1a, 2a).
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { QuizMcq } from '../../lib/daily';
 import { loadHistory, recordMock, setMockProgress, toggleBookmark, updateHistory, HISTORY_EVENT, type History } from '../../lib/history';
@@ -23,6 +24,16 @@ export interface MockInfo {
   summary: string | null;
 }
 
+/** F30: VU test. Nateeja history mocks/weakSubjects mein nahin (woh /mock-tests aur /mcqs ke links bante hain); bookmark nahin */
+export interface VuMode {
+  onBack: () => void;
+  /** F31-AC1: jama par (history mein likhne ke liye) */
+  onResult: (p: MockProgress) => void;
+  shareText: (s: { score: number; total: number; percent: number }) => string;
+  /** F31: nateeje ke foran baad meter, pack, agla test */
+  extra: (s: { percent: number }) => ComponentChildren;
+}
+
 const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
 const SAVE_EVERY_MS = 5000;
 
@@ -33,7 +44,7 @@ function showResultAd(show: boolean) {
   if (el) el.hidden = !show;
 }
 
-export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pack | null }) {
+export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pack | null; vu?: VuMode }) {
   const { mock, items } = p;
   const totalMs = mock.minutes * 60_000;
   const [phase, setPhase] = useState<Phase>({ k: 'start' });
@@ -61,6 +72,14 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
     return () => removeEventListener(HISTORY_EVENT, onHist);
   }, []);
   useEffect(() => showResultAd(phase.k === 'done'), [phase.k]);
+  // F30-AC4: chalte VU test mein order patti nahin (global.css)
+  useEffect(() => {
+    if (!p.vu || phase.k !== 'test') return;
+    document.documentElement.dataset.vuTest = '';
+    return () => {
+      delete document.documentElement.dataset.vuTest;
+    };
+  }, [phase.k]);
 
   const left = () => Math.max(0, endAt.current - Date.now());
 
@@ -96,7 +115,11 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
     palette.current?.close();
     const final = progRef.current;
     const s = scoreMock(final, items);
-    updateHistory((h) => recordMock(h, mock.slug, { score: s.score, total: s.total, bySubject: s.bySubject, at: new Date().toISOString(), name: mock.name }, wrongSubjects(final, items)));
+    if (p.vu) {
+      updateHistory((h) => setMockProgress(h, null));
+      p.vu.onResult(final);
+    }
+    else updateHistory((h) => recordMock(h, mock.slug, { score: s.score, total: s.total, bySubject: s.bySubject, at: new Date().toISOString(), name: mock.name }, wrongSubjects(final, items)));
     track('mock_submit', { mock: mock.slug, score: s.score, questions: s.total, auto });
     setResume(null);
     setPhase({ k: 'done', progress: final, usedMs, auto });
@@ -127,7 +150,7 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
     };
   }, [phase.k]);
 
-  const reportHref = (x: QuizMcq) => waLink(whatsappNumber(), `Assalam o Alaikum GVS Academy,\nSawal #${x.id} mein ghalti lagti hai:\n"${x.question.slice(0, 120)}"\n`);
+  const reportHref = (x: QuizMcq) => waLink(whatsappNumber(), `Assalam o Alaikum GVS Academy,\n${p.vu ? `${mock.name}, VU sawal` : 'Sawal'} #${x.id} mein ghalti lagti hai:\n"${x.question.slice(0, 120)}"\n`);
   const jump = (i: number) => {
     change(goTo(progRef.current, i, items.length));
     palette.current?.close();
@@ -181,6 +204,11 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
             </button>
           </>
         )}
+        {p.vu && (
+          <button type="button" onClick={p.vu.onBack} class={`${btn} border border-border`} data-vu-back>
+            ‹ Saare tests
+          </button>
+        )}
       </section>
     );
 
@@ -195,6 +223,7 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
         usedMs={phase.usedMs}
         auto={phase.auto}
         pack={p.pack}
+        vu={p.vu}
         onAgain={() => {
           setPhase({ k: 'start' });
           requestAnimationFrame(() => document.querySelector('[data-mock]')?.scrollIntoView({ block: 'start' }));
@@ -228,7 +257,7 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
         picked={prog.answers[q.id] ?? null}
         onPick={(i) => change(answer(progRef.current, q.id, i))}
         bookmarked={hist.bookmarks.includes(q.id)}
-        onBookmark={() => setHist(updateHistory((h) => toggleBookmark(h, q.id)))}
+        onBookmark={p.vu ? null : () => setHist(updateHistory((h) => toggleBookmark(h, q.id)))}
         reportHref={reportHref(q)}
       />
 

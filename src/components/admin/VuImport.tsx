@@ -100,6 +100,16 @@ export default function VuImport(p: { courses: AdminCourse[]; onBusy: (b: boolea
     p.onBusy(false);
   }
 
+  /** F12-AC8: dohre sawal is upload se nikalo */
+  function dropMcqs(list: ParsedMcq[]) {
+    if (!result) return;
+    const gone = new Set<unknown>(list);
+    const items = result.items.filter((x) => !gone.has(x));
+    setResult({ ...result, items });
+    setChunks(buildChunks(items));
+    setDup((d) => ({ existing: new Set([...d.existing].filter((q) => !gone.has(q))), repeats: new Map([...d.repeats].filter(([q]) => !gone.has(q))) }));
+  }
+
   function reset() {
     setText('');
     setResult(null);
@@ -150,7 +160,7 @@ export default function VuImport(p: { courses: AdminCourse[]; onBusy: (b: boolea
       </section>
 
       {result && (
-        <ContentPreview result={result} dup={dup}>
+        <ContentPreview result={result} dup={dup} onDrop={phase.k === 'edit' ? dropMcqs : null}>
           <section class="flex flex-col gap-3 rounded-xl border-2 border-primary bg-surface p-4" data-vu-save-box>
             {chunks.length === 0 ? (
               <p class="text-sm text-muted">Save karne ke liye koi sahih sawal nahin.</p>

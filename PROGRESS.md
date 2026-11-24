@@ -17,4 +17,4 @@
 - [x] 15 SEO, ads, analytics, manifest
 - [x] 16 V2 tayyari (band)
 - [x] 17 Preview par poori jaanch, content
-- [ ] 18 Production deploy, Access, backup
+- [x] 18 Production deploy, Access, backup

@@ -13,6 +13,7 @@ import { sitemapUrls } from '../src/lib/sitemap';
 import { trackOrder } from '../src/lib/track';
 import { publicNotes, notePage } from '../src/lib/notes';
 import { publicMocks, mockBySlug } from '../src/lib/mocks';
+import { listCourses, listVuMcqs } from '../src/lib/vu-admin';
 import { runMaintenance } from '../src/lib/maintenance';
 
 let d1: Awaited<ReturnType<typeof startD1>>;
@@ -113,6 +114,12 @@ beforeAll(async () => {
     ),
     db.prepare(`INSERT INTO mocks (slug, name, minutes, created_at) VALUES ('mock-1', 'Mock 1', 30, '2026-01-01T00:00:00Z')`),
     db.prepare(`UPDATE mcqs SET mock_id = 1 WHERE id <= 50`),
+    // F29: 20 courses x 250 sawal
+    db.prepare(`${cte(20)} INSERT INTO vu_courses (code, name, created_at) SELECT 'CS' || (100 + i), 'Course ' || i, '2026-01-01T00:00:00Z' FROM c`),
+    db.prepare(
+      `${cte(5000)} INSERT INTO vu_mcqs (course_code, term, question, options_json, answer_index, verified, verified_at, created_at, q_hash)
+       SELECT 'CS' || (101 + i % 20), CASE WHEN i % 40 < 20 THEN 'mid' ELSE 'final' END, 'VU ' || i, '["a","b"]', 0, 1, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 'h' || i FROM c`,
+    ),
   ]);
 }, 120_000);
 afterAll(async () => d1?.dispose());
@@ -132,6 +139,8 @@ const cases: [string, number, (db: D1Database) => Promise<unknown>][] = [
   ['jobs list (/jobs)', 400, (db) => publicJobs(db, NOW)],
   ['job page', 100, (db) => jobBySlug(db, 'job-600', NOW)],
   ['practice set (E06)', 1200, (db) => practiceSet(db, 'English', 0)],
+  ['VU courses list (E26): ginti course ki row mein, vu_mcqs nahin parhta', 100, async (db) => listCourses(await adminReq('/api/admin/vu/courses'), { DB: db, SESSION_SECRET: SECRET })],
+  ['VU sawal: ek course (E27)', 700, async (db) => listVuMcqs(await adminReq('/api/admin/vu/mcqs?course=CS101'), { DB: db, SESSION_SECRET: SECRET })],
   ['mock page', 200, (db) => mockBySlug(db, 'mock-1')],
   ['maintenance: har 15 min wali dafa (auto-cancel, rate_limits)', 100, (db) => runMaintenance({ DB: db }, NOW)],
 ];

@@ -9,7 +9,7 @@ const input = 'min-h-[44px] w-full rounded-lg border border-border bg-surface px
 const btn = 'min-h-[44px] rounded-lg px-4 font-semibold';
 const LETTERS = 'ABCDE';
 
-export default function McqForm(p: { mcq?: AdminMcq; subjects: string[]; onDone: (id: number) => void; onCancel: () => void }) {
+export default function McqForm(p: { mcq?: AdminMcq; subjects: string[]; /** VU (F29): doosra endpoint; tareekh nahin */ endpoint?: string; onDone: (id: number) => void; onCancel: () => void }) {
   const m = p.mcq;
   const [subject, setSubject] = useState(m?.subject ?? p.subjects[0] ?? '');
   const [question, setQuestion] = useState(m?.question ?? '');
@@ -26,7 +26,7 @@ export default function McqForm(p: { mcq?: AdminMcq; subjects: string[]; onDone:
   async function save() {
     setBusy(true);
     setError('');
-    const r = await adminJson<{ id: number }>('/api/admin/mcqs', {
+    const r = await adminJson<{ id: number }>(p.endpoint ?? '/api/admin/mcqs', {
       body: {
         action: 'save',
         ...(m ? { id: m.id } : { verified }),
@@ -131,12 +131,12 @@ export default function McqForm(p: { mcq?: AdminMcq; subjects: string[]; onDone:
             ))}
           </select>
         </div>
-        <div class="flex flex-col gap-1">
+        {!p.endpoint && <div class="flex flex-col gap-1">
           <label for={`${pre}-date`} class="text-sm font-medium">
             Tareekh{subject === 'Current Affairs' ? ' *' : ''}
           </label>
           <input id={`${pre}-date`} type="date" value={asOfDate} onInput={(e) => setAsOfDate((e.target as HTMLInputElement).value)} class={input} />
-        </div>
+        </div>}
       </div>
       {!m && (
         <label for={`${pre}-ver`} class="flex min-h-[44px] items-center gap-3">

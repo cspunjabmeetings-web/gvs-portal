@@ -1527,6 +1527,7 @@ Usool: course code bare harfon mein, alfaz ke beech `-`, khali jagah nahin.
 | 0.3 | 16 Nov 2026 | Tay shuda values (number, rates, 2 ghante ka wada); VS Code ke liye technical spec, pages, build ki tarteeb |
 | 0.4 | 16 Nov 2026 | Admin data capture, text format content, jobs, visitor UI aur history, Tailwind, WaSender aur Claude agent (Version 2) |
 | 1.0 | 16 Nov 2026 | Final compile: nayi tarteeb (hisse A se F); KPIs, scope, mafrooze, refund policy ki tajweez, API ki kharabi mein rasta, non-functional zaroorat, analytics events, mahol aur backup, launch ka mansooba, rozana operations, payment ki tasdeeq, khatre, kirdar, istilahat, khule faislay ki list |
+| 1.2 | 24 Nov 2026 | VU Mock manzoor: VU course-war muft mock tests (/vu-mock, /vu-mock/<code>, Midterm/Final), Important Questions, tayyari meter aur pack ki peshkash, achievement patti (sirf asal data, student ki ijazat ke sath), bina naam/number ka funnel hisab. VU course-war pages ki V1 wali rok sirf VU Mock ke liye khatam. Job/PPSC MCQs aur mocks bilkul alag rahenge |
 
 ## 33. spotlight/onboarding
 | 1.1 | 21 Nov 2026 | Order button par spotlight manzoor (pehli dafa cheez order list mein daalne par "Order karein" button par roshni + chhota tip; spec v0.3.7 F03-AC8). Onboarding/tips abhi nahin; soft launch ke baad sirf jahan log atkein (spec FU-10) |

@@ -1,6 +1,6 @@
 // spec: 6.3 (har admin screen par ghanti + tabs: Orders, Notifications, Content, Jobs, Settings), F07-AC4 (logout), F08-AC10 (44px, 360px),
 //       F08-AC11 (60 s polling, awaz, browser notification, ghanti), F09-AC3 (ghanti ki na-parhi ginti har tab par)
-// Qadam 7a: dhancha; 7b: Orders tab; 7c: Notifications + polling; 8: Settings (F10); 9b: Content (F11). 13a: Jobs tab (F19).
+// Qadam 7a: dhancha; 7b: Orders tab; 7c: Notifications + polling; 8: Settings (F10); 9b: Content (F11). 13a: Jobs tab (F19). VU-1: VU tab (F29).
 // Tabs URL hash se (#orders, #orders:GVS-2611-0005, #notifications); nayi route nahin (spec 6.4 mein sirf PAGE /admin).
 import { useEffect, useRef, useState } from 'preact/hooks';
 import OrdersTab from './OrdersTab';
@@ -8,6 +8,7 @@ import NotificationsTab from './NotificationsTab';
 import SettingsTab from './SettingsTab';
 import ContentTab from './ContentTab';
 import JobsTab from './JobsTab';
+import VuTab from './VuTab';
 import type { AdminNotification } from '../../lib/notify';
 import { ADMIN_EVENTS, chime, showBrowserNotification, unlockAudio } from '../../lib/admin-alert';
 
@@ -16,6 +17,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', soon: '' },
   { id: 'content', label: 'Content', soon: '' },
   { id: 'jobs', label: 'Jobs', soon: '' },
+  { id: 'vu', label: 'VU', soon: '' },
   { id: 'settings', label: 'Settings', soon: '' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
@@ -55,6 +57,11 @@ export default function AdminShell() {
     addEventListener('hashchange', onHash);
     return () => removeEventListener('hashchange', onHash);
   }, []);
+
+  // Phone par 6 tabs: chuna hua tab qatar mein nazar aaye
+  useEffect(() => {
+    document.querySelector('nav[aria-label="Admin tabs"] [aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [tab]);
 
   // F08-AC11 + F09-AC3: polling, ghanti ki ginti, naye order par awaz + browser notification
   useEffect(() => {
@@ -182,6 +189,10 @@ export default function AdminShell() {
       ) : tab === 'jobs' ? (
         <div data-tab="jobs">
           <JobsTab />
+        </div>
+      ) : tab === 'vu' ? (
+        <div data-tab="vu">
+          <VuTab />
         </div>
       ) : tab === 'settings' ? (
         <div data-tab="settings">

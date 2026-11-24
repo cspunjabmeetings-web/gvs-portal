@@ -11,6 +11,8 @@ import { answer, answeredCount, formatClock, goTo, newProgress, readProgress, sc
 import { track } from '../../lib/analytics';
 import { waLink } from '../../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../../lib/site-settings';
+import AchievementStrip from './AchievementStrip';
+import type { Achievement } from '../../lib/achievements-rules';
 import QuizCard from './QuizCard';
 import Timer from './Timer';
 import MockPalette, { PaletteLegend } from './MockPalette';
@@ -44,7 +46,7 @@ function showResultAd(show: boolean) {
   if (el) el.hidden = !show;
 }
 
-export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pack | null; vu?: VuMode }) {
+export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pack | null; vu?: VuMode; /** F33-AC3 */ strip?: Achievement[] }) {
   const { mock, items } = p;
   const totalMs = mock.minutes * 60_000;
   const [phase, setPhase] = useState<Phase>({ k: 'start' });
@@ -250,6 +252,8 @@ export default function MockTest(p: { mock: MockInfo; items: QuizMcq[]; pack: Pa
           Jama karein
         </button>
       </div>
+
+      {p.strip && <AchievementStrip items={p.strip} />}
 
       <QuizCard
         q={q}

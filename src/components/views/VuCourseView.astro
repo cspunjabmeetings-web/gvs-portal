@@ -3,14 +3,16 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import VuCourse from '../quiz/VuCourse.tsx';
+import type { Achievement } from '../../lib/achievements-rules';
 import { hasContent, vuPackList, type VuCourse as Course } from '../../lib/vu-public';
 
 interface Props {
   course: Course;
   ids: { mid: number[]; final: number[] };
   term: string | null;
+  strip: Achievement[];
 }
-const { course: c, term, ids } = Astro.props;
+const { course: c, term, ids, strip } = Astro.props;
 const packs = vuPackList();
 const ready = hasContent(c);
 // Link mein term ho to wohi; warna jis mein sawal hon (pehle Midterm)
@@ -27,7 +29,7 @@ const description = `${c.code} ${c.name}: muft online mock test, Midterm aur Fin
       <p class="mt-2 text-sm">Virtual University ke students ke liye muft practice. GVS niji academy hai.</p>
     </header>
     <div class="mt-5 max-w-xl">
-      <VuCourse client:load code={c.code} ids={ids} qs={{ mid: c.qMid, final: c.qFinal }} start={start} packs={packs} />
+      <VuCourse client:load code={c.code} ids={ids} qs={{ mid: c.qMid, final: c.qFinal }} start={start} packs={packs} strip={strip} />
       <noscript><p class="mt-4 rounded-xl bg-surface-2 p-4">Test dene ke liye browser mein JavaScript chalu karein.</p></noscript>
     </div>
     <p class="mt-6"><a href="/vu-mock" class="inline-flex min-h-[44px] items-center">Doosre VU courses</a></p>

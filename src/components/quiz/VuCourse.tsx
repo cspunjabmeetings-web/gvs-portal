@@ -8,6 +8,9 @@ import { cachedSettings, refreshSettings, whatsappNumber } from '../../lib/site-
 import { splitTests } from '../../lib/vu-tests';
 import { CHANNEL_URL, nextTest, readiness, recordVu, vuKey, vuShareText } from '../../lib/vu-progress';
 import MockTest from './MockTest';
+import type { Achievement } from '../../lib/achievements-rules';
+import AchievementStrip from './AchievementStrip';
+import RemarkCards from './RemarkCards';
 import VuMeter from './VuMeter';
 import VuPacks, { type VuPack } from './VuPacks';
 
@@ -15,7 +18,7 @@ type Term = 'mid' | 'final';
 const LABEL: Record<Term, string> = { mid: 'Midterm', final: 'Final Term' };
 const btn = 'inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-semibold no-underline';
 
-export default function VuCourse(p: { code: string; ids: Record<Term, number[]>; /** F32-AC3: jaanche Important Questions ki ginti */ qs: Record<Term, number>; start: Term; packs: VuPack[] }) {
+export default function VuCourse(p: { code: string; ids: Record<Term, number[]>; /** F32-AC3: jaanche Important Questions ki ginti */ qs: Record<Term, number>; start: Term; packs: VuPack[]; /** F33 */ strip: Achievement[] }) {
   const [term, setTerm] = useState<Term>(p.start);
   const [open, setOpen] = useState<{ n: number; items: QuizMcq[] } | null>(null);
   const [loading, setLoading] = useState(0);
@@ -96,6 +99,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
           mock={{ slug: slugOf(open.n), name, minutes: t?.minutes ?? 25, summary: null }}
           items={open.items}
           pack={null}
+          strip={p.strip}
           vu={{
             onBack: back,
             onResult: (prog) => updateHistory((h) => recordVu(h, vuKey(p.code, term), { n: open.n, items: open.items, answers: prog.answers, validIds: ids, at: new Date().toISOString() })),
@@ -114,6 +118,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
                   </p>
                 )}
                 {questions}
+                <RemarkCards items={p.strip} code={p.code} />
                 <VuPacks packs={p.packs} code={p.code} term={LABEL[term]} percent={s.percent} />
                 {CHANNEL_URL && (
                   <a href={CHANNEL_URL} target="_blank" rel="noopener" class={`${btn} border border-border`} data-vu-channel>
@@ -130,6 +135,7 @@ export default function VuCourse(p: { code: string; ids: Record<Term, number[]>;
 
   return (
     <div class="flex flex-col gap-4" data-vu-course>
+      <AchievementStrip items={p.strip} />
       <div class="grid grid-cols-2 gap-2 rounded-xl bg-surface-2 p-1" role="group" aria-label="Term chunein">
         {(['mid', 'final'] as const).map((t) => (
           <button key={t} type="button" aria-pressed={term === t} onClick={() => choose(t)} class={`${btn} ${term === t ? 'bg-primary text-on-primary' : ''}`} data-term={t}>

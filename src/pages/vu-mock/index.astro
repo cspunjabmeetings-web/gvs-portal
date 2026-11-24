@@ -3,6 +3,8 @@
 import { env } from 'cloudflare:workers';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AchievementStrip from '../../components/quiz/AchievementStrip.tsx';
+import { publicAchievements } from '../../lib/achievements';
 import seo from '../../data/seo.json';
 import { hasContent, vuCourses, type VuCourse } from '../../lib/vu-public';
 import { searchKey, splitTests } from '../../lib/vu-tests';
@@ -17,6 +19,7 @@ try {
 } catch {
   failed = true;
 }
+const strip = await publicAchievements(env.DB, 'vu');
 const ready = courses.filter(hasContent).length;
 const tests = (c: VuCourse) => splitTests(c.mid).length + splitTests(c.final).length;
 Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-age=0, s-maxage=300');
@@ -39,6 +42,8 @@ Astro.response.headers.set('Cache-Control', failed ? 'no-store' : 'public, max-a
         />
       </form>
     </section>
+
+    {strip.length > 0 && <div class="mt-3"><AchievementStrip client:load items={strip} /></div>}
 
     {
       failed ? (

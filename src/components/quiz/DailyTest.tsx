@@ -8,6 +8,8 @@ import { pkDate } from '../../lib/pkdate';
 import { track } from '../../lib/analytics';
 import { waLink } from '../../lib/phone';
 import { cachedSettings, refreshSettings, whatsappNumber } from '../../lib/site-settings';
+import AchievementStrip from './AchievementStrip';
+import type { Achievement } from '../../lib/achievements-rules';
 import QuizCard from './QuizCard';
 import ProgressBar from './ProgressBar';
 import ScoreCard, { type Pack } from './ScoreCard';
@@ -33,6 +35,9 @@ export default function DailyTest(p: { pack: Pack | null }) {
   const [phase, setPhase] = useState<Phase>({ k: 'loading' });
   const [hist, setHist] = useState<History>(() => loadHistory());
   const today = useMemo(() => pkDate(), []);
+  // F33-AC3: patti test shuru hone se pehle aa jati hai; test ke beech mein kabhi nahin jurti (CLS 0, koi request nahin)
+  const [strip, setStrip] = useState<Achievement[]>([]);
+  const [stripNow, setStripNow] = useState<Achievement[]>([]);
 
   async function load() {
     setPhase({ k: 'loading' });
@@ -49,6 +54,10 @@ export default function DailyTest(p: { pack: Pack | null }) {
 
   useEffect(() => {
     void load();
+    fetch('/api/achievements?place=job', { signal: AbortSignal.timeout(10_000) })
+      .then((r) => (r.ok ? (r.json() as Promise<{ items?: Achievement[] }>) : null))
+      .then((d) => setStrip(d?.items ?? []))
+      .catch(() => undefined);
     cachedSettings();
     void refreshSettings();
     const onHist = () => setHist(loadHistory());
@@ -63,6 +72,7 @@ export default function DailyTest(p: { pack: Pack | null }) {
 
   function begin(list: QuizMcq[], practice: boolean) {
     if (!practice) track('daily_test_start', { questions: list.length });
+    setStripNow(strip);
     setPhase({ k: 'quiz', list, practice, idx: 0, picks: list.map(() => null) });
     scrollTo({ top: 0 });
   }
@@ -142,6 +152,7 @@ export default function DailyTest(p: { pack: Pack | null }) {
     return (
       <section class="flex flex-col gap-4" data-daily-quiz>
         {phase.practice && <p class="text-sm text-muted">Practice — aaj ka score nahin badle ga.</p>}
+        <AchievementStrip items={stripNow} />
         <ProgressBar index={phase.idx} total={phase.list.length} score={score} />
         <QuizCard
           key={q.id}

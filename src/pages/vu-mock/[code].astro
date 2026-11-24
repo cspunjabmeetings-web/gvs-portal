@@ -3,6 +3,7 @@
 import { env } from 'cloudflare:workers';
 import NotFound from '../../components/NotFound.astro';
 import VuCourseView from '../../components/views/VuCourseView.astro';
+import { publicAchievements } from '../../lib/achievements';
 import { vuCourse, vuIds } from '../../lib/vu-public';
 import { normalizeCode } from '../../lib/vu';
 
@@ -12,8 +13,9 @@ const raw = Astro.params.code ?? '';
 const code = normalizeCode(raw);
 if (code && raw !== code.toLowerCase()) return Astro.redirect(`/vu-mock/${code.toLowerCase()}${Astro.url.search}`, 301);
 const course = code ? await vuCourse(env.DB, code) : null;
+const strip = course ? await publicAchievements(env.DB, 'vu') : [];
 const ids = course ? await vuIds(env.DB, course.code) : { mid: [], final: [] };
 if (!course) Astro.response.status = 404;
 Astro.response.headers.set('Cache-Control', course ? 'public, max-age=0, s-maxage=300' : 'public, max-age=0, s-maxage=60');
 ---
-{course ? <VuCourseView course={course} ids={ids} term={Astro.url.searchParams.get('term')} /> : <NotFound kind="missing" what="Yeh VU course" back={{ label: 'Saare VU courses', href: '/vu-mock' }} />}
+{course ? <VuCourseView course={course} ids={ids} strip={strip} term={Astro.url.searchParams.get('term')} /> : <NotFound kind="missing" what="Yeh VU course" back={{ label: 'Saare VU courses', href: '/vu-mock' }} />}

@@ -47,7 +47,9 @@ describe('F29-AC1: code aur list', () => {
     for (const s of ['cs101', 'CS 101', 'Cs-101', ' cs101 ']) expect(normalizeCode(s)).toBe('CS101');
     expect(normalizeCode('mgmt630')).toBe('MGMT630');
     expect(normalizeCode('cs101p')).toBe('CS101P');
-    for (const s of ['', 'CS', '101', 'CS1', 'CS1011', 'English', 'CS101x']) expect(normalizeCode(s)).toBeNull();
+    expect(normalizeCode('bt505t')).toBe('BT505T');
+    expect(normalizeCode('BT 505T')).toBe('BT505T');
+    for (const s of ['', 'CS', '101', 'CS1', 'CS1011', 'English', 'CS101xy', 'CS101 T', 'CS101T5']) expect(normalizeCode(s)).toBeNull();
   });
   it('har line; alag nishan; ghalat line number ke sath; isi list ka dohra', () => {
     const ok = parseCourseList('CS101 Introduction to Computing\r\n\nmth 101 - Calculus\nENG101: English, Comprehension');
@@ -62,6 +64,18 @@ describe('F29-AC1: code aur list', () => {
     expect(bad.errors[2].message).toContain('line 1');
     expect(parseCourseList(' \n').errors).toHaveLength(1);
     expect(parseCourseList(Array.from({ length: 501 }, (_, i) => `CS${100 + (i % 900)} N${i}`).join('\n')).errors).toHaveLength(1);
+  });
+  it('theory/practical code (BT505T, CS101P): list, MCQ, alag course, badalna, mitana', async () => {
+    const l = parseCourseList('BT505T Molecular Biology Theory\nBT505P - Molecular Biology Practical\nBT505 Molecular Biology\nCS101 T Course');
+    expect(l.errors).toEqual([]);
+    expect(l.items.map((x) => x.code)).toEqual(['BT505T', 'BT505P', 'BT505', 'CS101']);
+    expect(l.items[3].name).toBe('T Course');
+    expect((await add('BT505T Theory\nbt505p Practical')).body).toMatchObject({ added: 2 });
+    expect((await imp(mcq('Cell kya hai?', 'bt505t'))).body).toMatchObject({ saved: 1 });
+    expect((await imp(mcq('Cell kya hai?', 'BT505P'))).body).toMatchObject({ saved: 1 });
+    expect((await courses()).map((c) => [c.code, c.midOk])).toEqual([['BT505P', 1], ['BT505T', 1]]);
+    expect((await post(saveCourses, { action: 'rename', code: 'bt505t', name: 'Naya' })).status).toBe(200);
+    expect((await del(deleteCourse, 'BT505T')).status).toBe(409);
   });
   it('500 ek paste mein; dobara bhejne par sab pehle se', async () => {
     const text = Array.from({ length: 500 }, (_, i) => `CS${100 + i} Course number ${i} ka naam`).join('\n');

@@ -17,7 +17,7 @@ export interface OrderSource {
   term: 'mid' | 'final';
   source: VuSource;
 }
-const RE = /^([A-Z]{2,4}\d{3}P?):(mid|final):(channel|group|share|status|direct)$/;
+const RE = /^([A-Z]{2,4}\d{3}[A-Z]?):(mid|final):(channel|group|share|status|direct)$/;
 
 /** orders.source: "CS101:mid:channel" */
 export function parseOrderSource(raw: unknown): OrderSource | null {

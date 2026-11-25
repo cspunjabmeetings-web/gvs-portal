@@ -73,6 +73,11 @@ describe('import + list (E34, E35)', () => {
     expect((await list({ q: 'sawal 42' })).items).toHaveLength(1);
     expect((await imp(many(51, 200))).status).toBe(400);
   });
+  it('BT505T: Important Questions aur student ka course', async () => {
+    await post(saveCourses, { action: 'add', text: 'BT505T Theory' });
+    expect((await imp(sawal('Cell?', 'bt 505t'))).body).toMatchObject({ saved: 1 });
+    expect((await vuCourse(d1.db, 'BT505T'))?.qMid).toBe(1);
+  });
   it('anjaan course, term na ho, ek bhi ghalat → kuch save nahin', async () => {
     const un = await imp(`${sawal('A?')}\n${sawal('B?', 'CS999')}`);
     expect(un.status).toBe(400);

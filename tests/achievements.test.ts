@@ -47,6 +47,7 @@ describe('F33-AC1, AC2: qaide', () => {
     bad({ kind: 'remark', rating: 6 });
     bad({ kind: 'remark', rating: 0 });
     expect(checkAchievement({ ...F, course: 'cs 101', body: '  Do   lafz  ' })).toMatchObject({ ok: true, value: { course: 'CS101', body: 'Do lafz' } });
+    expect(checkAchievement({ ...F, course: 'bt505t' })).toMatchObject({ value: { course: 'BT505T' } });
     // 18/20 ya 2025 jaise hindse phone nahin
     expect(checkAchievement({ ...F, body: 'CS101 midterm 18/20, Fall 2025, 300 students' }).ok).toBe(true);
     // achievement par rating nahin

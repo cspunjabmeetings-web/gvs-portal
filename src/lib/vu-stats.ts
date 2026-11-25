@@ -21,7 +21,7 @@ const Body = v.object({
   events: v.pipe(
     v.array(
       v.object({
-        course: v.pipe(v.string(), v.regex(/^[A-Z]{2,4}\d{3}P?$/)),
+        course: v.pipe(v.string(), v.regex(/^[A-Z]{2,4}\d{3}[A-Z]?$/)),
         term: v.picklist(['mid', 'final']),
         event: v.picklist(VU_EVENTS),
         source: v.picklist(VU_SOURCES),

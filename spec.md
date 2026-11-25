@@ -500,7 +500,7 @@ Sirf job posts ki tasveerein. Free allowance is ke liye kaafi (150 KB × chand s
 VU courses ke muft mock tests, maujooda MCQs/mocks se bilkul alag tables mein. Chhe hisse: VU-1 admin (neeche), VU-2 student pages, VU-3 nateeja/pack, VU-4 Important Questions, VU-5 achievements, VU-6 funnel. Baqi hisson ke AC un ke apne plan ki manzoori par yahan jurein ge.
 
 **AC (VU-1)**
-- F29-AC1: Admin "VU" tab → Courses: ek ya poori list paste (≤ 500 lines, har line `CS101 Introduction to Computing`); ghalat line number ke sath (ek bhi ghalat to kuch save nahin); pehle se maujood code chhoot jata hai aur bataya jata hai; `cs 101` = `CS101`; code kabhi nahin badalta, naam badalta hai; chhupana; sawal wala course mitta nahin. Kul ≤ 2000.
+- F29-AC1: Admin "VU" tab → Courses: ek ya poori list paste (≤ 500 lines, har line `CS101 Introduction to Computing`); ghalat line number ke sath (ek bhi ghalat to kuch save nahin); pehle se maujood code chhoot jata hai aur bataya jata hai; `cs 101` = `CS101`; aakhir mein ek harf chalta hai (`BT505T` theory, `CS101P` practical), alag course ginta hai; code kabhi nahin badalta, naam badalta hai; chhupana; sawal wala course mitta nahin. Kul ≤ 2000.
 - F29-AC2: VU MCQs wahi `# MCQ` format (parser.ts), `Mazmoon` = course code; term (Midterm/Final) chune baghair save nahin; preview, 25-25 ke tukre, checkbox ke baghair na-jaanche; ek course + term mein ek sawal dohra nahin (pehle se ho to chhoot jata hai).
 - F29-AC3: Sawal ki list course-war (term, jaancha, search), badalna, dikhana/chhupana, mitana.
 - F29-AC4: VU sawal rozana test, `/mcqs`, mock tests, notes quiz aur bank ki ginti mein kabhi nahin.
@@ -1512,6 +1512,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.7 | 25 Nov 2026 | Owner: VU code ke aakhir mein koi bhi ek harf (BT505T, CS101P), F29-AC1 |
 | 0.4.6 | 24 Nov 2026 | VU-7 (owner "haan, 1a 2a"): F30-AC7 VU Mock ke links (Home, menu, `/vu`) |
 | 0.4.5 | 24 Nov 2026 | VU-6 (owner "haan, 1a"): F34-AC1..AC6, `vu_stats` + `orders.source` (`0006_vu_stats.sql`), E38, E39 |
 | 0.4.4 | 24 Nov 2026 | VU-5 (owner "haan, 1b 2a"): F33-AC1..AC5, `achievements` (`0005_achievements.sql`), E36, E37 |

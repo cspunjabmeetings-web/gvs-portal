@@ -47,7 +47,7 @@ export function checkAchievement(f: AchForm): { ok: true; value: AchClean } | { 
   if (PHONE.test(`${body} ${person} ${semester}`)) return bad('Phone number na likhein.');
   let course: string | null = null;
   if (f.course.trim()) {
-    const m = /^([A-Za-z]{2,4})[\s-]*(\d{3})([Pp]?)$/.exec(f.course.trim());
+    const m = /^([A-Za-z]{2,4})[\s-]*(\d{3})([A-Za-z]?)$/.exec(f.course.trim());
     if (!m) return bad('Course code sahih nahin (maslan CS101).');
     course = `${m[1]}${m[2]}${m[3]}`.toUpperCase();
   }

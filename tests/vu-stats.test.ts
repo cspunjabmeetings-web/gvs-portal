@@ -63,6 +63,13 @@ describe('F34-AC1: ginti (E38)', () => {
     expect(await rows()).toEqual([]);
     for (const bad of [[{ ...E, event: 'order' }], [{ ...E, event: 'x' }], [{ ...E, source: 'fb' }], [{ ...E, term: 'dono' }], [{ ...E, course: "CS101'--" }], [], Array(11).fill(E), 'x']) expect(await send(bad)).toBe(400);
   });
+  it('BT505T jaisa code bhi ginta hai; order ka nishan bhi', async () => {
+    await d1.db.prepare("INSERT INTO vu_courses (code, name, created_at) VALUES ('BT505T','A','t')").run();
+    expect(await send([{ ...E, course: 'BT505T' }])).toBe(200);
+    const { body } = await order('BT505T:mid:channel', [{ id: 'vu-smart', fields: { courseCode: 'BT505T', term: 'Midterm' } }]);
+    expect(await srcOf(body.id)).toBe('BT505T:mid:channel');
+    expect(await rows()).toMatchObject([{ event: 'order', n: 1 }, { event: 'view', n: 1 }]);
+  });
   it('naam/phone/IP ka khana hi nahin; kisi row mein IP nahin', async () => {
     await send([E], { ip: '203.0.113.77' });
     const cols = (await d1.db.prepare("SELECT name FROM pragma_table_info('vu_stats')").all<{ name: string }>()).results.map((r) => r.name);
@@ -143,6 +150,7 @@ describe('F34-AC2, AC6', () => {
   it('source pehchan aur label', () => {
     expect(['channel', 'GROUP', 'share', 'status', 'facebook', '', null].map((s) => toSource(s))).toEqual(['channel', 'group', 'share', 'status', 'direct', 'direct', 'direct']);
     expect(parseOrderSource(orderSource({ code: 'CS101P', term: 'final', source: 'group' }))).toEqual({ code: 'CS101P', term: 'final', source: 'group' });
+    expect(parseOrderSource('BT505T:mid:channel')?.code).toBe('BT505T');
     expect(sourceLabel('CS101:final:direct')).toBe('VU Mock: CS101 Final Term (Seedha)');
     expect([sourceLabel(null), sourceLabel('=HYPERLINK("x")')]).toEqual(['', '']);
   });

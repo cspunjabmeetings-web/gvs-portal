@@ -92,13 +92,15 @@ const ogImage = new URL(og.src, base).href;
     {chrome && <CartBar client:idle />}
     <script>
       // F23: page ke khud chalne wale events + GA4 (deferred; PUBLIC_GA_ID khali = band). Admin par analytics nahin.
-      import { PUBLIC_GA_ID } from 'astro:env/client';
-      import { autoEvents, initAnalytics } from '../lib/analytics';
+      // F23-AC5: Meta Pixel bhi (khali ID = band); /track par nahin kyun ke URL mein order number hota hai.
+      import { PUBLIC_GA_ID, PUBLIC_META_PIXEL_ID } from 'astro:env/client';
+      import { autoEvents, initAnalytics, initMetaPixel } from '../lib/analytics';
       import { captureInstall } from '../lib/install';
       captureInstall();
       if (!location.pathname.startsWith('/admin')) {
         autoEvents();
         initAnalytics(PUBLIC_GA_ID);
+        if (location.pathname.replace(/\/+$/, '') !== '/track') initMetaPixel(PUBLIC_META_PIXEL_ID);
       }
     </script>
   </body>

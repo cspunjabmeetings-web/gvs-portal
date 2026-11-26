@@ -52,7 +52,7 @@ npx wrangler d1 time-travel info gvs
 Code ki har tabdeeli ke baad (Claude batayega kab), **naye terminal** mein:
 
 ```
-$env:SITE_URL="https://gvsacademy.online"; $env:PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAAAGLeKz2o6KZEhAeG"; $env:PUBLIC_IMG_BASE="https://img.gvsacademy.online"; npm run build
+$env:SITE_URL="https://gvsacademy.online"; $env:PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAAAGLeKz2o6KZEhAeG"; $env:PUBLIC_IMG_BASE="https://img.gvsacademy.online"; $env:PUBLIC_META_PIXEL_ID="1830412394750675"; npm run build
 ```
 ```
 npx wrangler deploy

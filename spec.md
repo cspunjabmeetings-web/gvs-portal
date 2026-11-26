@@ -452,6 +452,7 @@ Sirf job posts ki tasveerein. Free allowance is ke liye kaafi (150 KB × chand s
 - F23-AC2: Kisi event mein naam, phone, order ki raqam ya order number nahin (test).
 - F23-AC3: Tool deferred load hota hai; load na ho to site pe asar nahin.
 - F23-AC4: `/track` ke liye analytics ka `page_location` bina query (`?id=...`) ke jaye (FL-08).
+- F23-AC5 (v0.4.8, owner ka CHANGE REQUEST): Meta Pixel (`PUBLIC_META_PIXEL_ID`, khali = band), sirf `analytics.ts` ke zariye, GA4 ki tarah deferred, `autoConfig` band (advanced matching/button scraping nahin). Events: PageView, ViewContent (`view_product`, `job_view`), AddToCart, InitiateCheckout (`open_order_form`), Lead (`order_created`, sirf ginti). Admin aur `/track` par pixel nahin; `/track` par referrer sirf origin (order number agle page ke referrer mein na jaye). Privacy par Meta ka zikr.
 
 ### F24. Khud chalne wale kaam (maintenance) `[i:12.6]`
 
@@ -1512,6 +1513,7 @@ JazzCash/Easypaisa details (Qadam 6), rang/logo (Qadam 0), domain ka naam (Qadam
 | 0.3.5 | 19 Nov 2026 | Qadam 10c (owner ki manzoori, faisla 2a): E23 mein `GET /api/admin/daily-pins` (A09 screen par lage pins dikhane ke liye) |
 | 0.3.6 | 20 Nov 2026 | Qadam 17a (owner ki manzoori): 7.3 mein `orders(created_at)` + `orders(updated_at)` index (`0002_order_indexes.sql`); preview `*.workers.dev` par `X-Robots-Tag: noindex` (`public/_headers` + middleware) |
 | 0.3.7 | 21 Nov 2026 | Qadam 17b (owner ka CHANGE REQUEST): F03-AC8 order button spotlight (17b ke baad alag qadam); FU-10 onboarding baad mein (soft launch ke baad) |
+| 0.4.8 | 26 Nov 2026 | Owner ka CHANGE REQUEST: Meta Pixel, F23-AC5 |
 | 0.4.7 | 25 Nov 2026 | Owner: VU code ke aakhir mein koi bhi ek harf (BT505T, CS101P), F29-AC1 |
 | 0.4.6 | 24 Nov 2026 | VU-7 (owner "haan, 1a 2a"): F30-AC7 VU Mock ke links (Home, menu, `/vu`) |
 | 0.4.5 | 24 Nov 2026 | VU-6 (owner "haan, 1a"): F34-AC1..AC6, `vu_stats` + `orders.source` (`0006_vu_stats.sql`), E38, E39 |

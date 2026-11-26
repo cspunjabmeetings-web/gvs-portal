@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { EVENT_NAMES, cleanLocation, cleanParams, track, _queued, initAnalytics } from '../src/lib/analytics';
+import { EVENT_NAMES, cleanLocation, cleanParams, track, _queued, initAnalytics, metaEvent, _metaQueued, initMetaPixel } from '../src/lib/analytics';
 
 // intent 18 ki table
 const INTENT_18 = [
@@ -96,5 +96,49 @@ describe('events ki fehrist (F23-AC1)', () => {
   it('analytics ka script sirf analytics.ts mein (googletagmanager kahin aur nahin)', () => {
     const hits = SRC.filter((f) => readFileSync(f, 'utf8').includes('googletagmanager'));
     expect(hits.map((f) => f.replace(process.cwd(), ''))).toEqual([join('', 'src', 'lib', 'analytics.ts').replace(/^/, process.platform === 'win32' ? '\\' : '/')]);
+  });
+});
+
+describe('Meta Pixel (F23-AC5)', () => {
+  it('sirf 5 standard events, sirf ginti aur catalog ids', () => {
+    expect(metaEvent('view_product', { products: 'vu-quick,mcq-pack' })).toEqual(['ViewContent', { content_type: 'product', content_ids: ['vu-quick', 'mcq-pack'] }]);
+    expect(metaEvent('job_view', { org: 'PPSC' })).toEqual(['ViewContent', { content_type: 'job', content_category: 'PPSC' }]);
+    expect(metaEvent('add_to_cart', { product: 'cv-cover', source: 'card' })).toEqual(['AddToCart', { content_type: 'product', content_ids: ['cv-cover'] }]);
+    expect(metaEvent('open_order_form', { items: 2 })).toEqual(['InitiateCheckout', { num_items: 2 }]);
+    expect(metaEvent('order_created', { items: 3 })).toEqual(['Lead', { num_items: 3 }]);
+    for (const e of EVENT_NAMES.filter((x) => !['view_product', 'job_view', 'add_to_cart', 'open_order_form', 'order_created'].includes(x))) {
+      expect(metaEvent(e, {}), e).toBeNull();
+    }
+  });
+
+  it('Lead mein raqam/order number/naam/phone nahin, chahe ghalti se bheje jayen', () => {
+    track('order_created', { items: 1, id: 'GVS-2611-0009', amount: 700, name: 'Ali', phone: '03001234567' } as never);
+    const last = _metaQueued().at(-1)!;
+    expect(last).toEqual(['Lead', { num_items: 1 }]);
+    expect(JSON.stringify(_metaQueued())).not.toMatch(/GVS-|0300|Ali|700/);
+  });
+
+  it('ajeeb product id (khali jagah, phone jaisa) Meta ko nahin jata', () => {
+    expect(metaEvent('add_to_cart', { product: '03001234567 x' })).toBeNull();
+    expect(metaEvent('view_product', { products: 'A B,<x>' })).toBeNull();
+  });
+
+  it('ID khali/ghalat ho to kuch shuru nahin hota (server par bhi)', () => {
+    expect(() => initMetaPixel('')).not.toThrow();
+    expect(() => initMetaPixel('abc')).not.toThrow();
+  });
+
+  it('fbevents script sirf analytics.ts mein; Base admin aur /track par pixel nahin chalata', () => {
+    const hits = SRC.filter((f) => /connect\.facebook\.net|fbevents/.test(readFileSync(f, 'utf8')));
+    expect(hits.map((f) => f.split(/[\\/]/).slice(-2).join('/'))).toEqual(['lib/analytics.ts']);
+    const base = readFileSync(join(process.cwd(), 'src', 'layouts', 'Base.astro'), 'utf8');
+    expect(base).toMatch(/startsWith\('\/admin'\)\)\s*\{[\s\S]*!== '\/track'\) initMetaPixel\(PUBLIC_META_PIXEL_ID\)/);
+    const a = readFileSync(join(process.cwd(), 'src', 'lib', 'analytics.ts'), 'utf8');
+    expect(a).toContain("fbq('set', 'autoConfig', false, id)");
+  });
+
+  it('/track par referrer sirf origin; privacy par Meta ka zikr', () => {
+    expect(readFileSync(join(process.cwd(), 'src', 'pages', 'track.astro'), 'utf8')).toMatch(/name="referrer" content="origin"/);
+    expect(readFileSync(join(process.cwd(), 'src', 'pages', 'privacy.astro'), 'utf8')).toMatch(/Meta Pixel/);
   });
 });

@@ -68,6 +68,13 @@ export default defineConfig({
         access: 'public',
         default: '',
       }),
+      // F23-AC5: Meta Pixel ID (sirf hindse). Khali = band (local/dev/tests Meta ko kuch nahin bhejte);
+      // production build par env se.
+      PUBLIC_META_PIXEL_ID: envField.string({
+        context: 'client',
+        access: 'public',
+        default: '',
+      }),
     },
   },
   vite: {

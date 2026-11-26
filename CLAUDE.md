@@ -562,3 +562,11 @@ REPORT mein har shart ke aage ✅/❌ aur saboot (test ka nateeja, page ka URL/s
 
 - **Owner ka masla:** BT505T (theory), CS101P (practical) — pehle sirf P chalta tha. Regex 6 jagah `[A-Z]?` (vu.ts 2, vu-source, vu-stats, history, achievements-rules). Catalog ka courseCode pattern pehle se harf leta hai. BT505, BT505T, BT505P teen alag courses. Migration nahin.
 - **Jaanch:** verify ✅; tests vu-admin, vu-stats, vu-progress, vu-questions, achievements mein izafa.
+
+### 26 Nov 2026 — Meta Pixel (F23-AC5) (branch `meta-pixel`, REPORT diya, approval baqi)
+
+- **Owner ka CHANGE REQUEST "haan"** + pixel ID `1830412394750675` (public, raaz nahin). Order par `Lead` (Purchase nahin — payment baad mein hoti hai). Spec v0.4.8 F23-AC5.
+- **Owner ka diya hua Meta snippet seedha `<head>` mein NAHIN lagaya:** woh foran load hota (PageSpeed) aur autoConfig se form ka matn parh sakta (qaida 11). Is ki jagah `analytics.ts` mein `initMetaPixel` (wahi stub, `fbq('set','autoConfig',false,id)` init se pehle, GA jaisa `whenIdle` — tap/scroll ya 4 s) + `metaEvent` (view_product/job_view → ViewContent, add_to_cart → AddToCart, open_order_form → InitiateCheckout, order_created → Lead `{num_items}`; ids sirf `[a-z0-9-]`); `track()` dono ko bhejta hai. `noscript` img nahin. `PUBLIC_META_PIXEL_ID` (astro:env, default khali = band; README deploy command mein ID). Base: admin aur `/track` par pixel nahin; `/track` par `<meta name="referrer" content="origin">` (agle page ke referrer mein order number na jaye). Privacy par Meta ka paragraph + ad preferences link.
+- **Jaanch:** verify ✅ (**798 pass**); no-pii-analytics +6. Browser e2e (local Worker, pixel ID ke sath, facebook requests CDP `Fetch` se **block** — asal pixel mein localhost data nahin gaya) **13/13**: deferred, autoConfig/init/PageView, block par site theek, ViewContent/AddToCart/InitiateCheckout, PII nahin, /track aur /admin par 0, /track ke baad referrer sirf origin. Lead ka browser e2e nahin (asal order chahiye) — unit test + owner phone se Events Manager mein.
+- **Owner ke kaam:** Events Manager → pixel → Settings → **Automatic advanced matching OFF** (code se band nahin hota, yeh dashboard ka switch hai).
+- **Agla:** owner approve → commit/push `meta-pixel` → PR #43 → merge → deploy (README ki nayi command) → Events Manager "Test events" mein PageView/Lead.

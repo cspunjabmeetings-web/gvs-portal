@@ -2,6 +2,7 @@
 //       deferred: pehli interaction ya idle ke baad; load na ho to site par asar nahin), F23-AC4 + FL-08 (/track ka query page_location mein
 //       nahin), Q-02 (GA4), FX-04, F22-AC4 (house_ad_click), qaida 11. Owner ka faisla (Qadam 15b): GA4 ID abhi nahin → PUBLIC_GA_ID khali =
 //       koi request nahin, events sirf queue mein (Qadam 18 mein ID).
+//       F23-AC5: Meta Pixel (PUBLIC_META_PIXEL_ID), deferred, autoConfig band, sirf 5 standard events.
 // Browser mein chalta hai (server par import ho to kuch nahin karta).
 
 type Value = string | number | boolean;
@@ -90,6 +91,14 @@ export function track<N extends EventName>(name: N, params: EventParams[N]): voi
       queue.push({ name, params: clean });
       if (queue.length > 50) queue.shift();
     }
+    const meta = metaEvent(name, clean);
+    if (meta) {
+      if (fbq) fbq('track', meta[0], meta[1]);
+      else {
+        metaQueue.push(meta);
+        if (metaQueue.length > 50) metaQueue.shift();
+      }
+    }
   } catch {
     /* analytics kabhi site na toore */
   }
@@ -97,6 +106,93 @@ export function track<N extends EventName>(name: N, params: EventParams[N]): voi
 
 /** Test ke liye */
 export const _queued = () => queue.slice();
+
+// ---------- F23-AC5: Meta Pixel ----------
+
+type MetaParams = Record<string, Value | string[]>;
+type Fbq = (...args: unknown[]) => void;
+let fbq: Fbq | null = null;
+const metaQueue: [string, MetaParams][] = [];
+const ID_LIST = /^[a-z0-9-]{1,40}$/;
+
+/**
+ * Hamara event → Meta ka standard event. Input pehle se `cleanParams` se guzra hota hai (PII nahin);
+ * yahan sirf ginti aur catalog ids jate hain. Baqi events Meta ko nahin jate.
+ */
+export function metaEvent(name: EventName, p: Record<string, Value>): [string, MetaParams] | null {
+  switch (name) {
+    case 'view_product': {
+      const ids = String(p.products ?? '').split(',').filter((x) => ID_LIST.test(x));
+      return ids.length ? ['ViewContent', { content_type: 'product', content_ids: ids }] : null;
+    }
+    case 'job_view':
+      return ['ViewContent', { content_type: 'job', content_category: String(p.org ?? '').slice(0, 40) }];
+    case 'add_to_cart':
+      return typeof p.product === 'string' && ID_LIST.test(p.product) ? ['AddToCart', { content_type: 'product', content_ids: [p.product] }] : null;
+    case 'open_order_form':
+      return ['InitiateCheckout', { num_items: Number(p.items) || 0 }];
+    case 'order_created':
+      return ['Lead', { num_items: Number(p.items) || 0 }];
+    default:
+      return null;
+  }
+}
+
+/** Test ke liye */
+export const _metaQueued = () => metaQueue.slice();
+
+/** F23-AC3: pehli interaction (tap/key/scroll) ya ~4 s ke baad ek dafa chalao */
+function whenIdle(start: () => void): void {
+  const once = () => {
+    for (const e of ['pointerdown', 'keydown', 'scroll'] as const) removeEventListener(e, once);
+    start();
+  };
+  for (const e of ['pointerdown', 'keydown', 'scroll'] as const) addEventListener(e, once, { once: true, passive: true });
+  setTimeout(start, 4000);
+}
+
+let metaStarted = false;
+
+/** Meta Pixel deferred. id khali/ghalat = kuch nahin. `/track` par na bulao (URL mein order number). */
+export function initMetaPixel(id: string): void {
+  if (metaStarted || typeof window === 'undefined' || !/^\d{10,20}$/.test(id)) return;
+  metaStarted = true;
+  type Stub = Fbq & { callMethod?: Fbq; queue: unknown[]; push: unknown; loaded: boolean; version: string };
+  const w = window as unknown as { fbq?: Stub; _fbq?: Stub };
+  whenIdle(() => {
+    if (fbq) return;
+    try {
+      if (!w.fbq) {
+        // Meta ka apna "stub" (unke snippet jaisa): script aane tak calls queue mein
+        const n = function (this: unknown) {
+          // eslint-disable-next-line prefer-rest-params
+          if (n.callMethod) n.callMethod.apply(n, arguments as unknown as unknown[]);
+          // eslint-disable-next-line prefer-rest-params
+          else n.queue.push(arguments);
+        } as Stub;
+        n.push = n;
+        n.loaded = true;
+        n.version = '2.0';
+        n.queue = [];
+        w.fbq = n;
+        if (!w._fbq) w._fbq = n;
+      }
+      fbq = w.fbq;
+      // autoConfig band: Meta khud buttons/form ka matn nahin parhta (naam/phone ka khatra, qaida 11)
+      fbq('set', 'autoConfig', false, id);
+      fbq('init', id);
+      fbq('track', 'PageView');
+      for (const [ev, params] of metaQueue.splice(0)) fbq('track', ev, params);
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://connect.facebook.net/en_US/fbevents.js';
+      s.onerror = () => undefined; // F23-AC3: block ho to bhi site chale
+      document.head.appendChild(s);
+    } catch {
+      /* chup */
+    }
+  });
+}
 
 let started = false;
 
@@ -129,12 +225,7 @@ export function initAnalytics(id: string): void {
       /* chup */
     }
   };
-  const once = () => {
-    for (const e of ['pointerdown', 'keydown', 'scroll'] as const) removeEventListener(e, once);
-    start();
-  };
-  for (const e of ['pointerdown', 'keydown', 'scroll'] as const) addEventListener(e, once, { once: true, passive: true });
-  setTimeout(start, 4000);
+  whenIdle(start);
 }
 
 /** Page par khud chalne wale events: view_product, job_view, aur click par share_click / house_ad_click */
